@@ -50,7 +50,7 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.view.setTransform(trans)
         view.centerOn(self.pynguin)
 
-        self.editor = HighlightedTextEdit()
+        self.editor = CodeArea()
         hbox = QHBoxLayout(self.ui.edframe)
         hbox.setSpacing(0)
         hbox.setMargin(0)
@@ -81,6 +81,24 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, ev=None):
         QtGui.qApp.quit()
 
+
+class CodeArea(HighlightedTextEdit):
+    def __init__(self):
+        HighlightedTextEdit.__init__(self)
+        self.title = ''
+
+    def keyPressEvent(self, ev):
+        HighlightedTextEdit.keyPressEvent(self, ev)
+        fblk = self._doc.firstBlock()
+        txt = str(fblk.text())
+        self.settitle(txt)
+
+    def settitle(self, txt):
+        if txt[:4] == 'def ' and txt.endswith(':'):
+            title = txt[4:-1]
+            if title != self.title:
+                self.title = title
+                print 'set title to', title
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self):
