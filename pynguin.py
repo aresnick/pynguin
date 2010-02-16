@@ -96,62 +96,77 @@ class Interpreter(HighlightedTextEdit):
         self._check_control_key = False
 
     def write(self, text):
-        sys.stdout = self.save_stdout
-        sys.stdout = self
-        text = text.strip()
-        self.append(text)
+        text = text.rstrip()
+        if text:
+            sys.stdout = self.save_stdout
+            #print 'writing',text
+            sys.stdout = self
+            text = text.strip()
+            self.append(text)
 
     def keyPressEvent(self, ev):
         k = ev.key()
+        print k
 
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
         Backspace = QtCore.Qt.Key_Backspace
+        Left = QtCore.Qt.Key_Left
         Return = QtCore.Qt.Key_Return
         Up = QtCore.Qt.Key_Up
         Down = QtCore.Qt.Key_Down
         Control = QtCore.Qt.Key_Control
         U = QtCore.Qt.Key_U
 
+
+        lblk = self._doc.lastBlock()
+        cpos = self.textCursor().position()
+        cblk = self._doc.findBlock(cpos)
+        cblkpos = cblk.position()
+
         if k == Return:
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
             blk = self._doc.findBlockByNumber(pos)
-            blk=blk.previous() or blk
+            blk = blk.previous() or blk
+
             txt = str(blk.text()[4:]).rstrip()
             if txt:
                 self.history.append(txt)
+            self.historyp = -1
+
             sys.stdout = self
             self.interpreter.push(txt)
             sys.stdout = self.save_stdout
+
             self.append('>>> ')
 
-            self.historyp = -1
-
-        elif k in (Up, Down):
+        elif k in (Backspace, Left):
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
-            #print 'CTXT', cblk.text()
+            cblkpos = cblk.position()
+
+            if cpos <= cblkpos + 4:
+                pass
+            else:
+                HighlightedTextEdit.keyPressEvent(self, ev)
+
+        elif k in (Up, Down):
+            cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
-            #blk = self._doc.findBlockByNumber(pos)
-            #blk = cblk.previous()
-            #pos = blk.position()
-            #print 'CPOS', cpos, pos
+
             txt = str(cblk.text()[4:]).strip()
-            #print 'PTXT', txt
+
             if k==Up and self.historyp==-1 and txt:
                 self.history.append(txt)
             lenhist = len(self.history)
-            #print self.history
             if k==Up and self.historyp > -lenhist:
                 self.historyp -= 1
             elif k==Down and self.historyp < -1:
                 self.historyp += 1
             txt = self.history[self.historyp]
-            #print 'UTXT', txt
             endpos = pos + cblk.length() - 1
-            #print 'EPOS', endpos
 
             curs = self.textCursor()
             curs.setPosition(pos+4, 0)
@@ -169,6 +184,19 @@ class Interpreter(HighlightedTextEdit):
 
         else:
             HighlightedTextEdit.keyPressEvent(self, ev)
+
+
+        cpos = self.textCursor().position()
+        cblk = self._doc.findBlock(cpos)
+        if cblk != lblk:
+            lblk = self._doc.lastBlock()
+            lpos = lblk.position() + lblk.length() - 1
+            curs = self.textCursor()
+            curs.setPosition(lpos, 0)
+            self.setTextCursor(curs)
+
+        vbar = self.verticalScrollBar()
+        vbar.setValue(vbar.maximum())
 
     def erasetostart(self):
         cpos = self.textCursor().position()
