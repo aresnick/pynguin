@@ -118,6 +118,8 @@ class Interpreter(HighlightedTextEdit):
 
         self._check_control_key = False
 
+        self.setWordWrapMode(QtGui.QTextOption.WordWrap)
+
     def write(self, text):
         text = text.rstrip()
         if text:
