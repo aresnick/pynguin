@@ -88,6 +88,20 @@ class MainWindow(QtGui.QMainWindow):
         docname = str(self.ui.mselect.itemText(idx))
         self.editor.switchto(docname)
 
+    def testcode(self):
+        self.editor.savecurrent()
+        docname = str(self.ui.mselect.currentText())
+        code = str(self.editor.documents[docname])
+        exec code in self.interpreter_locals
+        line0 = code.split('\n')[0]
+        if line0.startswith('def ') and line0.endswith(':'):
+            firstparen = line0.find('(')
+            if firstparen > -1:
+                funcname = line0[4:firstparen]
+                func = self.interpreter_locals.get(funcname, None)
+                if func is not None:
+                    func()
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
@@ -104,7 +118,7 @@ class CodeArea(HighlightedTextEdit):
         self.settitle(txt)
 
     def settitle(self, txt):
-        if txt[:4] == 'def ' and txt.endswith(':'):
+        if txt.startswith('def ') and txt.endswith(':'):
             title = txt[4:-1]
         elif txt=='NEW':
             title = 'Untitled'
@@ -122,13 +136,16 @@ class CodeArea(HighlightedTextEdit):
         idx = self.mselect.count()
         self.mselect.setCurrentIndex(idx-1)
 
-    def new(self):
+    def savecurrent(self):
         self.documents[self.title] = self._doc.toPlainText()
+
+    def new(self):
+        self.savecurrent()
         self._doc.setPlainText('')
         self.settitle('NEW')
 
     def switchto(self, docname):
-        self.documents[self.title] = self._doc.toPlainText()
+        self.savecurrent()
         self._doc.setPlainText(self.documents[docname])
         self.title = docname
 
@@ -158,7 +175,6 @@ class Interpreter(HighlightedTextEdit):
 
     def keyPressEvent(self, ev):
         k = ev.key()
-        print k
 
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
@@ -331,6 +347,7 @@ class Pynguin(GraphicsItem):
         self.set_transform()
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
+        self.pen.setWidth(5)
         self.drawn_items = []
 
     def boundingRect(self):

@@ -172,9 +172,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>testbtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>testcode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>794</x>
+     <y>349</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
   <slot>changedoc()</slot>
+  <slot>testcode()</slot>
  </slots>
 </ui>
