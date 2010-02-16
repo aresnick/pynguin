@@ -81,12 +81,21 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, ev=None):
         QtGui.qApp.quit()
 
+    def newdoc(self):
+        self.editor.new()
+
+    def changedoc(self, idx):
+        docname = str(self.ui.mselect.itemText(idx))
+        self.editor.switchto(docname)
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
         HighlightedTextEdit.__init__(self)
         self.mselect = mselect
+        self.documents = {}
         self.title = ''
+        self.settitle('Untitled')
 
     def keyPressEvent(self, ev):
         HighlightedTextEdit.keyPressEvent(self, ev)
@@ -97,13 +106,31 @@ class CodeArea(HighlightedTextEdit):
     def settitle(self, txt):
         if txt[:4] == 'def ' and txt.endswith(':'):
             title = txt[4:-1]
-            if title != self.title:
+        elif txt=='NEW':
+            title = 'Untitled'
+        else:
+            title = txt
+
+        if title != self.title:
+            if txt != 'NEW':
                 idx = self.mselect.findText(self.title)
                 if idx > -1:
                     self.mselect.removeItem(idx)
-                self.title = title
-                self.mselect.addItem(title)
-                print 'set title to', title
+            self.title = title
+            self.mselect.addItem(title)
+
+        idx = self.mselect.count()
+        self.mselect.setCurrentIndex(idx-1)
+
+    def new(self):
+        self.documents[self.title] = self._doc.toPlainText()
+        self._doc.setPlainText('')
+        self.settitle('NEW')
+
+    def switchto(self, docname):
+        self.documents[self.title] = self._doc.toPlainText()
+        self._doc.setPlainText(self.documents[docname])
+        self.title = docname
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self):

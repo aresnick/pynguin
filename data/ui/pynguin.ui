@@ -51,14 +51,14 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="newbtn">
              <property name="text">
               <string>New</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="testbtn">
              <property name="text">
               <string>Test</string>
              </property>
@@ -140,5 +140,41 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>newbtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newdoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>615</x>
+     <y>349</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mselect</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>changedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>704</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>newdoc()</slot>
+  <slot>changedoc()</slot>
+ </slots>
 </ui>
