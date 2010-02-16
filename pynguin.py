@@ -10,6 +10,10 @@ from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 from editor import HighlightedTextEdit
 
 
+
+pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
+                        'lt', 'right', 'rt', 'reset', 'home',]
+
 uidir = 'data/ui'
 uifile = 'pynguin.ui'
 uipath = os.path.join(uidir, uifile)
@@ -59,11 +63,11 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        self.interpreter_locals = {'p':self.pynguin,
-                                    'fd': self.pynguin.forward,
-                                    'bk': self.pynguin.backward,
-                                    'lt': self.pynguin.left,
-                                    'rt': self.pynguin.right}
+        ilocals = {}
+        for fname in pynguin_functions:
+            function = getattr(self.pynguin, fname)
+            ilocals[fname] = function
+        self.interpreter_locals = ilocals
         self.interpreter = code.InteractiveConsole(self.interpreter_locals)
         self.interpretereditor.interpreter = self.interpreter
 
@@ -128,26 +132,26 @@ class Interpreter(HighlightedTextEdit):
         elif k in (Up, Down):
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
-            print 'CTXT', cblk.text()
+            #print 'CTXT', cblk.text()
             pos = cblk.position()
             #blk = self._doc.findBlockByNumber(pos)
             #blk = cblk.previous()
             #pos = blk.position()
-            print 'CPOS', cpos, pos
+            #print 'CPOS', cpos, pos
             txt = str(cblk.text()[4:]).strip()
-            print 'PTXT', txt
+            #print 'PTXT', txt
             if k==Up and self.historyp==-1 and txt:
                 self.history.append(txt)
             lenhist = len(self.history)
-            print self.history
+            #print self.history
             if k==Up and self.historyp > -lenhist:
                 self.historyp -= 1
             elif k==Down and self.historyp < -1:
                 self.historyp += 1
             txt = self.history[self.historyp]
-            print 'UTXT', txt
+            #print 'UTXT', txt
             endpos = pos + cblk.length() - 1
-            print 'EPOS', endpos
+            #print 'EPOS', endpos
 
             curs = self.textCursor()
             curs.setPosition(pos+4, 0)
@@ -247,6 +251,7 @@ class Pynguin(GraphicsItem):
         self.set_transform()
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
+        self.drawn_items = []
 
     def boundingRect(self):
         return self.item.boundingRect()
@@ -267,15 +272,20 @@ class Pynguin(GraphicsItem):
 
         line = self.scene().addLine(QtCore.QLineF(p0, p1), self.pen)
         line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
+        self.drawn_items.append(line)
+    fd = forward
 
     def backward(self, distance):
         self.forward(-distance)
+    bk = backward
 
     def left(self, degrees):
         self.rotate(-degrees)
+    lt = left
 
     def right(self, degrees):
         self.left(-degrees)
+    rt = right
 
     def goto(self, pos):
         self.setpos(pos)
@@ -283,6 +293,12 @@ class Pynguin(GraphicsItem):
     def home(self):
         self.ang = 0
         self.goto((0, 0))
+
+    def reset(self):
+        scene = self.scene()
+        for item in self.drawn_items:
+            scene.removeItem(item)
+        self.home()
 
 
 def run():
