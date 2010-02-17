@@ -211,6 +211,8 @@ class Interpreter(HighlightedTextEdit):
 
             txt = str(blk.text()[4:]).rstrip()
             if txt:
+                if self.history and not self.history[-1]:
+                    del self.history[-1]
                 self.history.append(txt)
             self.historyp = -1
 
@@ -244,22 +246,36 @@ class Interpreter(HighlightedTextEdit):
 
             txt = str(cblk.text()[4:]).strip()
 
-            if k==Up and self.historyp==-1 and txt:
-                self.history.append(txt)
+            changeline = True
+
             lenhist = len(self.history)
-            if k==Up and self.historyp > -lenhist:
+            if k==Up and self.historyp <= -lenhist:
+                QtGui.QApplication.beep()
+                changeline = False
+            elif k==Up:
                 self.historyp -= 1
-            elif k==Down and self.historyp < -1:
+            elif k==Down and self.historyp >= -1:
+                QtGui.QApplication.beep()
+                changeline = False
+            elif k==Down:
                 self.historyp += 1
-            txt = self.history[self.historyp]
-            endpos = pos + cblk.length() - 1
 
-            curs = self.textCursor()
-            curs.setPosition(pos+4, 0)
-            curs.setPosition(endpos, 1)
-            curs.removeSelectedText()
+            if k==Up and self.historyp==-2:
+                self.history.append(txt)
 
-            self.insertPlainText(txt)
+            if changeline:
+                txt = self.history[self.historyp]
+                endpos = pos + cblk.length() - 1
+
+                if self.historyp == -1:
+                    del self.history[-1]
+
+                curs = self.textCursor()
+                curs.setPosition(pos+4, 0)
+                curs.setPosition(endpos, 1)
+                curs.removeSelectedText()
+
+                self.insertPlainText(txt)
 
             passthru = False
 
