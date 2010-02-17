@@ -199,14 +199,17 @@ class Interpreter(HighlightedTextEdit):
         cblk = self._doc.findBlock(cpos)
         cblkpos = cblk.position()
 
+        passthru = True
+
         if k == Return:
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
             blk = self._doc.findBlockByNumber(pos)
-            blk = blk.previous() or blk
+            blk = blk.previous() or self.firstBlock()
 
             txt = str(blk.text()[4:]).rstrip()
+            print cpos, txt
             if txt:
                 self.history.append(txt)
             self.historyp = -1
@@ -217,15 +220,23 @@ class Interpreter(HighlightedTextEdit):
 
             self.append('>>> ')
 
+            passthru = False
+
         elif k in (Backspace, Left):
+            lblk = self._doc.lastBlock()
+            lpos = lblk.position()
+            llpos = lblk.position() + lblk.length() - 1
+
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
             cblkpos = cblk.position()
 
-            if cpos <= cblkpos + 4:
-                pass
+            print cpos, cblkpos
+
+            if cpos <= lpos + 4:
+                passthru = False
             else:
-                HighlightedTextEdit.keyPressEvent(self, ev)
+                passthru = True
 
         elif k in (Up, Down):
             cblk = self._doc.findBlock(cpos)
@@ -250,6 +261,8 @@ class Interpreter(HighlightedTextEdit):
 
             self.insertPlainText(txt)
 
+            passthru = False
+
         elif k == Control:
             self._check_control_key = True
 
@@ -257,12 +270,10 @@ class Interpreter(HighlightedTextEdit):
             #erase from cursor to beginning of line
             self.erasetostart()
 
-        else:
-            HighlightedTextEdit.keyPressEvent(self, ev)
-
 
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
+        lblk = self._doc.lastBlock()
         if cblk != lblk:
             lblk = self._doc.lastBlock()
             lpos = lblk.position() + lblk.length() - 1
@@ -270,8 +281,13 @@ class Interpreter(HighlightedTextEdit):
             curs.setPosition(lpos, 0)
             self.setTextCursor(curs)
 
+        if passthru:
+            HighlightedTextEdit.keyPressEvent(self, ev)
+
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
+
+
 
     def erasetostart(self):
         cpos = self.textCursor().position()
