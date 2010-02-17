@@ -12,7 +12,8 @@ from editor import HighlightedTextEdit
 
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
-                        'lt', 'right', 'rt', 'reset', 'home',]
+                        'lt', 'right', 'rt', 'reset', 'home',
+                        'penup', 'pendown',]
 
 uidir = 'data/ui'
 uifile = 'pynguin.ui'
@@ -63,7 +64,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        ilocals = {}
+        ilocals = {'p': self.pynguin}
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
@@ -80,6 +81,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def closeEvent(self, ev=None):
         QtGui.qApp.quit()
+
+    def new(self):
+        pass
+
+    def save(self):
+        pass
 
     def newdoc(self):
         self.editor.new()
@@ -350,6 +357,8 @@ class Pynguin(GraphicsItem):
         self.pen.setWidth(5)
         self.drawn_items = []
 
+        self.pendown()
+
     def boundingRect(self):
         return self.item.boundingRect()
 
@@ -367,9 +376,10 @@ class Pynguin(GraphicsItem):
 
         p1 = QtCore.QPointF(self.pos)
 
-        line = self.scene().addLine(QtCore.QLineF(p0, p1), self.pen)
-        line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
-        self.drawn_items.append(line)
+        if self._pen:
+            line = self.scene().addLine(QtCore.QLineF(p0, p1), self.pen)
+            line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
+            self.drawn_items.append(line)
     fd = forward
 
     def backward(self, distance):
@@ -397,6 +407,10 @@ class Pynguin(GraphicsItem):
             scene.removeItem(item)
         self.home()
 
+    def penup(self):
+        self._pen = False
+    def pendown(self):
+        self._pen = True
 
 def run():
     app = QtGui.QApplication(sys.argv)
