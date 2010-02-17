@@ -161,7 +161,6 @@ class Interpreter(HighlightedTextEdit):
         HighlightedTextEdit.__init__(self)
         self.history = []
         self.historyp = -1
-        self.append('\n')
         self.append('>>> ')
 
         self.save_stdout = sys.stdout
@@ -206,10 +205,11 @@ class Interpreter(HighlightedTextEdit):
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
             blk = self._doc.findBlockByNumber(pos)
-            blk = blk.previous() or self.firstBlock()
+            blk = blk.previous()
+            if not blk.text():
+                blk = self._doc.firstBlock()
 
             txt = str(blk.text()[4:]).rstrip()
-            print cpos, txt
             if txt:
                 self.history.append(txt)
             self.historyp = -1
