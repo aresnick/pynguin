@@ -72,6 +72,8 @@ class MainWindow(QtGui.QMainWindow):
         self.interpreter = code.InteractiveConsole(self.interpreter_locals)
         self.interpretereditor.interpreter = self.interpreter
 
+        self.interpretereditor.setFocus()
+
         #QtCore.QTimer.singleShot(100, self.ropy)
 
     def ropy(self):
@@ -90,10 +92,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def newdoc(self):
         self.editor.new()
+        self.editor.setFocus()
 
     def changedoc(self, idx):
         docname = str(self.ui.mselect.itemText(idx))
         self.editor.switchto(docname)
+        self.editor.setFocus()
 
     def testcode(self):
         self.editor.savecurrent()
