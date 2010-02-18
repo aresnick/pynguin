@@ -308,6 +308,19 @@ class Interpreter(HighlightedTextEdit):
         vbar.setValue(vbar.maximum())
 
 
+    def mousePressEvent(self, ev):
+        curs = self.cursorForPosition(ev.pos())
+        col = curs.columnNumber()
+        cpos = curs.position()
+        blk = curs.block()
+        #blklen = blk.length()
+        blktext = str(blk.text())
+        promptblk = blktext.startswith('>>>') or blktext.startswith('...')
+        if promptblk and col < 4:
+            curs.setPosition(cpos + 4-col)
+            self.setTextCursor(curs)
+        else:
+            HighlightedTextEdit.mousePressEvent(self, ev)
 
     def erasetostart(self):
         cpos = self.textCursor().position()
