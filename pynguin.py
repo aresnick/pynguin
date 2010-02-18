@@ -169,6 +169,7 @@ class Interpreter(HighlightedTextEdit):
 
         self.save_stdout = sys.stdout
         self.save_stdin = sys.stdin
+        self.save_stderr = sys.stderr
 
         self._check_control_key = False
 
@@ -221,8 +222,10 @@ class Interpreter(HighlightedTextEdit):
             self.historyp = -1
 
             sys.stdout = self
+            sys.stderr = self
             self.interpreter.push(txt)
             sys.stdout = self.save_stdout
+            sys.stderr = self.save_stderr
 
             self.append('>>> ')
 
