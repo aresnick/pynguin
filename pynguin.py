@@ -47,7 +47,8 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin = Pynguin((0, 0), 0, self.rend)
         self.scene.addItem(self.pynguin)
         trans = QtGui.QTransform()
-        trans.scale(0.15, 0.15)
+        #trans.scale(0.15, 0.15)
+        trans.scale(1, 1)
         self.scene.view.setTransform(trans)
         view.centerOn(self.pynguin)
 
@@ -369,6 +370,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
         trans = QtGui.QTransform()
         trans.translate(x, y)
         trans.translate(cx, cy).rotate(ang).translate(-cx, -cy)
+        trans.scale(self.scale, self.scale)
         self.setTransform(trans)
 
     def setpos(self, pos):
@@ -390,10 +392,13 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
 class Pynguin(GraphicsItem):
     def __init__(self, pos, ang, rend):
-        cpt = QtCore.QPointF(110, 125)
+        cx, cy = 110, 125
+        scale = 0.20
+        cxs, cys = cx*scale, cy*scale
+        cpt = QtCore.QPointF(cxs, cys)
         self.cpt = cpt
         self.ang = ang
-        self.scale = 1
+        self.scale = scale
 
         GraphicsItem.__init__(self)
         self.setpos(pos)
@@ -406,7 +411,7 @@ class Pynguin(GraphicsItem):
         self.set_transform()
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
-        self.pen.setWidth(5)
+        self.pen.setWidthF(1.5)
         self.drawn_items = []
 
         self.pendown()
