@@ -254,36 +254,47 @@ class Interpreter(HighlightedTextEdit):
 
             txt = str(cblk.text()[4:]).strip()
 
-            changeline = True
-
-            lenhist = len(self.history)
-            if k==Up and self.historyp <= -lenhist:
+            if not self.history:
                 QtGui.QApplication.beep()
-                changeline = False
-            elif k==Up:
-                self.historyp -= 1
-            elif k==Down and self.historyp >= -1:
-                QtGui.QApplication.beep()
-                changeline = False
-            elif k==Down:
-                self.historyp += 1
 
-            if k==Up and self.historyp==-2:
-                self.history.append(txt)
+            else:
+                changeline = True
+                addthisline = False
 
-            if changeline:
-                txt = self.history[self.historyp]
-                endpos = pos + cblk.length() - 1
+                lenhist = len(self.history)
 
-                if self.historyp == -1:
-                    del self.history[-1]
+                if k==Up and self.historyp==-1:
+                    addthisline = True
 
-                curs = self.textCursor()
-                curs.setPosition(pos+4, 0)
-                curs.setPosition(endpos, 1)
-                curs.removeSelectedText()
+                if k==Up and lenhist==1:
+                    self.historyp -= 1
+                elif k==Up and self.historyp <= -lenhist:
+                    QtGui.QApplication.beep()
+                    changeline = False
+                elif k==Up:
+                    self.historyp -= 1
+                elif k==Down and self.historyp >= -1:
+                    QtGui.QApplication.beep()
+                    changeline = False
+                elif k==Down:
+                    self.historyp += 1
 
-                self.insertPlainText(txt)
+                if addthisline:
+                    self.history.append(txt)
+
+                if changeline:
+                    txt = self.history[self.historyp]
+                    endpos = pos + cblk.length() - 1
+
+                    if self.historyp == -1:
+                        del self.history[-1]
+
+                    curs = self.textCursor()
+                    curs.setPosition(pos+4, 0)
+                    curs.setPosition(endpos, 1)
+                    curs.removeSelectedText()
+
+                    self.insertPlainText(txt)
 
             passthru = False
 
