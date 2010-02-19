@@ -46,7 +46,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.pynguin = Pynguin((0, 0), 0, self.rend)
         self.scene.addItem(self.pynguin.gitem)
-        self.setImageArrow()
         trans = QtGui.QTransform()
         #trans.scale(0.15, 0.15)
         trans.scale(1, 1)
