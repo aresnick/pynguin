@@ -13,7 +13,7 @@ from editor import HighlightedTextEdit
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
-                        'penup', 'pendown',]
+                        'penup', 'pendown', 'color', 'width', ]
 
 uidir = 'data/ui'
 uifile = 'pynguin.ui'
@@ -114,6 +114,31 @@ class MainWindow(QtGui.QMainWindow):
                 if func is not None:
                     func()
 
+    def setPenColor(self):
+        icolor = self.pynguin.pen.brush().color()
+        ncolor = QtGui.QColorDialog.getColor(icolor, self)
+        if ncolor.isValid():
+            self.pynguin.pen.setColor(ncolor)
+            r, g, b, a = ncolor.getRgb()
+            cmd = 'color(%s, %s, %s)' % (r, g, b)
+            self.interpretereditor.addcmd(cmd)
+
+    def setPenWidth(self):
+        iwidth = self.pynguin.pen.width()
+        uifile = 'penwidth.ui'
+        uipath = os.path.join(uidir, uifile)
+        DClass, _ = uic.loadUiType(uipath)
+        dc = DClass()
+        d = QtGui.QDialog(self)
+        d.ui = DClass()
+        dc.setupUi(d)
+        dc.thewid.setValue(iwidth)
+        d.exec_()
+        nwidth = dc.thewid.value()
+        self.pynguin.width(nwidth)
+        cmd = 'width(%s)' % nwidth
+        self.interpretereditor.addcmd(cmd)
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
@@ -175,6 +200,11 @@ class Interpreter(HighlightedTextEdit):
         self._check_control_key = False
 
         self.setWordWrapMode(QtGui.QTextOption.WordWrap)
+
+    def addcmd(self, cmd):
+        self.insertPlainText(cmd)
+        self.append('>>> ')
+        self.history.append(cmd)
 
     def write(self, text):
         text = text.rstrip()
@@ -479,6 +509,20 @@ class Pynguin(GraphicsItem):
         self._pen = False
     def pendown(self):
         self._pen = True
+
+    def color(self, r=None, g=None, b=None):
+        pen = self.pen
+        if r is g is b is None:
+            return pen.brush().color().getRgb()[:3]
+        else:
+            pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+
+    def width(self, w=None):
+        if w is None:
+            return self.pen.width()
+        else:
+            self.pen.setWidthF(w)
+
 
 def run():
     app = QtGui.QApplication(sys.argv)
