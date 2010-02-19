@@ -165,11 +165,20 @@
    </property>
   </action>
   <action name="actionPenUp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Up (off)</string>
    </property>
   </action>
   <action name="actionPenDown">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Down (on)</string>
    </property>

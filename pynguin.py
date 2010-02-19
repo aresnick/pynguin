@@ -116,16 +116,16 @@ class MainWindow(QtGui.QMainWindow):
                     func()
 
     def setPenColor(self):
-        icolor = self.pynguin.pen.brush().color()
+        icolor = self.pynguin.gitem.pen.brush().color()
         ncolor = QtGui.QColorDialog.getColor(icolor, self)
         if ncolor.isValid():
-            self.pynguin.pen.setColor(ncolor)
+            self.pynguin.gitem.pen.setColor(ncolor)
             r, g, b, a = ncolor.getRgb()
             cmd = 'color(%s, %s, %s)' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
     def setPenWidth(self):
-        iwidth = self.pynguin.pen.width()
+        iwidth = self.pynguin.gitem.pen.width()
         uifile = 'penwidth.ui'
         uipath = os.path.join(uidir, uifile)
         DClass, _ = uic.loadUiType(uipath)
@@ -141,12 +141,20 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.addcmd(cmd)
 
     def setPenDown(self):
+        pendownaction = self.ui.actionPenDown
+        penupaction = self.ui.actionPenUp
         self.pynguin.pendown()
         self.interpretereditor.addcmd('pendown()')
+        pendownaction.setChecked(True)
+        penupaction.setChecked(False)
 
     def setPenUp(self):
+        pendownaction = self.ui.actionPenDown
+        penupaction = self.ui.actionPenUp
         self.pynguin.penup()
         self.interpretereditor.addcmd('penup()')
+        pendownaction.setChecked(False)
+        penupaction.setChecked(True)
 
     def setImagePynguin(self):
         pynguinaction = self.ui.actionPynguin
@@ -157,7 +165,6 @@ class MainWindow(QtGui.QMainWindow):
         arrowaction.setChecked(False)
 
     def setImageArrow(self):
-        print 'set to arrow'
         pynguinaction = self.ui.actionPynguin
         arrowaction = self.ui.actionArrow
 
@@ -487,9 +494,9 @@ class Pynguin(object):
 
     def width(self, w=None):
         if w is None:
-            return self.pen.width()
+            return self.gitem.pen.width()
         else:
-            self.pen.setWidth(w)
+            self.gitem.pen.setWidth(w)
 
     def setImageid(self, imageid):
         ogitem = self.gitem
