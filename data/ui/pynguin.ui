@@ -121,7 +121,15 @@
     <addaction name="actionColor"/>
     <addaction name="actionWidth"/>
    </widget>
+   <widget class="QMenu" name="menuPynguin">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionPynguin"/>
+    <addaction name="actionArrow"/>
+   </widget>
    <addaction name="menuQuit"/>
+   <addaction name="menuPynguin"/>
    <addaction name="menuPen"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -164,6 +172,22 @@
   <action name="actionPenDown">
    <property name="text">
     <string>Down (on)</string>
+   </property>
+  </action>
+  <action name="actionPynguin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Pynguin</string>
+   </property>
+  </action>
+  <action name="actionArrow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Arrow</string>
    </property>
   </action>
  </widget>
@@ -329,6 +353,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPynguin</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setImagePynguin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionArrow</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setImageArrow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -340,5 +396,7 @@
   <slot>setPenWidth()</slot>
   <slot>setPenDown()</slot>
   <slot>setPenUp()</slot>
+  <slot>setImagePynguin()</slot>
+  <slot>setImageArrow()</slot>
  </slots>
 </ui>

@@ -45,12 +45,13 @@ class MainWindow(QtGui.QMainWindow):
         view.show()
 
         self.pynguin = Pynguin((0, 0), 0, self.rend)
-        self.scene.addItem(self.pynguin)
+        self.scene.addItem(self.pynguin.gitem)
+        self.setImageArrow()
         trans = QtGui.QTransform()
         #trans.scale(0.15, 0.15)
         trans.scale(1, 1)
         self.scene.view.setTransform(trans)
-        view.centerOn(self.pynguin)
+        view.centerOn(self.pynguin.gitem)
 
         self.editor = CodeArea(self.ui.mselect)
         hbox = QHBoxLayout(self.ui.edframe)
@@ -147,6 +148,22 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin.penup()
         self.interpretereditor.addcmd('penup()')
 
+    def setImagePynguin(self):
+        pynguinaction = self.ui.actionPynguin
+        arrowaction = self.ui.actionArrow
+
+        self.pynguin.setImageid('pynguin')
+        pynguinaction.setChecked(True)
+        arrowaction.setChecked(False)
+
+    def setImageArrow(self):
+        print 'set to arrow'
+        pynguinaction = self.ui.actionPynguin
+        arrowaction = self.ui.actionArrow
+
+        self.pynguin.setImageid('arrow')
+        arrowaction.setChecked(True)
+        pynguinaction.setChecked(False)
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
@@ -403,6 +420,91 @@ class Scene(QtGui.QGraphicsScene):
 
 
 
+class Pynguin(object):
+    def __init__(self, pos, ang, rend):
+        self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
+        self.drawn_items = []
+
+        self.pendown()
+
+    def forward(self, distance):
+        gitem = self.gitem
+        ang = gitem.ang
+        rad = ang * (PI / 180)
+        dx = distance * math.cos(rad)
+        dy = distance * math.sin(rad)
+
+        p0 = QtCore.QPointF(self.gitem.pos)
+
+        x = gitem.pos.x()+dx
+        y = gitem.pos.y()+dy
+        gitem.setpos((x, y))
+
+        p1 = QtCore.QPointF(self.gitem.pos)
+
+        if self._pen:
+            line = gitem.scene().addLine(QtCore.QLineF(p0, p1), gitem.pen)
+            line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
+            self.drawn_items.append(line)
+    fd = forward
+
+    def backward(self, distance):
+        self.forward(-distance)
+    bk = backward
+
+    def left(self, degrees):
+        self.gitem.rotate(-degrees)
+    lt = left
+
+    def right(self, degrees):
+        self.left(-degrees)
+    rt = right
+
+    def goto(self, pos):
+        self.gitem.setpos(pos)
+
+    def home(self):
+        self.gitem.ang = 0
+        self.goto((0, 0))
+
+    def reset(self):
+        scene = self.gitem.scene()
+        for item in self.drawn_items:
+            scene.removeItem(item)
+        self.home()
+
+    def penup(self):
+        self._pen = False
+    def pendown(self):
+        self._pen = True
+
+    def color(self, r=None, g=None, b=None):
+        pen = self.gitem.pen
+        if r is g is b is None:
+            return pen.brush().color().getRgb()[:3]
+        else:
+            pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+
+    def width(self, w=None):
+        if w is None:
+            return self.pen.width()
+        else:
+            self.pen.setWidth(w)
+
+    def setImageid(self, imageid):
+        ogitem = self.gitem
+        pos = ogitem.pos
+        ang = ogitem.ang
+        rend = ogitem.rend
+        pen = ogitem.pen
+        scene = ogitem.scene()
+        gitem = PynguinGraphicsItem(pos, ang, rend, imageid)
+        gitem.pen = pen
+        scene.removeItem(ogitem)
+        scene.addItem(gitem)
+        self.gitem = gitem
+
+
 class GraphicsItem(QtGui.QGraphicsItem):
     def __init__(self):
         QtGui.QGraphicsItem.__init__(self)
@@ -423,8 +525,11 @@ class GraphicsItem(QtGui.QGraphicsItem):
         self.setTransform(trans)
 
     def setpos(self, pos):
-        x, y = pos
-        pt = QtCore.QPointF(x, y)
+        try:
+            x, y = pos
+            pt = QtCore.QPointF(x, y)
+        except TypeError:
+            pt = pos
         self.pos = pt
         self.set_transform()
 
@@ -439,97 +544,34 @@ class GraphicsItem(QtGui.QGraphicsItem):
     def paint(self, painter, option, widget):
         pass
 
-class Pynguin(GraphicsItem):
-    def __init__(self, pos, ang, rend):
-        cx, cy = 110, 125
+class PynguinGraphicsItem(GraphicsItem):
+    def __init__(self, pos, ang, rend, imageid):
+        cx, cy = 125, 125
         scale = 0.20
         cxs, cys = cx*scale, cy*scale
         cpt = QtCore.QPointF(cxs, cys)
         self.cpt = cpt
         self.ang = ang
         self.scale = scale
+        self.rend = rend
 
         GraphicsItem.__init__(self)
         self.setpos(pos)
 
-        imageid = 'pynguin'
-        self.item = QtSvg.QGraphicsSvgItem(self)
-        self.item.setSharedRenderer(rend)
-        self.item.setElementId(imageid)
+        self.setImageid(imageid)
 
         self.set_transform()
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
-        self.pen.setWidthF(1.5)
-        self.drawn_items = []
+        self.pen.setWidth(2)
 
-        self.pendown()
+    def setImageid(self, imageid):
+        self.item = QtSvg.QGraphicsSvgItem(self)
+        self.item.setSharedRenderer(self.rend)
+        self.item.setElementId(imageid)
 
     def boundingRect(self):
         return self.item.boundingRect()
-
-    def forward(self, distance):
-        ang = self.ang
-        rad = ang * (PI / 180)
-        dx = distance * math.cos(rad)
-        dy = distance * math.sin(rad)
-
-        p0 = QtCore.QPointF(self.pos)
-
-        x=self.pos.x()+dx
-        y=self.pos.y()+dy
-        self.setpos((x, y))
-
-        p1 = QtCore.QPointF(self.pos)
-
-        if self._pen:
-            line = self.scene().addLine(QtCore.QLineF(p0, p1), self.pen)
-            line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
-            self.drawn_items.append(line)
-    fd = forward
-
-    def backward(self, distance):
-        self.forward(-distance)
-    bk = backward
-
-    def left(self, degrees):
-        self.rotate(-degrees)
-    lt = left
-
-    def right(self, degrees):
-        self.left(-degrees)
-    rt = right
-
-    def goto(self, pos):
-        self.setpos(pos)
-
-    def home(self):
-        self.ang = 0
-        self.goto((0, 0))
-
-    def reset(self):
-        scene = self.scene()
-        for item in self.drawn_items:
-            scene.removeItem(item)
-        self.home()
-
-    def penup(self):
-        self._pen = False
-    def pendown(self):
-        self._pen = True
-
-    def color(self, r=None, g=None, b=None):
-        pen = self.pen
-        if r is g is b is None:
-            return pen.brush().color().getRgb()[:3]
-        else:
-            pen.setColor(QtGui.QColor.fromRgb(r, g, b))
-
-    def width(self, w=None):
-        if w is None:
-            return self.pen.width()
-        else:
-            self.pen.setWidthF(w)
 
 
 def run():
