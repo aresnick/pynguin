@@ -116,6 +116,8 @@
     <property name="title">
      <string>Pen</string>
     </property>
+    <addaction name="actionPenDown"/>
+    <addaction name="actionPenUp"/>
     <addaction name="actionColor"/>
     <addaction name="actionWidth"/>
    </widget>
@@ -152,6 +154,16 @@
   <action name="actionWidth">
    <property name="text">
     <string>Width</string>
+   </property>
+  </action>
+  <action name="actionPenUp">
+   <property name="text">
+    <string>Up (off)</string>
+   </property>
+  </action>
+  <action name="actionPenDown">
+   <property name="text">
+    <string>Down (on)</string>
    </property>
   </action>
  </widget>
@@ -285,6 +297,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPenDown</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setPenDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPenUp</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setPenUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -294,5 +338,7 @@
   <slot>new()</slot>
   <slot>setPenColor()</slot>
   <slot>setPenWidth()</slot>
+  <slot>setPenDown()</slot>
+  <slot>setPenUp()</slot>
  </slots>
 </ui>

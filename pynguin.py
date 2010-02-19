@@ -139,6 +139,14 @@ class MainWindow(QtGui.QMainWindow):
         cmd = 'width(%s)' % nwidth
         self.interpretereditor.addcmd(cmd)
 
+    def setPenDown(self):
+        self.pynguin.pendown()
+        self.interpretereditor.addcmd('pendown()')
+
+    def setPenUp(self):
+        self.pynguin.penup()
+        self.interpretereditor.addcmd('penup()')
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
