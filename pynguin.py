@@ -20,6 +20,8 @@ uifile = 'pynguin.ui'
 uipath = os.path.join(uidir, uifile)
 MWClass, _ = uic.loadUiType(uipath)
 
+def sign(x):
+    return cmp(x, 0)
 
 def getrend(app):
     filename = 'pynguin.svg'
@@ -464,8 +466,8 @@ class Pynguin(object):
         self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
         self.drawn_items = []
         self.drawspeed = 1
-        self.turnspeed = 1
-        self.delay = 200
+        self.turnspeed = 4
+        self.delay = 50
         self.pendown()
 
     def _forward(self, distance):
@@ -489,18 +491,27 @@ class Pynguin(object):
             self.drawn_items.append(line)
 
     def _move(self, distance):
+        drawspeed = self.drawspeed
         if distance >= 0:
-            perstep = self.drawspeed
+            perstep = drawspeed
         else:
-            perstep = -self.drawspeed
+            perstep = -drawspeed
 
         distance = abs(distance)
         d = 0
         while d < distance:
-            t = self.ForwardThread(self, perstep)
+            if perstep == 0:
+                step = distance
+                d = distance
+            elif d + drawspeed > distance:
+                step = sign(perstep) * distance - d
+            else:
+                step = perstep
+
+            t = self.ForwardThread(self, step)
             t.start()
             t.wait()
-            d += self.drawspeed
+            d += drawspeed
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
 
     def forward(self, distance):
@@ -514,6 +525,7 @@ class Pynguin(object):
     def _left(self, degrees):
         self.gitem.rotate(-degrees)
     def _turn(self, degrees):
+        turnspeed = self.turnspeed
         if degrees >= 0:
             perstep = self.turnspeed
         else:
@@ -522,11 +534,20 @@ class Pynguin(object):
         degrees = abs(degrees)
         a = 0
         while a < degrees:
-            t = self.LeftThread(self, perstep)
+            if perstep == 0:
+                step = degrees
+                a = degrees
+            elif a + turnspeed > degrees:
+                step = sign(perstep) * degrees - a
+            else:
+                step = perstep
+
+            t = self.LeftThread(self, step)
             t.start()
             t.wait()
             a += self.turnspeed
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
+
     def left(self, degrees):
         self._turn(degrees)
     lt = left
