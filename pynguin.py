@@ -77,6 +77,9 @@ class MainWindow(QtGui.QMainWindow):
 
         #QtCore.QTimer.singleShot(100, self.ropy)
 
+        #self.t = TryThread(self.pynguin)
+        #self.t.start()
+
     def ropy(self):
         self.pynguin.left(1)
         self.pynguin.forward(15)
@@ -171,6 +174,19 @@ class MainWindow(QtGui.QMainWindow):
         arrowaction.setChecked(True)
         pynguinaction.setChecked(False)
 
+
+
+
+class TryThread(QtCore.QThread):
+    def __init__(self, pynguin):
+        QtCore.QThread.__init__(self)
+        self.pynguin = pynguin
+
+    def run(self):
+        for x in range(10):
+            self.pynguin.forward(10)
+            time.sleep(1)
+
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
         HighlightedTextEdit.__init__(self)
@@ -216,6 +232,7 @@ class CodeArea(HighlightedTextEdit):
         self.savecurrent()
         self._doc.setPlainText(self.documents[docname])
         self.title = docname
+
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self):
@@ -427,13 +444,31 @@ class Scene(QtGui.QGraphicsScene):
 
 
 class Pynguin(object):
+    class ForwardThread(QtCore.QThread):
+        def __init__(self, pynguin, distance):
+            QtCore.QThread.__init__(self)
+            self.pynguin = pynguin
+            self.distance = distance
+        def run(self):
+            self.pynguin._forward(self.distance)
+
+    class LeftThread(QtCore.QThread):
+        def __init__(self, pynguin, angle):
+            QtCore.QThread.__init__(self)
+            self.pynguin = pynguin
+            self.angle = angle
+        def run(self):
+            self.pynguin._left(self.angle)
+
     def __init__(self, pos, ang, rend):
         self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
         self.drawn_items = []
-
+        self.drawspeed = 1
+        self.turnspeed = 1
+        self.delay = 200
         self.pendown()
 
-    def forward(self, distance):
+    def _forward(self, distance):
         gitem = self.gitem
         ang = gitem.ang
         rad = ang * (PI / 180)
@@ -452,14 +487,48 @@ class Pynguin(object):
             line = gitem.scene().addLine(QtCore.QLineF(p0, p1), gitem.pen)
             line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
             self.drawn_items.append(line)
+
+    def _move(self, distance):
+        if distance >= 0:
+            perstep = self.drawspeed
+        else:
+            perstep = -self.drawspeed
+
+        distance = abs(distance)
+        d = 0
+        while d < distance:
+            t = self.ForwardThread(self, perstep)
+            t.start()
+            t.wait()
+            d += self.drawspeed
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
+
+    def forward(self, distance):
+        self._move(distance)
     fd = forward
 
     def backward(self, distance):
         self.forward(-distance)
     bk = backward
 
-    def left(self, degrees):
+    def _left(self, degrees):
         self.gitem.rotate(-degrees)
+    def _turn(self, degrees):
+        if degrees >= 0:
+            perstep = self.turnspeed
+        else:
+            perstep = -self.turnspeed
+
+        degrees = abs(degrees)
+        a = 0
+        while a < degrees:
+            t = self.LeftThread(self, perstep)
+            t.start()
+            t.wait()
+            a += self.turnspeed
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
+    def left(self, degrees):
+        self._turn(degrees)
     lt = left
 
     def right(self, degrees):
