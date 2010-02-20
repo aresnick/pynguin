@@ -318,11 +318,14 @@ class Interpreter(HighlightedTextEdit):
 
             sys.stdout = self
             sys.stderr = self
-            self.interpreter.push(txt)
+            needmore = self.interpreter.push(txt)
             sys.stdout = self.save_stdout
             sys.stderr = self.save_stderr
 
-            self.append('>>> ')
+            if not needmore:
+                self.append('>>> ')
+            else:
+                self.append('... ')
 
             passthru = False
 
