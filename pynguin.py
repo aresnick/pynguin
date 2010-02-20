@@ -3,6 +3,7 @@ import sys
 import math
 PI = math.pi
 import code
+import Queue
 
 from PyQt4 import QtCore, QtGui, QtSvg, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
@@ -76,6 +77,15 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.interpreter = self.interpreter
 
         self.interpretereditor.setFocus()
+
+        self.speedgroup = QtGui.QActionGroup(self)
+        self.speedgroup.addAction(self.ui.actionSlow)
+        self.speedgroup.addAction(self.ui.actionMedium)
+        self.speedgroup.addAction(self.ui.actionFast)
+        self.speedgroup.addAction(self.ui.actionInstant)
+        self.speedgroup.setExclusive(True)
+        self.speedgroup.triggered.connect(self.setSpeed)
+        self._setSpeed(2)
 
         #QtCore.QTimer.singleShot(100, self.ropy)
 
@@ -190,7 +200,16 @@ class MainWindow(QtGui.QMainWindow):
         arrowaction.setChecked(False)
         pynguinaction.setChecked(False)
 
-
+    def _setSpeed(self, speed):
+        self.pynguin.drawspeed = 2 * speed
+        self.pynguin.turnspeed = 4 * speed
+    def setSpeed(self, ev):
+        choice = {self.ui.actionSlow: 5,
+                    self.ui.actionMedium: 10,
+                    self.ui.actionFast: 20,
+                    self.ui.actionInstant: 0,}
+        speed = choice[ev]
+        self._setSpeed(speed)
 
 
 class TryThread(QtCore.QThread):
@@ -460,29 +479,29 @@ class Scene(QtGui.QGraphicsScene):
 
 
 class Pynguin(object):
-    class ForwardThread(QtCore.QThread):
-        def __init__(self, pynguin, distance):
-            QtCore.QThread.__init__(self)
-            self.pynguin = pynguin
-            self.distance = distance
-        def run(self):
-            self.pynguin._forward(self.distance)
-
-    class LeftThread(QtCore.QThread):
-        def __init__(self, pynguin, angle):
-            QtCore.QThread.__init__(self)
-            self.pynguin = pynguin
-            self.angle = angle
-        def run(self):
-            self.pynguin._left(self.angle)
-
     def __init__(self, pos, ang, rend):
         self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
         self.drawn_items = []
         self.drawspeed = 1
         self.turnspeed = 4
-        self.delay = 50
+        self.delay = 40
         self.pendown()
+        self._moves = Queue.Queue(200)
+        QtCore.QTimer.singleShot(self.delay, self._process_moves)
+
+    def _process_moves(self):
+        try:
+            move, args = self._moves.get(block=False)
+        except Queue.Empty:
+            pass
+        else:
+            move(*args)
+
+        if self.drawspeed == 0:
+            delay = 0
+        else:
+            delay = self.delay
+        QtCore.QTimer.singleShot(delay, self._process_moves)
 
     def _forward(self, distance):
         gitem = self.gitem
@@ -511,22 +530,28 @@ class Pynguin(object):
         else:
             perstep = -drawspeed
 
-        distance = abs(distance)
+        adistance = abs(distance)
         d = 0
-        while d < distance:
+        n = 0
+        while d < adistance:
             if perstep == 0:
                 step = distance
-                d = distance
-            elif d + drawspeed > distance:
-                step = sign(perstep) * distance - d
+                d = adistance
+            elif d + drawspeed > adistance:
+                step = sign(perstep) * (adistance - d)
             else:
                 step = perstep
-
-            t = self.ForwardThread(self, step)
-            t.start()
-            t.wait()
+            n += 1
             d += drawspeed
-            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
+
+            while 1:
+                try:
+                    self._moves.put_nowait((self._forward, (step,)))
+                except Queue.Full:
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                else:
+                    break
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def forward(self, distance):
         self._move(distance)
@@ -545,22 +570,28 @@ class Pynguin(object):
         else:
             perstep = -self.turnspeed
 
-        degrees = abs(degrees)
+        adegrees = abs(degrees)
         a = 0
-        while a < degrees:
+        n = 0
+        while a < adegrees:
             if perstep == 0:
                 step = degrees
-                a = degrees
-            elif a + turnspeed > degrees:
-                step = sign(perstep) * degrees - a
+                a = adegrees
+            elif a + turnspeed > adegrees:
+                step = sign(perstep) * (adegrees - a)
             else:
                 step = perstep
-
-            t = self.LeftThread(self, step)
-            t.start()
-            t.wait()
+            n += 1
             a += self.turnspeed
-            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents, self.delay)
+
+            while 1:
+                try:
+                    self._moves.put_nowait((self._left, (step,)))
+                except Queue.Full:
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                else:
+                    break
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def left(self, degrees):
         self._turn(degrees)
@@ -581,6 +612,12 @@ class Pynguin(object):
         scene = self.gitem.scene()
         for item in self.drawn_items:
             scene.removeItem(item)
+        if self._moves:
+            while 1:
+                try:
+                    move, args = self._moves.get(block=False)
+                except Queue.Empty:
+                    break
         self.home()
 
     def penup(self):
