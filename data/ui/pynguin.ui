@@ -127,10 +127,17 @@
     </property>
     <addaction name="actionPynguin"/>
     <addaction name="actionArrow"/>
+    <addaction name="actionHidden"/>
+   </widget>
+   <widget class="QMenu" name="menuSpeed">
+    <property name="title">
+     <string>Speed</string>
+    </property>
    </widget>
    <addaction name="menuQuit"/>
    <addaction name="menuPynguin"/>
    <addaction name="menuPen"/>
+   <addaction name="menuSpeed"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
@@ -200,6 +207,14 @@
    </property>
    <property name="text">
     <string>Arrow</string>
+   </property>
+  </action>
+  <action name="actionHidden">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden</string>
    </property>
   </action>
  </widget>
@@ -397,6 +412,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionHidden</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setImageHidden()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -410,5 +441,6 @@
   <slot>setPenUp()</slot>
   <slot>setImagePynguin()</slot>
   <slot>setImageArrow()</slot>
+  <slot>setImageHidden()</slot>
  </slots>
 </ui>

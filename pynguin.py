@@ -163,17 +163,31 @@ class MainWindow(QtGui.QMainWindow):
     def setImagePynguin(self):
         pynguinaction = self.ui.actionPynguin
         arrowaction = self.ui.actionArrow
+        hiddenaction = self.ui.actionHidden
 
         self.pynguin.setImageid('pynguin')
         pynguinaction.setChecked(True)
         arrowaction.setChecked(False)
+        hiddenaction.setChecked(False)
 
     def setImageArrow(self):
         pynguinaction = self.ui.actionPynguin
         arrowaction = self.ui.actionArrow
+        hiddenaction = self.ui.actionHidden
 
         self.pynguin.setImageid('arrow')
         arrowaction.setChecked(True)
+        pynguinaction.setChecked(False)
+        hiddenaction.setChecked(False)
+
+    def setImageHidden(self):
+        pynguinaction = self.ui.actionPynguin
+        arrowaction = self.ui.actionArrow
+        hiddenaction = self.ui.actionHidden
+
+        self.pynguin.setImageid('hidden')
+        hiddenaction.setChecked(True)
+        arrowaction.setChecked(False)
         pynguinaction.setChecked(False)
 
 
