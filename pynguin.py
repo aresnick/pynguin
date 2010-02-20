@@ -78,6 +78,19 @@ class MainWindow(QtGui.QMainWindow):
 
         self.interpretereditor.setFocus()
 
+        self.viewgroup = QtGui.QActionGroup(self)
+        self.viewgroup.addAction(self.ui.actionPynguin)
+        self.viewgroup.addAction(self.ui.actionArrow)
+        self.viewgroup.addAction(self.ui.actionHidden)
+        self.viewgroup.setExclusive(True)
+        self.viewgroup.triggered.connect(self.setImage)
+
+        self.pengroup = QtGui.QActionGroup(self)
+        self.pengroup.addAction(self.ui.actionPenUp)
+        self.pengroup.addAction(self.ui.actionPenDown)
+        self.pengroup.setExclusive(True)
+        self.pengroup.triggered.connect(self.setPen)
+
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
         self.speedgroup.addAction(self.ui.actionMedium)
@@ -154,51 +167,19 @@ class MainWindow(QtGui.QMainWindow):
         cmd = 'width(%s)' % nwidth
         self.interpretereditor.addcmd(cmd)
 
-    def setPenDown(self):
-        pendownaction = self.ui.actionPenDown
-        penupaction = self.ui.actionPenUp
-        self.pynguin.pendown()
-        self.interpretereditor.addcmd('pendown()')
-        pendownaction.setChecked(True)
-        penupaction.setChecked(False)
+    def setPen(self, ev):
+        if ev == self.ui.actionPenUp:
+            self.pynguin.penup()
+            self.interpretereditor.addcmd('penup()')
+        else:
+            self.pynguin.pendown()
+            self.interpretereditor.addcmd('pendown()')
 
-    def setPenUp(self):
-        pendownaction = self.ui.actionPenDown
-        penupaction = self.ui.actionPenUp
-        self.pynguin.penup()
-        self.interpretereditor.addcmd('penup()')
-        pendownaction.setChecked(False)
-        penupaction.setChecked(True)
-
-    def setImagePynguin(self):
-        pynguinaction = self.ui.actionPynguin
-        arrowaction = self.ui.actionArrow
-        hiddenaction = self.ui.actionHidden
-
-        self.pynguin.setImageid('pynguin')
-        pynguinaction.setChecked(True)
-        arrowaction.setChecked(False)
-        hiddenaction.setChecked(False)
-
-    def setImageArrow(self):
-        pynguinaction = self.ui.actionPynguin
-        arrowaction = self.ui.actionArrow
-        hiddenaction = self.ui.actionHidden
-
-        self.pynguin.setImageid('arrow')
-        arrowaction.setChecked(True)
-        pynguinaction.setChecked(False)
-        hiddenaction.setChecked(False)
-
-    def setImageHidden(self):
-        pynguinaction = self.ui.actionPynguin
-        arrowaction = self.ui.actionArrow
-        hiddenaction = self.ui.actionHidden
-
-        self.pynguin.setImageid('hidden')
-        hiddenaction.setChecked(True)
-        arrowaction.setChecked(False)
-        pynguinaction.setChecked(False)
+    def setImage(self, ev):
+        choices = {self.ui.actionPynguin: 'pynguin',
+                    self.ui.actionArrow: 'arrow',
+                    self.ui.actionHidden: 'hidden',}
+        self.pynguin.setImageid(choices[ev])
 
     def _setSpeed(self, speed):
         self.pynguin.drawspeed = 2 * speed

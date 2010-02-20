@@ -387,86 +387,6 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>actionPenDown</sender>
-   <signal>activated()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setPenDown()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPenUp</sender>
-   <signal>activated()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setPenUp()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPynguin</sender>
-   <signal>activated()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setImagePynguin()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionArrow</sender>
-   <signal>activated()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setImageArrow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionHidden</sender>
-   <signal>activated()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setImageHidden()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -476,10 +396,5 @@
   <slot>new()</slot>
   <slot>setPenColor()</slot>
   <slot>setPenWidth()</slot>
-  <slot>setPenDown()</slot>
-  <slot>setPenUp()</slot>
-  <slot>setImagePynguin()</slot>
-  <slot>setImageArrow()</slot>
-  <slot>setImageHidden()</slot>
  </slots>
 </ui>
