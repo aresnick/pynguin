@@ -5,3 +5,4 @@ Focus follows mouse?
 Icons for menu items
 Animate movements
 Figure out how to kill infinite loops
+Make sure error message output ends with a newline
