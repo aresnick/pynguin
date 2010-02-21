@@ -3,6 +3,7 @@ Show errors when testing from editor
 Reload drawing when loading session?
 Focus follows mouse?
 Icons for menu items
+Toolbar?
 Use QGraphicsItemAnimation for animation?
 Figure out how to kill infinite loops
 Extend lines during animation, rather than always drawing new lines
