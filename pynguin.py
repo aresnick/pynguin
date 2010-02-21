@@ -460,6 +460,9 @@ class Interpreter(HighlightedTextEdit):
                 passthru = True
 
         elif k in (Up, Down):
+            self.scrolldown()
+
+            cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
 
