@@ -345,8 +345,8 @@ class Interpreter(HighlightedTextEdit):
     def __init__(self):
         HighlightedTextEdit.__init__(self)
         self.history = []
+        self._outputq = []
         self.historyp = -1
-        self.append('>>> ')
 
         self.save_stdout = sys.stdout
         self.save_stdin = sys.stdin
@@ -359,19 +359,26 @@ class Interpreter(HighlightedTextEdit):
         self.cmdthread = None
         self.controlC = False
 
+        QtCore.QTimer.singleShot(10, self.writeoutputq)
+
+        self.write('>>> ')
+
+
     def addcmd(self, cmd):
         self.insertPlainText(cmd)
-        self.append('>>> ')
+        self.write('>>> ')
         self.history.append(cmd)
 
     def write(self, text):
-        #text = text.rstrip()
         if text:
-            sys.stdout = self.save_stdout
-            #print 'writing',text
-            sys.stdout = self
-            text = text.strip()
-            self.append(text)
+            self._outputq.append(text)
+
+    def writeoutputq(self):
+        while self._outputq:
+            text = self._outputq.pop(0)
+            self.insertPlainText(text)
+            QtCore.QTimer.singleShot(100, self.scrolldown)
+        QtCore.QTimer.singleShot(10, self.writeoutputq)
 
     def keyPressEvent(self, ev):
         k = ev.key()
@@ -428,9 +435,9 @@ class Interpreter(HighlightedTextEdit):
                     sys.stderr = self.save_stderr
 
                 if not self.needmore:
-                    self.insertPlainText('>>> ')
+                    self.write('>>> ')
                 else:
-                    self.insertPlainText('... ')
+                    self.write('... ')
 
                 passthru = False
             else:
@@ -516,6 +523,12 @@ class Interpreter(HighlightedTextEdit):
                 #self.cmdthread.sleep(999999)
                 self.controlC = True
 
+        self.scrolldown()
+
+        if passthru:
+            HighlightedTextEdit.keyPressEvent(self, ev)
+
+    def scrolldown(self):
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         lblk = self._doc.lastBlock()
@@ -525,9 +538,6 @@ class Interpreter(HighlightedTextEdit):
             curs = self.textCursor()
             curs.setPosition(lpos, 0)
             self.setTextCursor(curs)
-
-        if passthru:
-            HighlightedTextEdit.keyPressEvent(self, ev)
 
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
