@@ -722,9 +722,10 @@ class Pynguin(object):
         self.goto((0, 0))
 
     def reset(self):
-        scene = self.gitem.scene()
         for item in self.drawn_items:
+            scene = item.scene()
             scene.removeItem(item)
+        self.drawn_items = []
         if self._moves:
             while 1:
                 try:
