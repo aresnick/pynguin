@@ -589,6 +589,7 @@ class Scene(QtGui.QGraphicsScene):
 class Pynguin(object):
     def __init__(self, pos, ang, rend):
         self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
+        self.gitem.setZValue(9999999)
         self.drawn_items = []
         self.drawspeed = 1
         self.turnspeed = 4
@@ -596,6 +597,7 @@ class Pynguin(object):
         self.pendown()
         self._moves = Queue.Queue(50)
         QtCore.QTimer.singleShot(self.delay, self._process_moves)
+        self._zvalue = 0
 
     def _process_moves(self):
         try:
@@ -628,7 +630,8 @@ class Pynguin(object):
 
         if self._pen:
             line = gitem.scene().addLine(QtCore.QLineF(p0, p1), gitem.pen)
-            line.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
+            line.setZValue(self._zvalue)
+            self._zvalue += 1
             self.drawn_items.append(line)
 
     def _move(self, distance):
@@ -754,6 +757,7 @@ class Pynguin(object):
         pen = ogitem.pen
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(pos, ang, rend, imageid)
+        gitem.setZValue(9999999)
         gitem.pen = pen
         scene.removeItem(ogitem)
         scene.addItem(gitem)
