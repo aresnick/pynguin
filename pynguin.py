@@ -521,9 +521,7 @@ class Interpreter(HighlightedTextEdit):
 
         elif self._check_control_key and k==C:
             #send keyboard interrupt
-            print 'ctrl-c'
             if self.cmdthread is not None and self.cmdthread.isRunning():
-                #self.cmdthread.sleep(999999)
                 self.controlC = True
 
         self.scrolldown()
