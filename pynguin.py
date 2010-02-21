@@ -81,6 +81,7 @@ class MainWindow(QtGui.QMainWindow):
         self.viewgroup = QtGui.QActionGroup(self)
         self.viewgroup.addAction(self.ui.actionPynguin)
         self.viewgroup.addAction(self.ui.actionArrow)
+        self.viewgroup.addAction(self.ui.actionRobot)
         self.viewgroup.addAction(self.ui.actionHidden)
         self.viewgroup.setExclusive(True)
         self.viewgroup.triggered.connect(self.setImage)
@@ -178,6 +179,7 @@ class MainWindow(QtGui.QMainWindow):
     def setImage(self, ev):
         choices = {self.ui.actionPynguin: 'pynguin',
                     self.ui.actionArrow: 'arrow',
+                    self.ui.actionRobot: 'robot',
                     self.ui.actionHidden: 'hidden',}
         self.pynguin.setImageid(choices[ev])
 

@@ -127,6 +127,7 @@
     </property>
     <addaction name="actionPynguin"/>
     <addaction name="actionArrow"/>
+    <addaction name="actionRobot"/>
     <addaction name="actionHidden"/>
    </widget>
    <widget class="QMenu" name="menuSpeed">
@@ -254,6 +255,14 @@
    </property>
    <property name="text">
     <string>Instant</string>
+   </property>
+  </action>
+  <action name="actionRobot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Robot</string>
    </property>
   </action>
  </widget>
