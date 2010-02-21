@@ -1,8 +1,8 @@
 Mouse wheel zooms on canvas
 Show errors when testing from editor
-Saving / loading session
+Reload drawing when loading session?
 Focus follows mouse?
 Icons for menu items
-Animate movements
+Use QGraphicsItemAnimation for animation?
 Figure out how to kill infinite loops
-Make sure error message output ends with a newline
+Extend lines during animation, rather than always drawing new lines
