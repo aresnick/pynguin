@@ -4,6 +4,7 @@ import math
 PI = math.pi
 import code
 import Queue
+import zipfile
 
 from PyQt4 import QtCore, QtGui, QtSvg, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
@@ -36,6 +37,10 @@ class MainWindow(QtGui.QMainWindow):
         self.app = app
         self.paused = False
         self.rend = getrend(self.app)
+
+        self._fdir = None
+        self._filepath = None
+        self._modified = False
 
         QtGui.QMainWindow.__init__(self)
         self.ui = MWClass()
@@ -117,8 +122,69 @@ class MainWindow(QtGui.QMainWindow):
     def new(self):
         pass
 
+    def _savestate(self):
+        self.editor.savecurrent()
+
+        r, ext = os.path.splitext(self._filepath)
+        if ext != '.pyn':
+            ext = '.pyn'
+        self._filepath = r + ext
+        z = zipfile.ZipFile(self._filepath, 'w')
+
+        for n, (ename, efile) in enumerate(self.editor.documents.items()):
+            arcname = '##%5s##__%s' % (n, ename)
+            z.writestr(arcname, efile)
+
+        historyname = '@@history@@'
+        history = '\n'.join(self.interpretereditor.history)
+        z.writestr(historyname, history)
+
+        z.close()
+
     def save(self):
-        pass
+        if self._filepath is None:
+            return self.saveas()
+        else:
+            self._savestate()
+
+    def saveas(self):
+        if self._fdir is None:
+            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+        else:
+            fdir = self._fdir
+
+        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Save As', fdir))
+        if fp:
+            self._filepath = fp
+            self._fdir, _ = os.path.split(fp)
+        else:
+            return
+
+        self._savestate()
+
+    def open(self):
+        if self._fdir is None:
+            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+        else:
+            fdir = self._fdir
+
+        fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
+        if fp:
+            self._filepath = fp
+            self._fdir, _ = os.path.split(fp)
+
+            z = zipfile.ZipFile(fp, 'r')
+            for ename in z.namelist():
+                fo = z.open(ename, 'rU')
+                data = fo.read()
+                if ename.startswith('##'):
+                    hdr = ename[0:9]
+                    if hdr.startswith('##') and hdr.endswith('##'):
+                        title = ename[11:]
+                        self.editor.add(data)
+                elif ename.startswith('@@history@@'):
+                    history = data.split('\n')
+                    self.interpretereditor.history = history
 
     def newdoc(self):
         self.editor.new()
@@ -222,7 +288,7 @@ class CodeArea(HighlightedTextEdit):
     def settitle(self, txt):
         if txt.startswith('def ') and txt.endswith(':'):
             title = txt[4:-1]
-        elif txt=='NEW':
+        elif txt=='NEW' or txt=='':
             title = 'Untitled'
         else:
             title = txt
@@ -239,7 +305,10 @@ class CodeArea(HighlightedTextEdit):
         self.mselect.setCurrentIndex(idx-1)
 
     def savecurrent(self):
-        self.documents[self.title] = self._doc.toPlainText()
+        title = self.title
+        text = str(self._doc.toPlainText())
+        if title != 'Untitled' or text:
+            self.documents[title] = text
 
     def new(self):
         self.savecurrent()
@@ -251,6 +320,12 @@ class CodeArea(HighlightedTextEdit):
         self._doc.setPlainText(self.documents[docname])
         self.title = docname
 
+    def add(self, txt):
+        self.new()
+        self._doc.setPlainText(txt)
+        title = txt.split('\n')[0]
+        self.settitle(title)
+        self.savecurrent()
 
 
 class CmdThread(QtCore.QThread):
