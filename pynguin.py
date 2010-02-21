@@ -250,6 +250,20 @@ class CodeArea(HighlightedTextEdit):
         self.title = docname
 
 
+
+class CmdThread(QtCore.QThread):
+    def __init__(self, ed, txt):
+        QtCore.QThread.__init__(self)
+        self.ed = ed
+        self.txt = txt
+    def run(self):
+        ed = self.ed
+        sys.stdout = ed
+        sys.stderr = ed
+        ed.needmore = ed.interpreter.push(self.txt)
+        sys.stdout = ed.save_stdout
+        sys.stderr = ed.save_stderr
+
 class Interpreter(HighlightedTextEdit):
     def __init__(self):
         HighlightedTextEdit.__init__(self)
@@ -265,13 +279,16 @@ class Interpreter(HighlightedTextEdit):
 
         self.setWordWrapMode(QtGui.QTextOption.WordWrap)
 
+        self.cmdthread = None
+        self.controlC = False
+
     def addcmd(self, cmd):
         self.insertPlainText(cmd)
         self.append('>>> ')
         self.history.append(cmd)
 
     def write(self, text):
-        text = text.rstrip()
+        #text = text.rstrip()
         if text:
             sys.stdout = self.save_stdout
             #print 'writing',text
@@ -291,6 +308,7 @@ class Interpreter(HighlightedTextEdit):
         Down = QtCore.Qt.Key_Down
         Control = QtCore.Qt.Key_Control
         U = QtCore.Qt.Key_U
+        C = QtCore.Qt.Key_C
 
 
         lblk = self._doc.lastBlock()
@@ -316,18 +334,30 @@ class Interpreter(HighlightedTextEdit):
                 self.history.append(txt)
             self.historyp = -1
 
-            sys.stdout = self
-            sys.stderr = self
-            needmore = self.interpreter.push(txt)
-            sys.stdout = self.save_stdout
-            sys.stderr = self.save_stderr
+            self.append('')
 
-            if not needmore:
-                self.append('>>> ')
+            if self.cmdthread is None:
+                self.cmdthread = CmdThread(self, txt)
+                self.cmdthread.start()
+                while not self.cmdthread.wait(0) and not self.controlC:
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                self.cmdthread = None
+                if self.controlC:
+                    self.append('')
+                    self.controlC = False
+                    self.needmore = False
+                    self.interpreter.resetbuffer()
+                    sys.stdout = self.save_stdout
+                    sys.stderr = self.save_stderr
+
+                if not self.needmore:
+                    self.insertPlainText('>>> ')
+                else:
+                    self.insertPlainText('... ')
+
+                passthru = False
             else:
-                self.append('... ')
-
-            passthru = False
+                passthru = True
 
         elif k in (Backspace, Left):
             lblk = self._doc.lastBlock()
@@ -402,6 +432,12 @@ class Interpreter(HighlightedTextEdit):
             #erase from cursor to beginning of line
             self.erasetostart()
 
+        elif self._check_control_key and k==C:
+            #send keyboard interrupt
+            print 'ctrl-c'
+            if self.cmdthread is not None and self.cmdthread.isRunning():
+                #self.cmdthread.sleep(999999)
+                self.controlC = True
 
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
@@ -418,6 +454,12 @@ class Interpreter(HighlightedTextEdit):
 
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
+
+    def keyReleaseEvent(self, ev):
+        k = ev.key()
+        Control = QtCore.Qt.Key_Control
+        if k == Control:
+            self._check_control_key = False
 
 
     def mousePressEvent(self, ev):
@@ -445,12 +487,6 @@ class Interpreter(HighlightedTextEdit):
         curs.setPosition(endpos, 1)
         curs.removeSelectedText()
 
-    def keyReleaseEvent(self, ev):
-        k = ev.key()
-        Control = QtCore.Qt.Key_Control
-        if k == Control:
-            self._check_control_key = False
-
 
 class Scene(QtGui.QGraphicsScene):
     def __init__(self):
@@ -470,7 +506,7 @@ class Pynguin(object):
         self.turnspeed = 4
         self.delay = 40
         self.pendown()
-        self._moves = Queue.Queue(200)
+        self._moves = Queue.Queue(50)
         QtCore.QTimer.singleShot(self.delay, self._process_moves)
 
     def _process_moves(self):
