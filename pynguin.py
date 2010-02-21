@@ -182,6 +182,8 @@ class MainWindow(QtGui.QMainWindow):
                     if hdr.startswith('##') and hdr.endswith('##'):
                         title = ename[11:]
                         self.editor.add(data)
+                        if data.startswith('def '):
+                            exec data in self.interpreter_locals
                 elif ename.startswith('@@history@@'):
                     history = data.split('\n')
                     self.interpretereditor.history = history
