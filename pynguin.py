@@ -215,7 +215,7 @@ class MainWindow(QtGui.QMainWindow):
         if ncolor.isValid():
             self.pynguin.gitem.pen.setColor(ncolor)
             r, g, b, a = ncolor.getRgb()
-            cmd = 'color(%s, %s, %s)' % (r, g, b)
+            cmd = 'color(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
     def setPenWidth(self):
@@ -231,16 +231,16 @@ class MainWindow(QtGui.QMainWindow):
         d.exec_()
         nwidth = dc.thewid.value()
         self.pynguin.width(nwidth)
-        cmd = 'width(%s)' % nwidth
+        cmd = 'width(%s)\n' % nwidth
         self.interpretereditor.addcmd(cmd)
 
     def setPen(self, ev):
         if ev == self.ui.actionPenUp:
             self.pynguin.penup()
-            self.interpretereditor.addcmd('penup()')
+            self.interpretereditor.addcmd('penup()\n')
         else:
             self.pynguin.pendown()
-            self.interpretereditor.addcmd('pendown()')
+            self.interpretereditor.addcmd('pendown()\n')
 
     def setImage(self, ev):
         choices = {self.ui.actionPynguin: 'pynguin',
@@ -365,9 +365,9 @@ class Interpreter(HighlightedTextEdit):
 
 
     def addcmd(self, cmd):
-        self.insertPlainText(cmd)
+        self.write(cmd)
         self.write('>>> ')
-        self.history.append(cmd)
+        self.history.append(cmd.rstrip())
 
     def write(self, text):
         if text:
