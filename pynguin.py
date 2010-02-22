@@ -748,7 +748,7 @@ class Pynguin(object):
                     break
         self.home()
 
-    def _penup(self, up=True)
+    def _penup(self, up=True):
         self._pen = up
 
     def penup(self):
