@@ -666,14 +666,21 @@ class Pynguin(object):
             n += 1
             d += drawspeed
 
-            while 1:
-                try:
-                    self._moves.put_nowait((self._forward, (step,)))
-                except Queue.Full:
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                else:
-                    break
+            self.qmove(self._forward, (step,))
+
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+    def qmove(self, func, args=None):
+        if args is None:
+            args = ()
+        while 1:
+            try:
+                self._moves.put_nowait((func, args))
+            except Queue.Full:
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+            else:
+                break
+
 
     def forward(self, distance):
         self._move(distance)
@@ -706,13 +713,8 @@ class Pynguin(object):
             n += 1
             a += self.turnspeed
 
-            while 1:
-                try:
-                    self._moves.put_nowait((self._left, (step,)))
-                except Queue.Full:
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                else:
-                    break
+            self.qmove(self._left, (step,))
+
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def left(self, degrees):
@@ -723,12 +725,15 @@ class Pynguin(object):
         self.left(-degrees)
     rt = right
 
-    def goto(self, pos):
+    def _goto(self, pos):
         self.gitem.setpos(pos)
 
+    def _setangle(self, ang):
+        self.gitem.ang = ang
+
     def home(self):
-        self.gitem.ang = 0
-        self.goto((0, 0))
+        self.qmove(self._setangle, (0,))
+        self.qmove(self._goto, ((0, 0),))
 
     def reset(self):
         for item in self.drawn_items:
@@ -743,10 +748,14 @@ class Pynguin(object):
                     break
         self.home()
 
+    def _penup(self, up=True)
+        self._pen = up
+
     def penup(self):
-        self._pen = False
+        self.qmove(self._penup, ())
+
     def pendown(self):
-        self._pen = True
+        self.qmove(self._penup, (False,))
 
     def color(self, r=None, g=None, b=None):
         pen = self.gitem.pen
