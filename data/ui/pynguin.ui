@@ -58,6 +58,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="removebtn">
+             <property name="text">
+              <string>Remove</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="testbtn">
              <property name="text">
               <string>Test</string>
@@ -440,6 +447,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>removebtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>removedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>704</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -451,5 +474,6 @@
   <slot>setPenWidth()</slot>
   <slot>open()</slot>
   <slot>saveas()</slot>
+  <slot>removedoc()</slot>
  </slots>
 </ui>

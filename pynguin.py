@@ -197,6 +197,15 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.switchto(docname)
         self.editor.setFocus()
 
+    def removedoc(self):
+        mselect = self.ui.mselect
+        idx = mselect.currentIndex()
+        docname = str(mselect.itemText(idx))
+        mselect.removeItem(idx)
+        if mselect.count():
+            self.changedoc(0)
+        del self.editor.documents[docname]
+
     def testcode(self):
         self.editor.savecurrent()
         docname = str(self.ui.mselect.currentText())
