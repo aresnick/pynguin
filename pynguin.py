@@ -605,8 +605,8 @@ class Pynguin(object):
         self.drawspeed = 1
         self.turnspeed = 4
         self.delay = 40
-        self.pendown()
         self._moves = Queue.Queue(50)
+        self.pendown()
         QtCore.QTimer.singleShot(self.delay, self._process_moves)
         self._zvalue = 0
 
@@ -748,14 +748,14 @@ class Pynguin(object):
                     break
         self.home()
 
-    def _penup(self, up=True):
-        self._pen = up
+    def _pendown(self, down=True):
+        self._pen = down
 
     def penup(self):
-        self.qmove(self._penup, ())
+        self.qmove(self._pendown, (False,))
 
     def pendown(self):
-        self.qmove(self._penup, (False,))
+        self.qmove(self._pendown, ())
 
     def color(self, r=None, g=None, b=None):
         pen = self.gitem.pen
