@@ -617,7 +617,8 @@ class Scene(QtGui.QGraphicsScene):
 
 class Pynguin(object):
     def __init__(self, pos, ang, rend):
-        self.gitem = PynguinGraphicsItem(pos, ang, rend, 'pynguin')
+        self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
+        self.ritem = GraphicsItem() #real location, etc.
         self.gitem.setZValue(9999999)
         self.drawn_items = []
         self.drawspeed = 1
@@ -627,6 +628,25 @@ class Pynguin(object):
         self.pendown()
         QtCore.QTimer.singleShot(self.delay, self._process_moves)
         self._zvalue = 0
+
+    def _set_item_pos(self, item, pos):
+        item.setPos(pos)
+
+    def _set_pos(self, args):
+        '''Setter for the position property.
+
+            args can be a QPoint[F] or a 2-tuple of numbers.
+        '''
+        try:
+            pos = QtCore.QPointF(args)
+        except TypeError:
+            pos = QtCore.QPointF(*args)
+        self._set_item_pos(self.ritem, pos)
+        self.qmove(self._set_item_pos, (self.gitem, pos,))
+    def _get_pos(self):
+        'Getter for the position property.'
+        return self.ritem.pos()
+    pos = property(_get_pos, _set_pos)
 
     def _process_moves(self):
         try:
@@ -642,28 +662,26 @@ class Pynguin(object):
             delay = self.delay
         QtCore.QTimer.singleShot(delay, self._process_moves)
 
-    def _forward(self, distance):
-        gitem = self.gitem
-        ang = gitem.ang
+    def _item_forward(self, item, distance, draw=True):
+        ang = item.ang
         rad = ang * (PI / 180)
         dx = distance * math.cos(rad)
         dy = distance * math.sin(rad)
 
-        p0 = QtCore.QPointF(self.gitem.pos)
+        p0 = item.pos()
 
-        x = gitem.pos.x()+dx
-        y = gitem.pos.y()+dy
-        gitem.setpos((x, y))
+        x = p0.x()+dx
+        y = p0.y()+dy
+        p1 = QtCore.QPointF(x, y)
+        item.setPos(p1)
 
-        p1 = QtCore.QPointF(self.gitem.pos)
-
-        if self._pen:
-            line = gitem.scene().addLine(QtCore.QLineF(p0, p1), gitem.pen)
+        if draw and item._pen:
+            line = item.scene().addLine(QtCore.QLineF(p0, p1), item.pen)
             line.setZValue(self._zvalue)
             self._zvalue += 1
             self.drawn_items.append(line)
 
-    def _move(self, distance):
+    def _gitem_move(self, distance):
         drawspeed = self.drawspeed
         if distance >= 0:
             perstep = drawspeed
@@ -684,7 +702,7 @@ class Pynguin(object):
             n += 1
             d += drawspeed
 
-            self.qmove(self._forward, (step,))
+            self.qmove(self._item_forward, (self.gitem, step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
@@ -699,17 +717,20 @@ class Pynguin(object):
             else:
                 break
 
-
     def forward(self, distance):
-        self._move(distance)
+        self._item_forward(self.ritem, distance, False)
+        self._gitem_move(distance)
     fd = forward
 
     def backward(self, distance):
         self.forward(-distance)
     bk = backward
 
-    def _left(self, degrees):
-        self.gitem.rotate(-degrees)
+    def _item_left(self, item, degrees):
+        item.rotate(-degrees)
+
+    def _item_left(self, item, degrees):
+        item.rotate(-degrees)
     def _turn(self, degrees):
         turnspeed = self.turnspeed
         if degrees >= 0:
@@ -731,11 +752,12 @@ class Pynguin(object):
             n += 1
             a += self.turnspeed
 
-            self.qmove(self._left, (step,))
+            self.qmove(self._item_left, (self.gitem, step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def left(self, degrees):
+        self._item_left(self.ritem, degrees)
         self._turn(degrees)
     lt = left
 
@@ -743,15 +765,19 @@ class Pynguin(object):
         self.left(-degrees)
     rt = right
 
-    def _goto(self, pos):
-        self.gitem.setpos(pos)
+    def _item_goto(self, item, pos):
+        item.setPos(pos)
+        item.set_transform()
 
-    def _setangle(self, ang):
-        self.gitem.ang = ang
+    def _item_setangle(self, item, ang):
+        item.ang = ang
+        item.set_transform()
 
     def home(self):
-        self.qmove(self._setangle, (0,))
-        self.qmove(self._goto, ((0, 0),))
+        self._item_goto(self.ritem, QtCore.QPointF(0, 0))
+        self._item_setangle(self.ritem, 0)
+        self.qmove(self._item_goto, (self.gitem, QtCore.QPointF(0, 0),))
+        self.qmove(self._item_setangle, (self.gitem, 0,))
 
     def reset(self):
         for item in self.drawn_items:
@@ -767,12 +793,14 @@ class Pynguin(object):
         self.home()
 
     def _pendown(self, down=True):
-        self._pen = down
+        self.gitem._pen = down
 
     def penup(self):
+        self.ritem._pen = False
         self.qmove(self._pendown, (False,))
 
     def pendown(self):
+        self.ritem._pen = True
         self.qmove(self._pendown, ())
 
     def color(self, r=None, g=None, b=None):
@@ -806,55 +834,34 @@ class Pynguin(object):
 class GraphicsItem(QtGui.QGraphicsItem):
     def __init__(self):
         QtGui.QGraphicsItem.__init__(self)
+        self._pen = True
+        self.ang = 0
 
     def set_transform(self):
-        cpt = self.cpt
-        cx, cy = cpt.x(), cpt.y()
-        #pt = self.pos
-        pt = self.pos - cpt
-        x, y = pt.x(), pt.y()
-
-        ang = self.ang
-
-        trans = QtGui.QTransform()
-        trans.translate(x, y)
-        trans.translate(cx, cy).rotate(ang).translate(-cx, -cy)
-        trans.scale(self.scale, self.scale)
-        self.setTransform(trans)
-
-    def setpos(self, pos):
-        try:
-            x, y = pos
-            pt = QtCore.QPointF(x, y)
-        except TypeError:
-            pt = pos
-        self.pos = pt
-        self.set_transform()
+        pass
 
     def set_rotation(self, ang):
+        'directly set rotation (in radians)'
         self.ang = -(180/pi)*ang
-        self.set_transform()
 
     def rotate(self, deg):
+        'turn clockwise from current angle by deg degrees'
         self.ang += deg
-        self.set_transform()
 
     def paint(self, painter, option, widget):
         pass
 
 class PynguinGraphicsItem(GraphicsItem):
-    def __init__(self, pos, ang, rend, imageid):
+    def __init__(self, rend, imageid):
         cx, cy = 125, 125
         scale = 0.20
         cxs, cys = cx*scale, cy*scale
         cpt = QtCore.QPointF(cxs, cys)
         self.cpt = cpt
-        self.ang = ang
         self.scale = scale
         self.rend = rend
 
         GraphicsItem.__init__(self)
-        self.setpos(pos)
 
         self.setImageid(imageid)
 
@@ -862,6 +869,35 @@ class PynguinGraphicsItem(GraphicsItem):
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
         self.pen.setWidth(2)
+
+    def setPos(self, pos):
+        GraphicsItem.setPos(self, pos)
+        self.set_transform()
+
+    def set_transform(self):
+        cpt = self.cpt
+        cx, cy = cpt.x(), cpt.y()
+        #pt = self.pos
+        pt = self.pos() - cpt
+        x, y = pt.x(), pt.y()
+
+        ang = self.ang
+
+        trans = QtGui.QTransform()
+        trans.translate(-cx, -cy)
+        trans.translate(cx, cy).rotate(ang).translate(-cx, -cy)
+        trans.scale(self.scale, self.scale)
+        self.setTransform(trans)
+
+    def set_rotation(self, ang):
+        'directly set rotation (in radians)'
+        self.ang = -(180/pi)*ang
+        self.set_transform()
+
+    def rotate(self, deg):
+        'turn clockwise from current angle by deg degrees'
+        self.ang += deg
+        self.set_transform()
 
     def setImageid(self, imageid):
         self.item = QtSvg.QGraphicsSvgItem(self)
