@@ -201,7 +201,10 @@ class MainWindow(QtGui.QMainWindow):
                         title = ename[11:]
                         self.editor.add(data)
                         if data.startswith('def '):
-                            exec data in self.interpreter_locals
+                            try:
+                                exec data in self.interpreter_locals
+                            except:
+                                pass
                 elif ename.startswith('@@history@@'):
                     history = data.split('\n')
                     self.interpretereditor.history = history
