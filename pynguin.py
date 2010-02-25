@@ -330,6 +330,9 @@ class CodeArea(HighlightedTextEdit):
                 idx = self.mselect.findText(self.title)
                 if idx > -1:
                     self.mselect.removeItem(idx)
+                if self.title in self.documents:
+                    self.documents[title] = self.documents[self.title]
+                    del self.documents[self.title]
             self.title = title
             self.mselect.addItem(title)
 
