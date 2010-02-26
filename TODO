@@ -11,3 +11,6 @@ Create a non-graphical turtle library?
 Add a slower circle implementation for use with slower speeds
 Fill mode
 Adjustable sliding panels to change editor / console sizes
+Easy export of drawing
+Ask about closing current documents when opening file
+Make sure to ask before closing / quitting to avoid lost work
