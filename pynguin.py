@@ -243,14 +243,19 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.savecurrent()
         docname = str(self.ui.mselect.currentText())
         code = str(self.editor.documents[docname])
-        exec code in self.interpreter_locals
-        line0 = code.split('\n')[0]
-        if line0.startswith('def ') and line0.endswith(':'):
-            firstparen = line0.find('(')
-            lastparen = line0.rfind(')')
-            if firstparen > -1 and lastparen > -1:
-                tocall = line0[4:lastparen+1]
-                self.interpretereditor.addcmd(tocall)
+        try:
+            exec code in self.interpreter_locals
+        except SyntaxError, e:
+            self.editor.selectline(e.lineno)
+            self.interpretereditor.addcmd('Syntax Error in line %s\n' % e.lineno)
+        else:
+            line0 = code.split('\n')[0]
+            if line0.startswith('def ') and line0.endswith(':'):
+                firstparen = line0.find('(')
+                lastparen = line0.rfind(')')
+                if firstparen > -1 and lastparen > -1:
+                    tocall = line0[4:lastparen+1]
+                    self.interpretereditor.addcmd(tocall)
         self.interpretereditor.setFocus()
 
     def setPenColor(self):
@@ -366,6 +371,25 @@ class CodeArea(HighlightedTextEdit):
         title = txt.split('\n')[0]
         self.settitle(title)
         self.savecurrent()
+
+    def selectline(self, n):
+        docline = 1
+        doccharstart = 0
+        blk = self._doc.begin()
+        while docline < n:
+            txt = blk.text()
+            lentxt = len(txt)+1
+            doccharstart += lentxt
+            blk = blk.next()
+            docline += 1
+        txt = blk.text()
+        lentxt = len(txt)
+        doccharend = doccharstart + lentxt
+
+        curs = QtGui.QTextCursor(self._doc)
+        curs.setPosition(doccharstart, 0)
+        curs.setPosition(doccharend, 1)
+        self.setTextCursor(curs)
 
 
 class CmdThread(QtCore.QThread):
