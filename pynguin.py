@@ -447,6 +447,7 @@ class Interpreter(HighlightedTextEdit):
                 if self.controlC:
                     self.cmdthread.terminate()
                     self.pynguin._empty_move_queue()
+                    self.pynguin._r_process_moves()
                     self.pynguin._sync_items()
                     self.append('')
                     self.controlC = False
@@ -881,13 +882,15 @@ class Pynguin(object):
 
     def setImageid(self, imageid):
         ogitem = self.gitem
-        pos = ogitem.pos
+        pos = ogitem.pos()
         ang = ogitem.ang
         rend = ogitem.rend
         pen = ogitem.pen
         scene = ogitem.scene()
-        gitem = PynguinGraphicsItem(pos, ang, rend, imageid)
+        gitem = PynguinGraphicsItem(rend, imageid)
         gitem.setZValue(9999999)
+        gitem.setPos(pos)
+        gitem.ang = ang
         gitem.pen = pen
         scene.removeItem(ogitem)
         scene.addItem(gitem)
