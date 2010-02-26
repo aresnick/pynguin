@@ -41,9 +41,11 @@ uipath = os.path.join(uidir, uifile)
 MWClass, _ = uic.loadUiType(uipath)
 
 def sign(x):
+    'return 1 if x is positive, -1 if negative, or zero'
     return cmp(x, 0)
 
 def getrend(app):
+    'return a handle to the app-wide shared SVG renderer'
     filename = 'pynguin.svg'
     filepath = os.path.join('data/images', filename)
     fp = QtCore.QString(filepath)
@@ -131,6 +133,12 @@ class MainWindow(QtGui.QMainWindow):
         pass
 
     def _savestate(self):
+        '''write out the files in the editor window, and keep the list
+            of history entries. All of this is packed up in to a zip
+            file and given a .pyn filename ending.
+
+        '''
+
         self.editor.savecurrent()
 
         r, ext = os.path.splitext(self._filepath)
@@ -150,6 +158,10 @@ class MainWindow(QtGui.QMainWindow):
         z.close()
 
     def save(self):
+        '''call _savestate with current file name, or get a file name from
+            the user and then call _savestate
+        '''
+
         if self._filepath is None:
             return self.saveas()
         else:
@@ -171,6 +183,13 @@ class MainWindow(QtGui.QMainWindow):
         self._savestate()
 
     def open(self):
+        '''read in a previously written .pyn file (written by _savestate)
+            Any documents that look like function definitions will be
+                exec'd to load them in to the interpreter local namespace.
+            Any previous history will be lost and replaced with the
+                history loaded from the file.
+        '''
+
         if self._fdir is None:
             fdir = QtCore.QString(os.path.abspath(os.path.curdir))
         else:
@@ -200,15 +219,18 @@ class MainWindow(QtGui.QMainWindow):
                     self.interpretereditor.history = history
 
     def newdoc(self):
+        '''Add a new (blank) page to the document editor'''
         self.editor.new()
         self.editor.setFocus()
 
     def changedoc(self, idx):
+        '''switch which document is visible in the document editor'''
         docname = str(self.ui.mselect.itemText(idx))
         self.editor.switchto(docname)
         self.editor.setFocus()
 
     def removedoc(self):
+        '''throw away the currently displayed editor document'''
         mselect = self.ui.mselect
         idx = mselect.currentIndex()
         docname = str(mselect.itemText(idx))
