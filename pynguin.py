@@ -283,16 +283,6 @@ class MainWindow(QtGui.QMainWindow):
         self._setSpeed(speed)
 
 
-class TryThread(QtCore.QThread):
-    def __init__(self, pynguin):
-        QtCore.QThread.__init__(self)
-        self.pynguin = pynguin
-
-    def run(self):
-        for x in range(10):
-            self.pynguin.forward(10)
-            time.sleep(1)
-
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
         HighlightedTextEdit.__init__(self)
