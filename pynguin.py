@@ -872,6 +872,38 @@ class Pynguin(object):
         scene.addItem(gitem)
         self.gitem = gitem
 
+    def _circle(self, r, center):
+        gitem = self.gitem
+        scene = gitem.scene()
+        cpt = gitem.pos()
+
+        if not center:
+            radians = (((PI*2)/360.) * self.gitem.ang)
+            tocenter = radians + PI/2
+
+            dx = r * math.cos(tocenter)
+            dy = r * math.sin(tocenter)
+
+            tocpt = QtCore.QPointF(dx, dy)
+            cpt = cpt + tocpt
+
+        ul = cpt - QtCore.QPointF(r, r)
+        sz = QtCore.QSizeF(2*r, 2*r)
+
+        crect = QtCore.QRectF(ul, sz)
+        circle = scene.addEllipse(crect, self.gitem.pen)
+        self.drawn_items.append(circle)
+
+    def circle(self, r, center=False):
+        '''Draw a circle of radius r.
+
+            If center is True, the current position will be the center of
+                the circle. Otherwise, the circle will be drawn with the
+                current position and rotation being a tangent to the circle.
+        '''
+
+        self.qmove(self._circle, (r, center))
+
 
 class GraphicsItem(QtGui.QGraphicsItem):
     def __init__(self):
