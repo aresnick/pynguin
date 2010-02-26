@@ -85,7 +85,7 @@ class MainWindow(QtGui.QMainWindow):
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.editor)
 
-        self.interpretereditor = Interpreter()
+        self.interpretereditor = Interpreter(self)
         hbox = QHBoxLayout(self.ui.interpreterframe)
         hbox.setSpacing(0)
         hbox.setMargin(0)
@@ -377,8 +377,9 @@ class CmdThread(QtCore.QThread):
         sys.stderr = ed.save_stderr
 
 class Interpreter(HighlightedTextEdit):
-    def __init__(self):
+    def __init__(self, parent):
         HighlightedTextEdit.__init__(self)
+        self.pynguin = parent.pynguin
         self.history = []
         self._outputq = []
         self.historyp = -1
@@ -459,6 +460,7 @@ class Interpreter(HighlightedTextEdit):
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
                 while not self.cmdthread.wait(0) and not self.controlC:
+                    self.pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
                 self.cmdthread = None
                 if self.controlC:
@@ -620,11 +622,34 @@ class Scene(QtGui.QGraphicsScene):
         self.setBackgroundBrush(brush)
 
 
+class RItem(object):
+    def __init__(self):
+        self.setPos(QtCore.QPointF(0, 0))
+        self._pen = True
+        self.ang = 0
+
+    def pos(self):
+        return self._pos
+
+    def setPos(self, pos):
+        self._pos = pos
+
+    def set_transform(self):
+        pass
+
+    def set_rotation(self, ang):
+        'directly set rotation (in radians)'
+        self.ang = -(180/PI)*ang
+
+    def rotate(self, deg):
+        'turn clockwise from current angle by deg degrees'
+        self.ang += deg
+
 
 class Pynguin(object):
     def __init__(self, pos, ang, rend):
         self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
-        self.ritem = GraphicsItem() #real location, etc.
+        self.ritem = RItem() #real location, etc.
         self.gitem.setZValue(9999999)
         self.drawn_items = []
         self.drawspeed = 1
@@ -655,6 +680,14 @@ class Pynguin(object):
     pos = property(_get_pos, _set_pos)
 
     def _process_moves(self):
+        self._r_process_moves()
+        if self.drawspeed == 0:
+            delay = 0
+        else:
+            delay = self.delay
+        QtCore.QTimer.singleShot(delay, self._process_moves)
+
+    def _r_process_moves(self):
         try:
             move, args = self._moves.get(block=False)
         except Queue.Empty:
@@ -662,11 +695,7 @@ class Pynguin(object):
         else:
             move(*args)
 
-        if self.drawspeed == 0:
-            delay = 0
-        else:
-            delay = self.delay
-        QtCore.QTimer.singleShot(delay, self._process_moves)
+        QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def _item_forward(self, item, distance, draw=True):
         ang = item.ang
@@ -719,7 +748,7 @@ class Pynguin(object):
             try:
                 self._moves.put_nowait((func, args))
             except Queue.Full:
-                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                pass
             else:
                 break
 
@@ -760,8 +789,6 @@ class Pynguin(object):
 
             self.qmove(self._item_left, (self.gitem, step,))
 
-            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-
     def left(self, degrees):
         self._item_left(self.ritem, degrees)
         self._turn(degrees)
@@ -785,7 +812,7 @@ class Pynguin(object):
         self.qmove(self._item_goto, (self.gitem, QtCore.QPointF(0, 0),))
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
-    def reset(self):
+    def _reset(self):
         for item in self.drawn_items:
             scene = item.scene()
             scene.removeItem(item)
@@ -796,6 +823,9 @@ class Pynguin(object):
                     move, args = self._moves.get(block=False)
                 except Queue.Empty:
                     break
+
+    def reset(self):
+        self.qmove(self._reset, ())
         self.home()
 
     def _pendown(self, down=True):
@@ -809,18 +839,24 @@ class Pynguin(object):
         self.ritem._pen = True
         self.qmove(self._pendown, ())
 
-    def color(self, r=None, g=None, b=None):
+    def _color(self, r=None, g=None, b=None):
         pen = self.gitem.pen
         if r is g is b is None:
             return pen.brush().color().getRgb()[:3]
         else:
             pen.setColor(QtGui.QColor.fromRgb(r, g, b))
 
-    def width(self, w=None):
+    def color(self, r=None, g=None, b=None):
+        self.qmove(self._color, (r, g, b))
+
+    def _width(self, w=None):
         if w is None:
             return self.gitem.pen.width()
         else:
             self.gitem.pen.setWidth(w)
+
+    def width(self, w=None):
+        self.qmove(self._width, (w,))
 
     def setImageid(self, imageid):
         ogitem = self.gitem
@@ -848,7 +884,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
     def set_rotation(self, ang):
         'directly set rotation (in radians)'
-        self.ang = -(180/pi)*ang
+        self.ang = -(180/PI)*ang
 
     def rotate(self, deg):
         'turn clockwise from current angle by deg degrees'
@@ -897,7 +933,7 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def set_rotation(self, ang):
         'directly set rotation (in radians)'
-        self.ang = -(180/pi)*ang
+        self.ang = -(180/PI)*ang
         self.set_transform()
 
     def rotate(self, deg):
