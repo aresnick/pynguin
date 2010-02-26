@@ -495,6 +495,7 @@ class Interpreter(HighlightedTextEdit):
         C = QtCore.Qt.Key_C
         A = QtCore.Qt.Key_A
         Home = QtCore.Qt.Key_Home
+        E = QtCore.Qt.Key_E
 
         lblk = self._doc.lastBlock()
         cpos = self.textCursor().position()
@@ -631,8 +632,11 @@ class Interpreter(HighlightedTextEdit):
                 self.controlC = True
 
         elif (self._check_control_key and k==A) or k == Home:
-            print 'CAH'
             self.movetostart()
+            passthru = False
+
+        elif (self._check_control_key and k==E):
+            self.movetoend()
             passthru = False
 
         self.scrolldown()
@@ -681,6 +685,15 @@ class Interpreter(HighlightedTextEdit):
         pos = cblk.position()
         curs = self.textCursor()
         curs.setPosition(pos+4, 0)
+        self.setTextCursor(curs)
+
+    def movetoend(self):
+        cpos = self.textCursor().position()
+        cblk = self._doc.findBlock(cpos)
+        pos = cblk.position()
+        endpos = pos + cblk.length() - 1
+        curs = self.textCursor()
+        curs.setPosition(endpos, 0)
         self.setTextCursor(curs)
 
     def erasetostart(self):
