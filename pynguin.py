@@ -346,6 +346,7 @@ class CodeArea(HighlightedTextEdit):
 class CmdThread(QtCore.QThread):
     def __init__(self, ed, txt):
         QtCore.QThread.__init__(self)
+        QtCore.QThread.setTerminationEnabled()
         self.ed = ed
         self.txt = txt
     def run(self):
@@ -442,14 +443,17 @@ class Interpreter(HighlightedTextEdit):
                 while not self.cmdthread.wait(0) and not self.controlC:
                     self.pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                self.cmdthread = None
                 if self.controlC:
+                    self.cmdthread.terminate()
+                    self.pynguin._empty_move_queue()
+                    self.pynguin._sync_items()
                     self.append('')
                     self.controlC = False
                     self.needmore = False
                     self.interpreter.resetbuffer()
                     sys.stdout = self.save_stdout
                     sys.stderr = self.save_stderr
+                self.cmdthread = None
 
                 if not self.needmore:
                     self.write('>>> ')
@@ -669,6 +673,19 @@ class Pynguin(object):
             delay = self.delay
         QtCore.QTimer.singleShot(delay, self._process_moves)
 
+    def _sync_items(self):
+        '''Sometimes, after running code is interrupted (like by Ctrl-C)
+            the actual position (ritem.pos) and displayed position
+            (gitem.pos) will be out of sync.
+
+            This method can be called to synchronize the ritem to the
+            position and rotation of the display.
+
+        '''
+
+        self.ritem.setPos(self.gitem.pos())
+        self.ritem.ang = self.gitem.ang
+
     def _r_process_moves(self):
         drawspeed = self.drawspeed
         delay = self.delay
@@ -810,17 +827,20 @@ class Pynguin(object):
         self.qmove(self._item_home, (self.gitem,))
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
+    def _empty_move_queue(self):
+        while 1:
+            try:
+                move, args = self._moves.get(block=False)
+            except Queue.Empty:
+                break
+
     def _reset(self):
         for item in self.drawn_items:
             scene = item.scene()
             scene.removeItem(item)
         self.drawn_items = []
         if self._moves:
-            while 1:
-                try:
-                    move, args = self._moves.get(block=False)
-                except Queue.Empty:
-                    break
+            self._empty_move_queue()
         self.qmove(self._item_home, (self.gitem,))
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
