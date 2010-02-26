@@ -240,6 +240,13 @@ class MainWindow(QtGui.QMainWindow):
         del self.editor.documents[docname]
 
     def testcode(self):
+        '''exec the code in the current editor window and load it in
+            to the interpreter local namespace
+
+            If the first line looks like a function definition, use
+            it to feed a line to the interpreter set up to call the
+            function.
+        '''
         self.editor.savecurrent()
         docname = str(self.ui.mselect.currentText())
         code = str(self.editor.documents[docname])
@@ -259,6 +266,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.setFocus()
 
     def setPenColor(self):
+        '''use a color selection dialog to set the pen line color'''
         icolor = self.pynguin.gitem.pen.brush().color()
         ncolor = QtGui.QColorDialog.getColor(icolor, self)
         if ncolor.isValid():
@@ -268,6 +276,7 @@ class MainWindow(QtGui.QMainWindow):
             self.interpretereditor.addcmd(cmd)
 
     def setPenWidth(self):
+        '''open a dialog with a spin button to get a new pen line width'''
         iwidth = self.pynguin.gitem.pen.width()
         uifile = 'penwidth.ui'
         uipath = os.path.join(uidir, uifile)
@@ -284,6 +293,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.addcmd(cmd)
 
     def setPen(self, ev):
+        '''toggle pen up and pen down'''
         if ev == self.ui.actionPenUp:
             self.pynguin.penup()
             self.interpretereditor.addcmd('penup()\n')
@@ -292,6 +302,7 @@ class MainWindow(QtGui.QMainWindow):
             self.interpretereditor.addcmd('pendown()\n')
 
     def setImage(self, ev):
+        '''select which image to show'''
         choices = {self.ui.actionPynguin: 'pynguin',
                     self.ui.actionArrow: 'arrow',
                     self.ui.actionRobot: 'robot',
@@ -302,6 +313,7 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin.drawspeed = 2 * speed
         self.pynguin.turnspeed = 4 * speed
     def setSpeed(self, ev):
+        '''select drawing speed setting'''
         choice = {self.ui.actionSlow: 5,
                     self.ui.actionMedium: 10,
                     self.ui.actionFast: 20,
@@ -328,6 +340,13 @@ class CodeArea(HighlightedTextEdit):
         self.settitle(txt)
 
     def settitle(self, txt):
+        '''set the title for the current document to txt
+            Also updates the combobox document selector.
+
+            If txt looks like a function definition, uses
+            the name/ signature of the function as the
+            title instead of the whole line.
+        '''
         if txt.startswith('def ') and txt.endswith(':'):
             title = txt[4:-1]
         elif txt=='NEW' or txt=='':
@@ -350,22 +369,28 @@ class CodeArea(HighlightedTextEdit):
         self.mselect.setCurrentIndex(idx-1)
 
     def savecurrent(self):
+        '''get the text of the current document and save it in the
+            documents dictionary, keyed by title
+        '''
         title = self.title
         text = str(self._doc.toPlainText())
         if title != 'Untitled' or text:
             self.documents[title] = text
 
     def new(self):
+        '''save the current document and start a new blank document'''
         self.savecurrent()
         self._doc.setPlainText('')
         self.settitle('NEW')
 
     def switchto(self, docname):
+        '''save the current document and switch to the document titled docname'''
         self.savecurrent()
         self._doc.setPlainText(self.documents[docname])
         self.title = docname
 
     def add(self, txt):
+        '''add a new document with txt as the contents'''
         self.new()
         self._doc.setPlainText(txt)
         title = txt.split('\n')[0]
@@ -373,6 +398,7 @@ class CodeArea(HighlightedTextEdit):
         self.savecurrent()
 
     def selectline(self, n):
+        '''highlight line number n'''
         docline = 1
         doccharstart = 0
         blk = self._doc.begin()
@@ -394,6 +420,8 @@ class CodeArea(HighlightedTextEdit):
 
 class CmdThread(QtCore.QThread):
     def __init__(self, ed, txt):
+        '''set up a separate thread to run the code given in txt in the
+            InteractiveInterpreter ed.'''
         QtCore.QThread.__init__(self)
         QtCore.QThread.setTerminationEnabled()
         self.ed = ed
@@ -437,10 +465,15 @@ class Interpreter(HighlightedTextEdit):
             self.history.append(cmd.rstrip())
 
     def write(self, text):
+        '''cannot write directly to the console...
+            instead, append this text to the output queue for later use.
+        '''
         if text:
             self._outputq.append(text)
 
     def writeoutputq(self):
+        '''process the text output queue. Must be done from the main thread.
+        '''
         while self._outputq:
             text = self._outputq.pop(0)
             self.insertPlainText(text)
@@ -460,7 +493,8 @@ class Interpreter(HighlightedTextEdit):
         Control = QtCore.Qt.Key_Control
         U = QtCore.Qt.Key_U
         C = QtCore.Qt.Key_C
-
+        A = QtCore.Qt.Key_A
+        Home = QtCore.Qt.Key_Home
 
         lblk = self._doc.lastBlock()
         cpos = self.textCursor().position()
@@ -596,6 +630,11 @@ class Interpreter(HighlightedTextEdit):
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 self.controlC = True
 
+        elif (self._check_control_key and k==A) or k == Home:
+            print 'CAH'
+            self.movetostart()
+            passthru = False
+
         self.scrolldown()
 
         if passthru:
@@ -635,6 +674,14 @@ class Interpreter(HighlightedTextEdit):
             self.setTextCursor(curs)
         else:
             HighlightedTextEdit.mousePressEvent(self, ev)
+
+    def movetostart(self):
+        cpos = self.textCursor().position()
+        cblk = self._doc.findBlock(cpos)
+        pos = cblk.position()
+        curs = self.textCursor()
+        curs.setPosition(pos+4, 0)
+        self.setTextCursor(curs)
 
     def erasetostart(self):
         cpos = self.textCursor().position()
