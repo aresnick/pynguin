@@ -282,6 +282,9 @@ class MainWindow(QtGui.QMainWindow):
         speed = choice[ev]
         self._setSpeed(speed)
 
+    def about(self):
+        AboutDialog().exec_()
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mselect):
@@ -1004,6 +1007,15 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def boundingRect(self):
         return self.item.boundingRect()
+
+
+
+class AboutDialog(QtGui.QDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+        uifile = 'about.ui'
+        uipath = os.path.join(uidir, uifile)
+        uic.loadUi(uipath, self)
 
 
 class Splash(QtGui.QSplashScreen):
