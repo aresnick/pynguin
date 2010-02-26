@@ -91,7 +91,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        ilocals = {'p': self.pynguin}
+        ilocals = {'p': self.pynguin, 'PI':math.pi}
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
@@ -225,11 +225,11 @@ class MainWindow(QtGui.QMainWindow):
         line0 = code.split('\n')[0]
         if line0.startswith('def ') and line0.endswith(':'):
             firstparen = line0.find('(')
-            if firstparen > -1:
-                funcname = line0[4:firstparen]
-                func = self.interpreter_locals.get(funcname, None)
-                if func is not None:
-                    func()
+            lastparen = line0.rfind(')')
+            if firstparen > -1 and lastparen > -1:
+                tocall = line0[4:lastparen+1]
+                self.interpretereditor.addcmd(tocall)
+        self.interpretereditor.setFocus()
 
     def setPenColor(self):
         icolor = self.pynguin.gitem.pen.brush().color()
@@ -383,8 +383,9 @@ class Interpreter(HighlightedTextEdit):
 
     def addcmd(self, cmd):
         self.write(cmd)
-        self.write('>>> ')
-        self.history.append(cmd.rstrip())
+        if cmd[-1] == '\n':
+            self.write('>>> ')
+            self.history.append(cmd.rstrip())
 
     def write(self, text):
         if text:
