@@ -439,14 +439,8 @@ class Interpreter(HighlightedTextEdit):
             if self.cmdthread is None:
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
-                drawspeed = self.pynguin.drawspeed
-                check = self.pynguin.delay
                 while not self.cmdthread.wait(0) and not self.controlC:
-                    if drawspeed and check > 0:
-                        check -= 1
-                    else:
-                        check = drawspeed
-                        self.pynguin._r_process_moves()
+                    self.pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
                 self.cmdthread = None
                 if self.controlC:
@@ -643,6 +637,8 @@ class Pynguin(object):
         self.delay = 50
         self._moves = Queue.Queue(250)
         self.pendown()
+        self._checktime = QtCore.QTime()
+        self._checktime.start()
         QtCore.QTimer.singleShot(self.delay, self._process_moves)
         self._zvalue = 0
 
@@ -674,20 +670,24 @@ class Pynguin(object):
         QtCore.QTimer.singleShot(delay, self._process_moves)
 
     def _r_process_moves(self):
-        while True:
-            try:
-                move, args = self._moves.get(block=False)
-            except Queue.Empty:
-                break
-            else:
-                move(*args)
+        drawspeed = self.drawspeed
+        delay = self.delay
+        etime = self._checktime.elapsed()
+        if not drawspeed or etime > delay:
+            while True:
+                try:
+                    move, args = self._moves.get(block=False)
+                except Queue.Empty:
+                    break
+                else:
+                    move(*args)
 
-            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
-            print self._moves.qsize()
+                if self.drawspeed:
+                    break
 
-            if self.drawspeed:
-                break
+            self._checktime.restart()
 
     def _item_forward(self, item, distance, draw=True):
         ang = item.ang
@@ -734,6 +734,8 @@ class Pynguin(object):
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def qmove(self, func, args=None):
+        '''queue up a command for later application'''
+
         if args is None:
             args = ()
         while 1:
@@ -823,7 +825,7 @@ class Pynguin(object):
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
     def reset(self):
-        self.qmove(self._reset, ())
+        self.qmove(self._reset)
         self._item_home(self.ritem)
 
     def _pendown(self, down=True):
@@ -835,7 +837,7 @@ class Pynguin(object):
 
     def pendown(self):
         self.ritem._pen = True
-        self.qmove(self._pendown, ())
+        self.qmove(self._pendown)
 
     def _color(self, r=None, g=None, b=None):
         pen = self.gitem.pen
