@@ -645,6 +645,9 @@ class Interpreter(HighlightedTextEdit):
             HighlightedTextEdit.keyPressEvent(self, ev)
 
     def scrolldown(self):
+        '''force the console to scroll all the way down, and put
+            the cursor after the last letter.
+        '''
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         lblk = self._doc.lastBlock()
@@ -680,6 +683,7 @@ class Interpreter(HighlightedTextEdit):
             HighlightedTextEdit.mousePressEvent(self, ev)
 
     def movetostart(self):
+        '''move the cursor to the start of the line (after the prompt)'''
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         pos = cblk.position()
@@ -688,6 +692,7 @@ class Interpreter(HighlightedTextEdit):
         self.setTextCursor(curs)
 
     def movetoend(self):
+        '''move the cursor to the end of the line'''
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         pos = cblk.position()
@@ -697,6 +702,9 @@ class Interpreter(HighlightedTextEdit):
         self.setTextCursor(curs)
 
     def erasetostart(self):
+        '''erase from the current cursor position to the beginning
+            of the line
+        '''
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         pos = cblk.position()
@@ -718,6 +726,12 @@ class Scene(QtGui.QGraphicsScene):
 
 
 class RItem(object):
+    '''Used to track the "real" state of the pynguin (as opposed
+        to the visible state which may be delayed for animation
+        at slower speeds
+
+        RItem uses the same API as GraphicsItem
+    '''
     def __init__(self):
         self.setPos(QtCore.QPointF(0, 0))
         self._pen = True
@@ -744,13 +758,13 @@ class RItem(object):
 class Pynguin(object):
     def __init__(self, pos, ang, rend):
         self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
-        self.ritem = RItem() #real location, etc.
+        self.ritem = RItem() #real location, angle, etc.
         self.gitem.setZValue(9999999)
         self.drawn_items = []
         self.drawspeed = 1
         self.turnspeed = 4
         self.delay = 50
-        self._moves = Queue.Queue(250)
+        self._moves = Queue.Queue(250) # max number of items in queue
         self.pendown()
         self._checktime = QtCore.QTime()
         self._checktime.start()
@@ -777,6 +791,7 @@ class Pynguin(object):
     pos = property(_get_pos, _set_pos)
 
     def _process_moves(self):
+        '''regular timer tick to make sure graphics are being updated'''
         self._r_process_moves()
         if self.drawspeed == 0:
             delay = 0
@@ -798,6 +813,9 @@ class Pynguin(object):
         self.ritem.ang = self.gitem.ang
 
     def _r_process_moves(self):
+        '''apply the queued commands for the graphical display item
+            This must be done from the main thread
+        '''
         drawspeed = self.drawspeed
         delay = self.delay
         etime = self._checktime.elapsed()
@@ -818,6 +836,9 @@ class Pynguin(object):
             self._checktime.restart()
 
     def _item_forward(self, item, distance, draw=True):
+        '''Move item ahead distance. If draw is True, also add a line
+            to the item's scene. draw should only be true for gitem
+        '''
         ang = item.ang
         rad = ang * (PI / 180)
         dx = distance * math.cos(rad)
@@ -837,6 +858,10 @@ class Pynguin(object):
             self.drawn_items.append(line)
 
     def _gitem_move(self, distance):
+        '''used to break up movements for graphic animations. gitem will
+            move forward by distance, but it will be done in steps that
+            depend on the drawspeed setting
+        '''
         drawspeed = self.drawspeed
         if distance >= 0:
             perstep = drawspeed
@@ -963,22 +988,22 @@ class Pynguin(object):
         self.gitem._pen = down
 
     def penup(self):
-        self.ritem._pen = False
+        self.pen = self.ritem._pen = False
         self.qmove(self._pendown, (False,))
 
     def pendown(self):
-        self.ritem._pen = True
+        self.pen = self.ritem._pen = True
         self.qmove(self._pendown)
 
     def _color(self, r=None, g=None, b=None):
-        pen = self.gitem.pen
-        if r is g is b is None:
-            return pen.brush().color().getRgb()[:3]
-        else:
-            pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+        self.gitem.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
 
     def color(self, r=None, g=None, b=None):
-        self.qmove(self._color, (r, g, b))
+        if r is g is b is None:
+            return self.ritem.color
+        else:
+            self.ritem.color = (r, g, b)
+            self.qmove(self._color, (r, g, b))
 
     def _width(self, w=None):
         if w is None:
