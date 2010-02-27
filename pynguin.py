@@ -365,8 +365,8 @@ class CodeArea(HighlightedTextEdit):
             self.title = title
             self.mselect.addItem(title)
 
-        idx = self.mselect.count()
-        self.mselect.setCurrentIndex(idx-1)
+        idx = self.mselect.findText(self.title)
+        self.mselect.setCurrentIndex(idx)
 
     def savecurrent(self):
         '''get the text of the current document and save it in the
