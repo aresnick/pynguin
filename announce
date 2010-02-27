@@ -1,0 +1,16 @@
+pynguin is a python-based turtle graphics application.
+It combines an editor, interactive interpreter, and
+graphics display area.
+
+http://pynguin.googlecode.com/
+
+
+Dependencies:
+    pynguin is tested with Python 2.6.4 and uses
+        PyQt (4.6) for its GUI elements.
+
+pynguin is released under GPLv3.
+
+
+Changes in pybotwar-0.1:
+    - initial public release
