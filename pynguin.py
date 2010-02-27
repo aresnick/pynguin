@@ -72,8 +72,9 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.view = view
         view.show()
 
-        self.pynguin = Pynguin((0, 0), 0, self.rend)
-        self.scene.addItem(self.pynguin.gitem)
+        self.pynguins = []
+        self._primary_pynguin = True
+        self.pynguin = self.new_pynguin()
         trans = QtGui.QTransform()
         #trans.scale(0.15, 0.15)
         trans.scale(1, 1)
@@ -93,7 +94,9 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        ilocals = {'p': self.pynguin, 'PI':math.pi}
+        ilocals = {'p': self.pynguin,
+                    'PI':math.pi,
+                    'new_pynguin':self.new_pynguin}
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
@@ -125,6 +128,19 @@ class MainWindow(QtGui.QMainWindow):
         self.speedgroup.setExclusive(True)
         self.speedgroup.triggered.connect(self.setSpeed)
         self._setSpeed(2)
+
+    def new_pynguin(self):
+        p = Pynguin((0, 0), 0, self.rend)
+        self.scene.addItem(p.gitem)
+        self.pynguins.append(p)
+
+        if self._primary_pynguin:
+            p._process_moves()
+            self._primary_pynguin = False
+        else:
+            self.pynguin.qmove(p._process_moves)
+
+        return p
 
     def closeEvent(self, ev=None):
         QtGui.qApp.quit()
@@ -266,7 +282,11 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.setFocus()
 
     def setPenColor(self):
-        '''use a color selection dialog to set the pen line color'''
+        '''use a color selection dialog to set the pen line color
+
+        sets the color for the primary pynguin only. For other later
+            added pynguins, use p.color()
+        '''
         icolor = self.pynguin.gitem.pen.brush().color()
         ncolor = QtGui.QColorDialog.getColor(icolor, self)
         if ncolor.isValid():
@@ -276,7 +296,11 @@ class MainWindow(QtGui.QMainWindow):
             self.interpretereditor.addcmd(cmd)
 
     def setPenWidth(self):
-        '''open a dialog with a spin button to get a new pen line width'''
+        '''open a dialog with a spin button to get a new pen line width
+
+        sets the width for the primary pynguin only. For other later
+            added pynguins, use p.width()
+        '''
         iwidth = self.pynguin.gitem.pen.width()
         uifile = 'penwidth.ui'
         uipath = os.path.join(uidir, uifile)
@@ -293,7 +317,11 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.addcmd(cmd)
 
     def setPen(self, ev):
-        '''toggle pen up and pen down'''
+        '''toggle pen up and pen down
+
+        sets the pen for the primary pynguin only. For other later
+            added pynguins, use p.penup() or p.pendown()
+        '''
         if ev == self.ui.actionPenUp:
             self.pynguin.penup()
             self.interpretereditor.addcmd('penup()\n')
@@ -302,7 +330,11 @@ class MainWindow(QtGui.QMainWindow):
             self.interpretereditor.addcmd('pendown()\n')
 
     def setImage(self, ev):
-        '''select which image to show'''
+        '''select which image to show
+
+        sets the image for the primary pynguin only. For other later
+            added pynguins, use p.setImageid() or p.setImageid()
+        '''
         choices = {self.ui.actionPynguin: 'pynguin',
                     self.ui.actionArrow: 'arrow',
                     self.ui.actionRobot: 'robot',
@@ -310,10 +342,11 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin.setImageid(choices[ev])
 
     def _setSpeed(self, speed):
-        self.pynguin.drawspeed = 2 * speed
-        self.pynguin.turnspeed = 4 * speed
+        for pynguin in self.pynguins:
+            pynguin.drawspeed = 2 * speed
+            pynguin.turnspeed = 4 * speed
     def setSpeed(self, ev):
-        '''select drawing speed setting'''
+        '''select drawing speed setting. Sets the speed for _all_ pynguins!'''
         choice = {self.ui.actionSlow: 5,
                     self.ui.actionMedium: 10,
                     self.ui.actionFast: 20,
@@ -437,6 +470,7 @@ class CmdThread(QtCore.QThread):
 class Interpreter(HighlightedTextEdit):
     def __init__(self, parent):
         HighlightedTextEdit.__init__(self)
+        self.mw = parent
         self.pynguin = parent.pynguin
         self.history = []
         self._outputq = []
@@ -526,13 +560,15 @@ class Interpreter(HighlightedTextEdit):
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
                 while not self.cmdthread.wait(0) and not self.controlC:
-                    self.pynguin._r_process_moves()
+                    for pynguin in self.mw.pynguins:
+                        pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
                 if self.controlC:
                     self.cmdthread.terminate()
-                    self.pynguin._empty_move_queue()
-                    self.pynguin._r_process_moves()
-                    self.pynguin._sync_items()
+                    for pynguin in self.mw.pynguins:
+                        pynguin._empty_move_queue()
+                        pynguin._r_process_moves()
+                        pynguin._sync_items()
                     self.append('')
                     self.controlC = False
                     self.needmore = False
@@ -768,7 +804,6 @@ class Pynguin(object):
         self.pendown()
         self._checktime = QtCore.QTime()
         self._checktime.start()
-        QtCore.QTimer.singleShot(self.delay, self._process_moves)
         self._zvalue = 0
 
     def _set_item_pos(self, item, pos):
