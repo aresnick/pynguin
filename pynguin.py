@@ -96,7 +96,8 @@ class MainWindow(QtGui.QMainWindow):
         hbox.addWidget(self.interpretereditor)
         ilocals = {'p': self.pynguin,
                     'PI':math.pi,
-                    'new_pynguin':self.new_pynguin}
+                    'new_pynguin':self.new_pynguin,
+                    'history': self.history}
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
@@ -151,6 +152,13 @@ class MainWindow(QtGui.QMainWindow):
         else:
             ev.ignore()
 
+    def history(self, clear=False):
+        if not clear:
+            for line in self.interpretereditor.history:
+                self.interpretereditor.write('%s\n' % line)
+        else:
+            self.interpretereditor.history = []
+
     def new(self):
         if self.maybe_save():
             for pynguin in self.pynguins:
@@ -198,7 +206,10 @@ class MainWindow(QtGui.QMainWindow):
         self._filepath = r + ext
         z = zipfile.ZipFile(self._filepath, 'w')
 
-        for n, (ename, efile) in enumerate(self.editor.documents.items()):
+        mselect = self.ui.mselect
+        for n in range(mselect.count()):
+            ename = str(mselect.itemText(n))
+            efile = self.editor.documents[ename]
             arcname = '##%5s##__%s' % (n, ename)
             z.writestr(arcname, efile)
 
@@ -271,10 +282,13 @@ class MainWindow(QtGui.QMainWindow):
                             try:
                                 exec data in self.interpreter_locals
                             except:
-                                pass
+                                print 'problem', title
                 elif ename.startswith('@@history@@'):
                     history = data.split('\n')
                     self.interpretereditor.history = history
+
+        self.ui.mselect.setCurrentIndex(0)
+        self.changedoc(0)
 
         self._modified = False
         self.setWindowModified(False)
