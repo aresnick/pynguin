@@ -209,6 +209,7 @@ class MainWindow(QtGui.QMainWindow):
         z.close()
 
         self._modified = False
+        self.setWindowModified(False)
 
         return True
 
@@ -276,6 +277,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.interpretereditor.history = history
 
         self._modified = False
+        self.setWindowModified(False)
 
     def newdoc(self):
         '''Add a new (blank) page to the document editor'''
@@ -283,6 +285,7 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.setFocus()
 
         self._modified = True
+        self.setWindowModified(True)
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
@@ -301,6 +304,7 @@ class MainWindow(QtGui.QMainWindow):
         del self.editor.documents[docname]
 
         self._modified = True
+        self.setWindowModified(True)
 
     def testcode(self):
         '''exec the code in the current editor window and load it in
@@ -426,6 +430,7 @@ class CodeArea(HighlightedTextEdit):
         self.settitle(txt)
         if self._doc.isModified():
             self.mw._modified = True
+            self.mw.setWindowModified(True)
 
     def settitle(self, txt):
         '''set the title for the current document to txt
