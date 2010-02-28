@@ -1,0 +1,5 @@
+.hg*
+.tar-ignore
+*.pyc
+doc/screenshots
+doc/examples/test
