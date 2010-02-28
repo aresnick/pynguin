@@ -9,4 +9,3 @@ Extend lines during animation, rather than always drawing new lines
 Create a non-graphical turtle library?
 Add a slower circle implementation for use with slower speeds
 Fill mode
-Easy export of drawing
