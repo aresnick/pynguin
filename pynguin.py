@@ -634,7 +634,7 @@ class Interpreter(HighlightedTextEdit):
                         pynguin._empty_move_queue()
                         pynguin._r_process_moves()
                         pynguin._sync_items()
-                    self.append('')
+                    self.append('KeyboardInterrupt\n')
                     self.controlC = False
                     self.needmore = False
                     self.interpreter.resetbuffer()
@@ -729,6 +729,8 @@ class Interpreter(HighlightedTextEdit):
             #send keyboard interrupt
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 self.controlC = True
+            else:
+                self.addcmd('KeyboardInterrupt\n')
 
         elif (self._check_control_key and k==A) or k == Home:
             self.movetostart()
