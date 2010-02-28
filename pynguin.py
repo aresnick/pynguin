@@ -279,6 +279,34 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = False
         self.setWindowModified(False)
 
+    def export(self):
+        '''save the current drawing'''
+        if self._fdir is None:
+            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+        else:
+            fdir = self._fdir
+
+        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
+        if fp:
+            self._fdir, _ = os.path.split(fp)
+        else:
+            return False
+
+        for pynguin in self.pynguins:
+            pynguin.gitem.hide()
+        scene = self.scene
+        sz = scene.sceneRect().size()
+        w, h = sz.width(), sz.height()
+        self._i = i = QtGui.QImage(w, h, QtGui.QImage.Format_RGB32)
+        p = QtGui.QPainter(i)
+        scene.view.render(p)
+        if not i.save(fp):
+            QtGui.QMessageBox.warning(self,
+                                'Unable to save',
+                                'Cannot export image.')
+        for pynguin in self.pynguins:
+            pynguin.gitem.show()
+
     def newdoc(self):
         '''Add a new (blank) page to the document editor'''
         self.editor.new()
