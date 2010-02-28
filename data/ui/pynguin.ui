@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>901</width>
+    <width>900</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QFrame" name="frame">
       <property name="frameShape">
@@ -23,68 +23,107 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QGraphicsView" name="view"/>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="rsl">
-         <item>
-          <widget class="QComboBox" name="mselect"/>
-         </item>
-         <item>
-          <widget class="QFrame" name="edframe">
-           <property name="minimumSize">
-            <size>
-             <width>350</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
+        <widget class="QSplitter" name="wsplitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QGraphicsView" name="view"/>
+         <widget class="QSplitter" name="rsplitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QComboBox" name="mselect">
+              <property name="baseSize">
+               <size>
+                <width>350</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="edframe">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>400</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QPushButton" name="newbtn">
+                <property name="text">
+                 <string>New</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="removebtn">
+                <property name="text">
+                 <string>Remove</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="testbtn">
+                <property name="text">
+                 <string>Test</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QPushButton" name="newbtn">
-             <property name="text">
-              <string>New</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="removebtn">
-             <property name="text">
-              <string>Remove</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="testbtn">
-             <property name="text">
-              <string>Test</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
           <widget class="QFrame" name="interpreterframe">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>115</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>115</height>
+             <height>400</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>250</height>
             </size>
            </property>
            <property name="frameShape">
@@ -94,8 +133,8 @@
             <enum>QFrame::Raised</enum>
            </property>
           </widget>
-         </item>
-        </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -107,7 +146,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>901</width>
+     <width>900</width>
      <height>26</height>
     </rect>
    </property>
@@ -316,54 +355,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>newbtn</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>newdoc()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>615</x>
-     <y>349</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mselect</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>changedoc()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>704</x>
-     <y>57</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>testbtn</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>testcode()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>794</x>
-     <y>349</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionNew</sender>
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
@@ -460,22 +451,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>removebtn</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>removedoc()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>704</x>
-     <y>345</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionAbout</sender>
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
@@ -484,6 +459,70 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>newbtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newdoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>615</x>
+     <y>349</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mselect</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>changedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>704</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>testbtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>testcode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>794</x>
+     <y>349</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>removebtn</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>removedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>704</x>
+     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>450</x>

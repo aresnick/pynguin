@@ -106,6 +106,9 @@ class MainWindow(QtGui.QMainWindow):
 
         self.interpretereditor.setFocus()
 
+        self.ui.rsplitter.setSizes([390, 110])
+        self.ui.wsplitter.setSizes([550, 350])
+
         self.viewgroup = QtGui.QActionGroup(self)
         self.viewgroup.addAction(self.ui.actionPynguin)
         self.viewgroup.addAction(self.ui.actionArrow)
