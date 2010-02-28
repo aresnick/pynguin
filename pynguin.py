@@ -595,8 +595,6 @@ class Interpreter(HighlightedTextEdit):
             cblk = self._doc.findBlock(cpos)
             cblkpos = cblk.position()
 
-            print cpos, cblkpos
-
             if cpos <= lpos + 4:
                 passthru = False
             else:
