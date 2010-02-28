@@ -81,7 +81,7 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.view.setTransform(trans)
         view.centerOn(self.pynguin.gitem)
 
-        self.editor = CodeArea(self.ui.mselect)
+        self.editor = CodeArea(self)
         hbox = QHBoxLayout(self.ui.edframe)
         hbox.setSpacing(0)
         hbox.setMargin(0)
@@ -146,10 +146,42 @@ class MainWindow(QtGui.QMainWindow):
         return p
 
     def closeEvent(self, ev=None):
-        QtGui.qApp.quit()
+        if self.maybe_save():
+            ev.accept()
+        else:
+            ev.ignore()
 
     def new(self):
-        pass
+        if self.maybe_save():
+            for pynguin in self.pynguins:
+                pynguin.reset()
+                if pynguin is not self.pynguin:
+                    self.scene.removeItem(pynguin.gitem)
+                    self.pynguins.remove(pynguin)
+            del_later = []
+            for name in self.interpreter_locals:
+                if name not in pynguin_functions:
+                    del_later.append(name)
+            for name in del_later:
+                del self.interpreter_locals[name]
+            self.editor.clear()
+            self.interpretereditor.clear()
+        else:
+            pass
+
+    def maybe_save(self):
+        if self._modified:
+            ret = QtGui.QMessageBox.warning(self, self.tr("Application"),
+                        self.tr("The document has been modified.\n"
+                                "Do you want to save your changes?"),
+                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                        QtGui.QMessageBox.No,
+                        QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+            if ret == QtGui.QMessageBox.Yes:
+                return self.save()
+            elif ret == QtGui.QMessageBox.Cancel:
+                return False
+        return True
 
     def _savestate(self):
         '''write out the files in the editor window, and keep the list
@@ -176,6 +208,10 @@ class MainWindow(QtGui.QMainWindow):
 
         z.close()
 
+        self._modified = False
+
+        return True
+
     def save(self):
         '''call _savestate with current file name, or get a file name from
             the user and then call _savestate
@@ -184,7 +220,7 @@ class MainWindow(QtGui.QMainWindow):
         if self._filepath is None:
             return self.saveas()
         else:
-            self._savestate()
+            return self._savestate()
 
     def saveas(self):
         if self._fdir is None:
@@ -197,9 +233,9 @@ class MainWindow(QtGui.QMainWindow):
             self._filepath = fp
             self._fdir, _ = os.path.split(fp)
         else:
-            return
+            return False
 
-        self._savestate()
+        return self._savestate()
 
     def open(self):
         '''read in a previously written .pyn file (written by _savestate)
@@ -208,6 +244,8 @@ class MainWindow(QtGui.QMainWindow):
             Any previous history will be lost and replaced with the
                 history loaded from the file.
         '''
+        if not self.maybe_save():
+            return
 
         if self._fdir is None:
             fdir = QtCore.QString(os.path.abspath(os.path.curdir))
@@ -237,10 +275,14 @@ class MainWindow(QtGui.QMainWindow):
                     history = data.split('\n')
                     self.interpretereditor.history = history
 
+        self._modified = False
+
     def newdoc(self):
         '''Add a new (blank) page to the document editor'''
         self.editor.new()
         self.editor.setFocus()
+
+        self._modified = True
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
@@ -257,6 +299,8 @@ class MainWindow(QtGui.QMainWindow):
         if mselect.count():
             self.changedoc(0)
         del self.editor.documents[docname]
+
+        self._modified = True
 
     def testcode(self):
         '''exec the code in the current editor window and load it in
@@ -362,18 +406,26 @@ class MainWindow(QtGui.QMainWindow):
 
 
 class CodeArea(HighlightedTextEdit):
-    def __init__(self, mselect):
+    def __init__(self, mw):
         HighlightedTextEdit.__init__(self)
-        self.mselect = mselect
+        self.mw = mw
+        self.mselect = mw.ui.mselect
         self.documents = {}
         self.title = ''
         self.settitle('Untitled')
+
+    def clear(self):
+        self._doc.clear()
+        self.documents = {}
+        self.mselect.clear()
 
     def keyPressEvent(self, ev):
         HighlightedTextEdit.keyPressEvent(self, ev)
         fblk = self._doc.firstBlock()
         txt = str(fblk.text())
         self.settitle(txt)
+        if self._doc.isModified():
+            self.mw._modified = True
 
     def settitle(self, txt):
         '''set the title for the current document to txt
@@ -494,6 +546,11 @@ class Interpreter(HighlightedTextEdit):
 
         self.write('>>> ')
 
+    def clear(self):
+        self.history = []
+        self._outputq = []
+        self._doc.clear()
+        self.write('>>> ')
 
     def addcmd(self, cmd):
         self.write(cmd)

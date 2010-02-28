@@ -1,5 +1,4 @@
 Mouse wheel zooms on canvas
-Show errors when testing from editor
 Reload drawing when loading session?
 Focus follows mouse?
 Icons for menu items
@@ -11,5 +10,3 @@ Create a non-graphical turtle library?
 Add a slower circle implementation for use with slower speeds
 Fill mode
 Easy export of drawing
-Ask about closing current documents when opening file
-Make sure to ask before closing / quitting to avoid lost work
