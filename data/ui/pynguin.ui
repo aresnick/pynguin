@@ -147,7 +147,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQuit">
@@ -177,6 +177,7 @@
     <addaction name="actionPynguin"/>
     <addaction name="actionArrow"/>
     <addaction name="actionRobot"/>
+    <addaction name="actionTurtle"/>
     <addaction name="actionHidden"/>
    </widget>
    <widget class="QMenu" name="menuSpeed">
@@ -339,6 +340,14 @@
   <action name="actionExport">
    <property name="text">
     <string>Export Image</string>
+   </property>
+  </action>
+  <action name="actionTurtle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Turtle</string>
    </property>
   </action>
  </widget>
