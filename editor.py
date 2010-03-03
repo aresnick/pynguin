@@ -198,7 +198,10 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
 
         self.setWordWrapMode(QtGui.QTextOption.NoWrap)
         char_format = QtGui.QTextCharFormat()
-        char_format.setFont(self.font())
+        font = QtGui.QFont('Courier')
+        font.setFixedPitch(True)
+        font.setWeight(QtGui.QFont.DemiBold)
+        char_format.setFont(font)
         char_format.setFontPointSize(16)
         self.setFontPointSize(16)
         self.highlighter = PythonHighlighter(self.document(), char_format)
