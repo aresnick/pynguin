@@ -468,7 +468,28 @@ class CodeArea(HighlightedTextEdit):
         self.mselect.clear()
 
     def keyPressEvent(self, ev):
+        k = ev.key()
+
+        Return = QtCore.Qt.Key_Return
+        lead = 0
+        if k == Return:
+            cpos = self.textCursor().position()
+            cblk = self._doc.findBlock(cpos)
+            cblktxt = str(cblk.text())
+            ts = cblktxt.split()
+            if ts:
+                lead = cblktxt.find(ts[0])
+
+            char = self._doc.characterAt(cpos-1)
+            colon = QtCore.QChar(':')
+            if char == colon:
+                # auto indent
+                lead += 4
+
         HighlightedTextEdit.keyPressEvent(self, ev)
+        if lead:
+            self.insertPlainText(' '*lead)
+
         fblk = self._doc.firstBlock()
         txt = str(fblk.text())
         self.settitle(txt)
