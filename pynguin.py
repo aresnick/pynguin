@@ -648,6 +648,8 @@ class Interpreter(HighlightedTextEdit):
         passthru = True
 
         if k == Return:
+            self.movetoend()
+
             cpos = self.textCursor().position()
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
