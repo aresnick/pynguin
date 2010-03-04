@@ -36,9 +36,6 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'penup', 'pendown', 'color', 'width', ]
 
 uidir = 'data/ui'
-uifile = 'pynguin.ui'
-uipath = os.path.join(uidir, uifile)
-MWClass, _ = uic.loadUiType(uipath)
 
 def sign(x):
     'return 1 if x is positive, -1 if negative, or zero'
@@ -58,9 +55,15 @@ class MainWindow(QtGui.QMainWindow):
         self.paused = False
         self.rend = getrend(self.app)
 
-        self._fdir = None
+        self._fdir = os.path.expanduser('~')
         self._filepath = None
         self._modified = False
+
+        import pynguin
+        appdir, _ = os.path.split(os.path.abspath(pynguin.__file__))
+        uifile = 'pynguin.ui'
+        uipath = os.path.join(appdir, uidir, uifile)
+        MWClass, _ = uic.loadUiType(uipath)
 
         QtGui.QMainWindow.__init__(self)
         self.ui = MWClass()
