@@ -931,6 +931,10 @@ class Pynguin(object):
         self.drawn_items = []
         self.drawspeed = 1
         self.turnspeed = 4
+        self.gitem._drawn = self.drawspeed
+        self.gitem._turned = self.turnspeed
+        self.ritem._drawn = self.drawspeed
+        self.ritem._turned = self.turnspeed
         self.delay = 50
         self._moves = Queue.Queue(250) # max number of items in queue
         self.pendown()
@@ -995,17 +999,32 @@ class Pynguin(object):
                 else:
                     move(*args)
 
-                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                #print 'dt', self.gitem._drawn, self.gitem._turned
+
+                if not drawspeed:
+                    delay -= 1
+                    if delay < 0:
+                        QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                        delay = 5 * self.delay
+                elif self.gitem._drawn > 0 and self.gitem._turned > 0:
+                    continue
+                else:
+                    self.gitem._drawn = self.drawspeed
+                    self.gitem._turned = self.turnspeed
+                    break
 
                 if self.drawspeed:
                     break
 
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             self._checktime.restart()
 
     def _item_forward(self, item, distance, draw=True):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
+        item._drawn -= abs(distance)
+
         ang = item.ang
         rad = ang * (PI / 180)
         dx = distance * math.cos(rad)
@@ -1079,8 +1098,9 @@ class Pynguin(object):
         item.rotate(-degrees)
 
     def _item_left(self, item, degrees):
+        item._turned -= (abs(degrees))
         item.rotate(-degrees)
-    def _turn(self, degrees):
+    def _gitem_turn(self, degrees):
         turnspeed = self.turnspeed
         if degrees >= 0:
             perstep = self.turnspeed
@@ -1105,7 +1125,7 @@ class Pynguin(object):
 
     def left(self, degrees):
         self._item_left(self.ritem, degrees)
-        self._turn(degrees)
+        self._gitem_turn(degrees)
     lt = left
 
     def right(self, degrees):
