@@ -141,6 +141,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setup_examples()
 
+        self.setSpeed(self.ui.actionMedium)
+
     def setup_examples(self):
         filemenu = self.ui.filemenu
         actionsave = self.ui.actionSave
