@@ -147,10 +147,10 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuQuit">
+   <widget class="QMenu" name="filemenu">
     <property name="title">
      <string>File</string>
     </property>
@@ -161,7 +161,7 @@
     <addaction name="actionExport"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuPen">
+   <widget class="QMenu" name="penmenu">
     <property name="title">
      <string>Pen</string>
     </property>
@@ -170,7 +170,7 @@
     <addaction name="actionColor"/>
     <addaction name="actionWidth"/>
    </widget>
-   <widget class="QMenu" name="menuPynguin">
+   <widget class="QMenu" name="viewmenu">
     <property name="title">
      <string>View</string>
     </property>
@@ -180,7 +180,7 @@
     <addaction name="actionTurtle"/>
     <addaction name="actionHidden"/>
    </widget>
-   <widget class="QMenu" name="menuSpeed">
+   <widget class="QMenu" name="speedmenu">
     <property name="title">
      <string>Speed</string>
     </property>
@@ -189,17 +189,17 @@
     <addaction name="actionFast"/>
     <addaction name="actionInstant"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="helpmenu">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuQuit"/>
-   <addaction name="menuPynguin"/>
-   <addaction name="menuPen"/>
-   <addaction name="menuSpeed"/>
-   <addaction name="menuHelp"/>
+   <addaction name="filemenu"/>
+   <addaction name="viewmenu"/>
+   <addaction name="penmenu"/>
+   <addaction name="speedmenu"/>
+   <addaction name="helpmenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
@@ -350,12 +350,17 @@
     <string>Turtle</string>
    </property>
   </action>
+  <action name="actionExamples">
+   <property name="text">
+    <string>Examples</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
    <sender>actionQuit</sender>
-   <signal>triggered()</signal>
+   <signal>activated()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>

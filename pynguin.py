@@ -23,6 +23,7 @@ PI = math.pi
 import code
 import Queue
 import zipfile
+import glob
 
 from PyQt4 import QtCore, QtGui, QtSvg, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
@@ -61,6 +62,7 @@ class MainWindow(QtGui.QMainWindow):
 
         import pynguin
         appdir, _ = os.path.split(os.path.abspath(pynguin.__file__))
+        self.appdir = appdir
         uifile = 'pynguin.ui'
         uipath = os.path.join(appdir, uidir, uifile)
         MWClass, _ = uic.loadUiType(uipath)
@@ -137,6 +139,29 @@ class MainWindow(QtGui.QMainWindow):
         self.speedgroup.triggered.connect(self.setSpeed)
         self._setSpeed(2)
 
+        self.setup_examples()
+
+    def setup_examples(self):
+        examplemenu = self.ui.filemenu.addMenu('Examples')
+        examplesrel = 'doc/examples'
+        examplespath = os.path.join(self.appdir, examplesrel)
+        self.examplespath = examplespath
+        examplesglob = '%s/*.pyn' % examplespath
+        examples = glob.glob(examplesglob)
+        for ex in examples:
+            pth, fn = os.path.split(ex)
+            def excb(fp=ex):
+                self.open_example(fp)
+            action = examplemenu.addAction(fn, excb)
+
+    def open_example(self, fp):
+        if not self.maybe_save():
+            return
+        else:
+            self._filepath = None
+        self._new()
+        self._openfile(fp)
+
     def new_pynguin(self):
         p = Pynguin((0, 0), 0, self.rend)
         self.scene.addItem(p.gitem)
@@ -165,21 +190,25 @@ class MainWindow(QtGui.QMainWindow):
 
     def new(self):
         if self.maybe_save():
-            for pynguin in self.pynguins:
-                pynguin.reset()
-                if pynguin is not self.pynguin:
-                    self.scene.removeItem(pynguin.gitem)
-                    self.pynguins.remove(pynguin)
-            del_later = []
-            for name in self.interpreter_locals:
-                if name not in pynguin_functions:
-                    del_later.append(name)
-            for name in del_later:
-                del self.interpreter_locals[name]
-            self.editor.clear()
-            self.interpretereditor.clear()
+            self._new()
         else:
             pass
+
+    def _new(self):
+        for pynguin in self.pynguins:
+            pynguin.reset()
+            if pynguin is not self.pynguin:
+                self.scene.removeItem(pynguin.gitem)
+                self.pynguins.remove(pynguin)
+        del_later = []
+        for name in self.interpreter_locals:
+            if name not in pynguin_functions:
+                del_later.append(name)
+        for name in del_later:
+            del self.interpreter_locals[name]
+        self.editor.clear()
+        self.interpretereditor.clear()
+        self._filepath = None
 
     def maybe_save(self):
         if self._modified:
@@ -272,24 +301,27 @@ class MainWindow(QtGui.QMainWindow):
         if fp:
             self._filepath = fp
             self._fdir, _ = os.path.split(fp)
+            self._new()
+            self._openfile(fp)
 
-            z = zipfile.ZipFile(fp, 'r')
-            for ename in z.namelist():
-                fo = z.open(ename, 'rU')
-                data = fo.read()
-                if ename.startswith('##'):
-                    hdr = ename[0:9]
-                    if hdr.startswith('##') and hdr.endswith('##'):
-                        title = ename[11:]
-                        self.editor.add(data)
-                        if data.startswith('def '):
-                            try:
-                                exec data in self.interpreter_locals
-                            except:
-                                print 'problem', title
-                elif ename.startswith('@@history@@'):
-                    history = data.split('\n')
-                    self.interpretereditor.history = history
+    def _openfile(self, fp):
+        z = zipfile.ZipFile(fp, 'r')
+        for ename in z.namelist():
+            fo = z.open(ename, 'rU')
+            data = fo.read()
+            if ename.startswith('##'):
+                hdr = ename[0:9]
+                if hdr.startswith('##') and hdr.endswith('##'):
+                    title = ename[11:]
+                    self.editor.add(data)
+                    if data.startswith('def '):
+                        try:
+                            exec data in self.interpreter_locals
+                        except:
+                            print 'problem', title
+            elif ename.startswith('@@history@@'):
+                history = data.split('\n')
+                self.interpretereditor.history = history
 
         self.ui.mselect.setCurrentIndex(0)
         self.changedoc(0)
