@@ -77,6 +77,14 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.view = view
         view.show()
 
+        self.speedgroup = QtGui.QActionGroup(self)
+        self.speedgroup.addAction(self.ui.actionSlow)
+        self.speedgroup.addAction(self.ui.actionMedium)
+        self.speedgroup.addAction(self.ui.actionFast)
+        self.speedgroup.addAction(self.ui.actionInstant)
+        self.speedgroup.setExclusive(True)
+        self.speedgroup.triggered.connect(self.setSpeed)
+
         self.pynguins = []
         self._primary_pynguin = True
         self.pynguin = self.new_pynguin()
@@ -130,18 +138,8 @@ class MainWindow(QtGui.QMainWindow):
         self.pengroup.setExclusive(True)
         self.pengroup.triggered.connect(self.setPen)
 
-        self.speedgroup = QtGui.QActionGroup(self)
-        self.speedgroup.addAction(self.ui.actionSlow)
-        self.speedgroup.addAction(self.ui.actionMedium)
-        self.speedgroup.addAction(self.ui.actionFast)
-        self.speedgroup.addAction(self.ui.actionInstant)
-        self.speedgroup.setExclusive(True)
-        self.speedgroup.triggered.connect(self.setSpeed)
-        self._setSpeed(2)
-
         self.setup_examples()
 
-        self.setSpeed(self.ui.actionMedium)
 
     def setup_examples(self):
         filemenu = self.ui.filemenu
@@ -173,6 +171,7 @@ class MainWindow(QtGui.QMainWindow):
         p = Pynguin((0, 0), 0, self.rend)
         self.scene.addItem(p.gitem)
         self.pynguins.append(p)
+        self.setSpeed()
 
         if self._primary_pynguin:
             p._process_moves()
@@ -482,12 +481,16 @@ class MainWindow(QtGui.QMainWindow):
         for pynguin in self.pynguins:
             pynguin.drawspeed = 2 * speed
             pynguin.turnspeed = 4 * speed
-    def setSpeed(self, ev):
+    def setSpeed(self, ev=None):
         '''select drawing speed setting. Sets the speed for _all_ pynguins!'''
+        if ev is None:
+            ev = self.speedgroup.checkedAction()
+
         choice = {self.ui.actionSlow: 5,
                     self.ui.actionMedium: 10,
                     self.ui.actionFast: 20,
                     self.ui.actionInstant: 0,}
+
         speed = choice[ev]
         self._setSpeed(speed)
 
