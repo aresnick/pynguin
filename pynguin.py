@@ -142,7 +142,12 @@ class MainWindow(QtGui.QMainWindow):
         self.setup_examples()
 
     def setup_examples(self):
-        examplemenu = self.ui.filemenu.addMenu('Examples')
+        filemenu = self.ui.filemenu
+        actionsave = self.ui.actionSave
+        exmenu = QtGui.QMenu('Examples', filemenu)
+        exa = filemenu.insertMenu(actionsave, exmenu)
+        examplemenu = exa.menu()
+
         examplesrel = 'doc/examples'
         examplespath = os.path.join(self.appdir, examplesrel)
         self.examplespath = examplespath
