@@ -350,16 +350,26 @@ class MainWindow(QtGui.QMainWindow):
 
         for pynguin in self.pynguins:
             pynguin.gitem.hide()
+
         scene = self.scene
-        sz = scene.sceneRect().size()
-        w, h = sz.width(), sz.height()
-        self._i = i = QtGui.QImage(w, h, QtGui.QImage.Format_RGB32)
+        view = scene.view
+
+        scene.setSceneRect(scene.sceneRect().united(scene.itemsBoundingRect()))
+
+        src = scene.sceneRect()
+        szf = src.size()
+        sz = QtCore.QSize(szf.width(), szf.height())
+        self._i = i = QtGui.QImage(sz, QtGui.QImage.Format_ARGB32)
         p = QtGui.QPainter(i)
-        scene.view.render(p)
+        ir = i.rect()
+        irf = QtCore.QRectF(0, 0, src.width(), src.height())
+
+        scene.render(p, irf, src)
         if not i.save(fp):
             QtGui.QMessageBox.warning(self,
                                 'Unable to save',
                                 'Cannot export image.')
+
         for pynguin in self.pynguins:
             pynguin.gitem.show()
 
