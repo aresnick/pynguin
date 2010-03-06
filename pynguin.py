@@ -35,6 +35,7 @@ from editor import HighlightedTextEdit
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width', ]
+interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
 
@@ -210,7 +211,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.pynguins.remove(pynguin)
         del_later = []
         for name in self.interpreter_locals:
-            if name not in pynguin_functions:
+            if name not in pynguin_functions and name not in interpreter_protect:
                 del_later.append(name)
         for name in del_later:
             del self.interpreter_locals[name]
