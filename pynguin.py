@@ -76,6 +76,8 @@ class MainWindow(QtGui.QMainWindow):
         view.setScene(self.scene)
         self.scene.view = view
         view.show()
+        view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
