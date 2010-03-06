@@ -990,6 +990,7 @@ class Pynguin(object):
         self.turnspeed = 4
         self.gitem._drawn = self.drawspeed
         self.gitem._turned = self.turnspeed
+        self.gitem._current_line = None
         self.ritem._drawn = self.drawspeed
         self.ritem._turned = self.turnspeed
         self.delay = 50
@@ -1080,6 +1081,10 @@ class Pynguin(object):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
+        if not distance and item is self.gitem:
+            self.gitem._current_line = None
+            return
+
         item._drawn -= abs(distance)
 
         ang = item.ang
@@ -1087,18 +1092,25 @@ class Pynguin(object):
         dx = distance * math.cos(rad)
         dy = distance * math.sin(rad)
 
-        p0 = item.pos()
+        p1 = item.pos()
 
-        x = p0.x()+dx
-        y = p0.y()+dy
-        p1 = QtCore.QPointF(x, y)
-        item.setPos(p1)
+        x = p1.x()+dx
+        y = p1.y()+dy
+        p2 = QtCore.QPointF(x, y)
+        item.setPos(p2)
 
         if draw and item._pen:
-            line = item.scene().addLine(QtCore.QLineF(p0, p1), item.pen)
-            line.setZValue(self._zvalue)
-            self._zvalue += 1
-            self.drawn_items.append(line)
+            cl = self.gitem._current_line
+            if cl is None:
+                line = item.scene().addLine(QtCore.QLineF(p1, p2), item.pen)
+                line.setZValue(self._zvalue)
+                self._zvalue += 1
+                self.drawn_items.append(line)
+                self.gitem._current_line = line
+            else:
+                lineline = cl.line()
+                lineline.setP2(p2)
+                cl.setLine(lineline)
 
     def _gitem_move(self, distance):
         '''used to break up movements for graphic animations. gitem will
@@ -1113,7 +1125,6 @@ class Pynguin(object):
 
         adistance = abs(distance)
         d = 0
-        n = 0
         while d < adistance:
             if perstep == 0:
                 step = distance
@@ -1122,12 +1133,13 @@ class Pynguin(object):
                 step = sign(perstep) * (adistance - d)
             else:
                 step = perstep
-            n += 1
             d += drawspeed
 
             self.qmove(self._item_forward, (self.gitem, step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+        self.qmove(self._item_forward, (self.gitem, 0,))
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
