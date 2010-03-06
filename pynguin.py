@@ -34,7 +34,8 @@ from editor import HighlightedTextEdit
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
-                        'penup', 'pendown', 'color', 'width', ]
+                        'penup', 'pendown', 'color', 'width',
+                        'circle',]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -992,6 +993,7 @@ class Pynguin(object):
         self.gitem._drawn = self.drawspeed
         self.gitem._turned = self.turnspeed
         self.gitem._current_line = None
+        self.gitem._current_circle = None
         self.ritem._drawn = self.drawspeed
         self.ritem._turned = self.turnspeed
         self.delay = 50
@@ -1272,6 +1274,7 @@ class Pynguin(object):
         self.qmove(self._width, (w,))
 
     def setImageid(self, imageid):
+        '''change the visible (avatar) image'''
         ogitem = self.gitem
         pos = ogitem.pos()
         ang = ogitem.ang
@@ -1287,13 +1290,90 @@ class Pynguin(object):
         scene.addItem(gitem)
         self.gitem = gitem
 
-    def _circle(self, r, center):
+    def _circle(self, crect):
+        '''instant circle'''
+        scene = self.gitem.scene()
+        circle = scene.addEllipse(crect, self.gitem.pen)
+        circle.setZValue(self._zvalue)
+        self._zvalue += 1
+        self.drawn_items.append(circle)
+
+    def _extend_circle(self, crect, distance):
+        '''individual steps for animated circle drawing
+        '''
         gitem = self.gitem
         scene = gitem.scene()
-        cpt = gitem.pos()
+        cc = gitem._current_circle
+        if cc is not None and not distance:
+            # circle complete.
+            # replace the circle drawn using line segments
+            # with a real ellipse item
+            for item in cc:
+                scene.removeItem(item)
+                circle = scene.addEllipse(crect, self.gitem.pen)
+                circle.setZValue(self._zvalue)
+                self._zvalue += 1
+                self.drawn_items.append(circle)
+            gitem._current_circle = None
+        elif cc is None:
+            # first segment
+            self._item_left(gitem, -2)
+            self._item_forward(gitem, distance)
+            gitem._current_line = None
+            line = self.drawn_items.pop()
+            current_circle = [line]
+            gitem._current_circle = current_circle
+        else:
+            # continue drawing
+            self._item_left(gitem, -4)
+            self._item_forward(gitem, distance)
+            gitem._current_line = None
+            line = self.drawn_items.pop()
+            cc.append(line)
+
+    def _slowcircle(self, crect, r, center):
+        '''Animated circle drawing
+        '''
+        pos0 = self.ritem.pos()
+        ang0 = self.ritem.ang
+        sangle = self.gitem.ang
+        if center:
+            pen = self.pen
+            self.penup()
+            self._gitem_move(r)
+            self._gitem_turn(-90)
+            if pen:
+                self.pendown()
+            sangle += 90
+
+        circumference = 2 * PI * r
+        for n in range(1, 90):
+            self.qmove(self._extend_circle, (crect, circumference/90.))
+        self.qmove(self._extend_circle, (crect, 0))
+
+        if center:
+            self.penup()
+            self._gitem_turn(-90)
+            self._gitem_move(r)
+            self._gitem_turn(180)
+            if pen:
+                self.pendown()
+        self.qmove(self._item_goto, (self.gitem, pos0,))
+        self.qmove(self._item_setangle, (self.gitem, ang0,))
+
+    def circle(self, r, center=False):
+        '''Draw a circle of radius r.
+
+            If center is True, the current position will be the center of
+                the circle. Otherwise, the circle will be drawn with the
+                current position and rotation being a tangent to the circle.
+        '''
+
+        ritem = self.ritem
+        cpt = ritem.pos()
 
         if not center:
-            radians = (((PI*2)/360.) * self.gitem.ang)
+            radians = (((PI*2)/360.) * ritem.ang)
             tocenter = radians + PI/2
 
             dx = r * math.cos(tocenter)
@@ -1306,18 +1386,13 @@ class Pynguin(object):
         sz = QtCore.QSizeF(2*r, 2*r)
 
         crect = QtCore.QRectF(ul, sz)
-        circle = scene.addEllipse(crect, self.gitem.pen)
-        self.drawn_items.append(circle)
 
-    def circle(self, r, center=False):
-        '''Draw a circle of radius r.
-
-            If center is True, the current position will be the center of
-                the circle. Otherwise, the circle will be drawn with the
-                current position and rotation being a tangent to the circle.
-        '''
-
-        self.qmove(self._circle, (r, center))
+        if self.drawspeed == 0:
+            # instant circles
+            self.qmove(self._circle, (crect,))
+        else:
+            # animated circles
+            self._slowcircle(crect, r, center)
 
 
 class GraphicsItem(QtGui.QGraphicsItem):

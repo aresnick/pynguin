@@ -17,7 +17,8 @@ Changes in pynguin-0.2:
     - added basic auto-indent in editor
     - added quick links to example files
     - even out speeds when drawing short line segments
-    - now exports entire drawing, even if not visible onscreen
+    - added animated circle drawing
+    - now exports entire drawing, even if not visible on screen
     - fixed initial drawing speed to match menu
     - fixed-width fonts in editor and interactive interpreter
     - added classic turtle image
