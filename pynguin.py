@@ -35,7 +35,7 @@ from editor import HighlightedTextEdit
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
-                        'circle',]
+                        'circle', 'fill', 'nofill', 'begin_fill', 'end_fill', ]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -1108,9 +1108,8 @@ class Pynguin(object):
                 ppath.lineTo(p2)
                 line = item.scene().addPath(ppath, item.pen)
 
-                #color = QtGui.QColor(255, 130, 160)
-                #brush = QtGui.QBrush(color)
-                #line.setBrush(brush)
+                if self.gitem._fillmode:
+                    line.setBrush(self.gitem.brush)
 
                 line.setZValue(self._zvalue)
                 self._zvalue += 1
@@ -1282,6 +1281,32 @@ class Pynguin(object):
     def width(self, w=None):
         self.qmove(self._width, (w,))
 
+    def _gitem_fillmode(self, start):
+        if start:
+            self.gitem._fillmode = True
+            self._item_forward(self.gitem, 0)
+        else:
+            self.gitem._fillmode = False
+            self._item_forward(self.gitem, 0)
+
+    def fill(self):
+        '''go in to fill mode. Anything drawn will be filled until
+            nofill() is called.
+        '''
+        self.ritem._fillmode = True
+        self.qmove(self._gitem_fillmode, (True,))
+
+    def nofill(self):
+        '''turn off fill mode'''
+        self.ritem._fillmode = False
+        self.qmove(self._gitem_fillmode, (False,))
+
+    def begin_fill(self):
+        self.fill()
+
+    def end_fill(self):
+        self.nofill()
+
     def setImageid(self, imageid):
         '''change the visible (avatar) image'''
         ogitem = self.gitem
@@ -1301,9 +1326,12 @@ class Pynguin(object):
 
     def _circle(self, crect):
         '''instant circle'''
-        self._item_forward(self.gitem, 0)
-        scene = self.gitem.scene()
-        circle = scene.addEllipse(crect, self.gitem.pen)
+        gitem = self.gitem
+        self._item_forward(gitem, 0)
+        scene = gitem.scene()
+        circle = scene.addEllipse(crect, gitem.pen)
+        if gitem._fillmode:
+            circle.setBrush(gitem.brush)
         circle.setZValue(self._zvalue)
         self._zvalue += 1
         self.drawn_items.append(circle)
@@ -1322,6 +1350,8 @@ class Pynguin(object):
             scene.removeItem(cl)
             self._item_forward(gitem, 0)
             circle = scene.addEllipse(crect, self.gitem.pen)
+            if gitem._fillmode:
+                circle.setBrush(gitem.brush)
             circle.setZValue(self._zvalue)
             self._zvalue += 1
             self.drawn_items.append(circle)
@@ -1437,6 +1467,10 @@ class PynguinGraphicsItem(GraphicsItem):
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
         self.pen.setWidth(2)
+
+        color = QtGui.QColor(255, 130, 160)
+        self.brush = QtGui.QBrush(color)
+        self._fillmode = False
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)
