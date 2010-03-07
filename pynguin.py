@@ -993,11 +993,10 @@ class Pynguin(object):
         self.gitem._drawn = self.drawspeed
         self.gitem._turned = self.turnspeed
         self.gitem._current_line = None
-        self.gitem._current_circle = None
         self.ritem._drawn = self.drawspeed
         self.ritem._turned = self.turnspeed
         self.delay = 50
-        self._moves = Queue.Queue(250) # max number of items in queue
+        self._moves = Queue.Queue(50) # max number of items in queue
         self.pendown()
         self._checktime = QtCore.QTime()
         self._checktime.start()
@@ -1105,15 +1104,24 @@ class Pynguin(object):
         if draw and item._pen:
             cl = self.gitem._current_line
             if cl is None:
-                line = item.scene().addLine(QtCore.QLineF(p1, p2), item.pen)
+                ppath = QtGui.QPainterPath(p1)
+                ppath.lineTo(p2)
+                line = item.scene().addPath(ppath, item.pen)
+
+                #color = QtGui.QColor(255, 130, 160)
+                #brush = QtGui.QBrush(color)
+                #line.setBrush(brush)
+
                 line.setZValue(self._zvalue)
                 self._zvalue += 1
                 self.drawn_items.append(line)
                 self.gitem._current_line = line
             else:
-                lineline = cl.line()
-                lineline.setP2(p2)
-                cl.setLine(lineline)
+                ppath = cl.path()
+                plast = ppath.currentPosition()
+                if p2 != plast:
+                    ppath.lineTo(p2)
+                    cl.setPath(ppath)
 
     def _gitem_move(self, distance):
         '''used to break up movements for graphic animations. gitem will
@@ -1141,8 +1149,6 @@ class Pynguin(object):
             self.qmove(self._item_forward, (self.gitem, step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-
-        self.qmove(self._item_forward, (self.gitem, 0,))
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
@@ -1220,6 +1226,7 @@ class Pynguin(object):
         self._item_home(self.ritem)
         self._item_setangle(self.ritem, 0)
         self.qmove(self._item_home, (self.gitem,))
+        self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
     def _empty_move_queue(self):
@@ -1237,6 +1244,7 @@ class Pynguin(object):
         if self._moves:
             self._empty_move_queue()
         self.qmove(self._item_home, (self.gitem,))
+        self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._item_setangle, (self.gitem, 0,))
 
     def reset(self):
@@ -1249,6 +1257,7 @@ class Pynguin(object):
     def penup(self):
         self.pen = self.ritem._pen = False
         self.qmove(self._pendown, (False,))
+        self.qmove(self._item_forward, (self.gitem, 0))
 
     def pendown(self):
         self.pen = self.ritem._pen = True
@@ -1292,6 +1301,7 @@ class Pynguin(object):
 
     def _circle(self, crect):
         '''instant circle'''
+        self._item_forward(self.gitem, 0)
         scene = self.gitem.scene()
         circle = scene.addEllipse(crect, self.gitem.pen)
         circle.setZValue(self._zvalue)
@@ -1303,37 +1313,31 @@ class Pynguin(object):
         '''
         gitem = self.gitem
         scene = gitem.scene()
-        cc = gitem._current_circle
-        if cc is not None and not distance:
+        cl = gitem._current_line
+        if cl is not None and not distance:
             # circle complete.
             # replace the circle drawn using line segments
             # with a real ellipse item
-            for item in cc:
-                scene.removeItem(item)
-                circle = scene.addEllipse(crect, self.gitem.pen)
-                circle.setZValue(self._zvalue)
-                self._zvalue += 1
-                self.drawn_items.append(circle)
-            gitem._current_circle = None
-        elif cc is None:
+            self.drawn_items.pop()
+            scene.removeItem(cl)
+            self._item_forward(gitem, 0)
+            circle = scene.addEllipse(crect, self.gitem.pen)
+            circle.setZValue(self._zvalue)
+            self._zvalue += 1
+            self.drawn_items.append(circle)
+        elif cl is None:
             # first segment
             self._item_left(gitem, -2)
             self._item_forward(gitem, distance)
-            gitem._current_line = None
-            line = self.drawn_items.pop()
-            current_circle = [line]
-            gitem._current_circle = current_circle
         else:
             # continue drawing
             self._item_left(gitem, -4)
             self._item_forward(gitem, distance)
-            gitem._current_line = None
-            line = self.drawn_items.pop()
-            cc.append(line)
 
     def _slowcircle(self, crect, r, center):
         '''Animated circle drawing
         '''
+        self.qmove(self._item_forward, (self.gitem, 0))
         pos0 = self.ritem.pos()
         ang0 = self.ritem.ang
         sangle = self.gitem.ang
