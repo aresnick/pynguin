@@ -149,6 +149,9 @@ class MainWindow(QtGui.QMainWindow):
         self.fillgroup.setExclusive(True)
         self.fillgroup.triggered.connect(self.setFill)
 
+        self.setup_settings()
+        self.setup_recent()
+
         self.setup_examples()
 
     def setup_examples(self):
@@ -168,6 +171,36 @@ class MainWindow(QtGui.QMainWindow):
             def excb(fp=ex):
                 self.open_example(fp)
             action = examplemenu.addAction(fn, excb)
+
+    def setup_settings(self):
+        settings = QtCore.QSettings()
+        QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
+        QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')
+        QtCore.QCoreApplication.setApplicationName('pynguin')
+        self.settings = settings
+
+    def setup_recent(self):
+        settings = self.settings
+        settings = QtCore.QSettings()
+        recent = []
+        for n in range(settings.beginReadArray('recent')):
+            settings.setArrayIndex(n)
+            fname = settings.value('fname').toString()
+            recent.append(str(fname))
+        settings.endArray()
+
+        filemenu = self.ui.filemenu
+        actionsave = self.ui.actionSave
+        recmenu = QtGui.QMenu('Recent', filemenu)
+        exa = filemenu.insertMenu(actionsave, recmenu)
+        examplemenu = exa.menu()
+        for fp in recent:
+            pth, fn = os.path.split(fp)
+            if not fn:
+                continue
+            def excb(fp=fp):
+                self.open_example(fp)
+            examplemenu.addAction(fn, excb)
 
     def open_example(self, fp):
         if not self.maybe_save():
@@ -271,7 +304,28 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = False
         self.setWindowModified(False)
 
+        self.addrecentfile(self._filepath)
+
         return True
+
+    def addrecentfile(self, fp):
+        settings = self.settings
+        settings = QtCore.QSettings()
+        recent = [fp]
+        for n in range(settings.beginReadArray('recent')):
+            settings.setArrayIndex(n)
+            fname = settings.value('fname').toString()
+            recent.append(fname)
+        settings.endArray()
+
+        recent = recent[:6]
+
+        settings.beginWriteArray('recent')
+        for n in range(len(recent)):
+            settings.setArrayIndex(n)
+            fpath = recent[n]
+            settings.setValue('fname', fpath)
+        settings.endArray()
 
     def save(self):
         '''call _savestate with current file name, or get a file name from
@@ -315,9 +369,9 @@ class MainWindow(QtGui.QMainWindow):
 
         fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
         if fp:
-            self._filepath = fp
             self._fdir, _ = os.path.split(fp)
             self._new()
+            self._filepath = fp
             self._openfile(fp)
 
     def _openfile(self, fp):
@@ -344,6 +398,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self._modified = False
         self.setWindowModified(False)
+
+        self.addrecentfile(self._filepath)
 
     def export(self):
         '''save the current drawing'''
