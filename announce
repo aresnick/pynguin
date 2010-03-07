@@ -9,12 +9,19 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
+This release continues adding basic functionality and
+    corrects some annoyances. If you are interested,
+    please take a look and let me know what you think.
+
+
 Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
 Changes in pynguin-0.2:
+    - added fill mode
     - added basic auto-indent in editor
+    - added quick links to recent documents
     - added quick links to example files
     - even out speeds when drawing short line segments
     - added animated circle drawing
