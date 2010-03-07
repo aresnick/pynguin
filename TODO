@@ -7,4 +7,4 @@ Use QGraphicsItemAnimation for animation?
 Figure out how to kill infinite loops
 Extend lines during animation, rather than always drawing new lines
 Create a non-graphical turtle library?
-Fill mode
+Update menu selections when pen / fill / image set from code

@@ -169,6 +169,10 @@
     <addaction name="actionPenUp"/>
     <addaction name="actionColor"/>
     <addaction name="actionWidth"/>
+    <addaction name="separator"/>
+    <addaction name="actionFill"/>
+    <addaction name="actionNofill"/>
+    <addaction name="actionFillColor"/>
    </widget>
    <widget class="QMenu" name="viewmenu">
     <property name="title">
@@ -353,6 +357,33 @@
   <action name="actionExamples">
    <property name="text">
     <string>Examples</string>
+   </property>
+  </action>
+  <action name="actionFill">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Fill (on)</string>
+   </property>
+  </action>
+  <action name="actionNofill">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>No Fill (fill off)</string>
+   </property>
+  </action>
+  <action name="actionFillColor">
+   <property name="text">
+    <string>Fill Color</string>
    </property>
   </action>
  </widget>
@@ -566,6 +597,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionFillColor</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFillColor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -580,5 +627,6 @@
   <slot>removedoc()</slot>
   <slot>about()</slot>
   <slot>export()</slot>
+  <slot>setFillColor()</slot>
  </slots>
 </ui>

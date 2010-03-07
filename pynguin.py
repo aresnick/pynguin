@@ -35,7 +35,8 @@ from editor import HighlightedTextEdit
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
-                        'circle', 'fill', 'nofill', 'begin_fill', 'end_fill', ]
+                        'circle', 'fill', 'nofill', 'fillcolor',
+                        'begin_fill', 'end_fill', ]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -142,8 +143,13 @@ class MainWindow(QtGui.QMainWindow):
         self.pengroup.setExclusive(True)
         self.pengroup.triggered.connect(self.setPen)
 
-        self.setup_examples()
+        self.fillgroup = QtGui.QActionGroup(self)
+        self.fillgroup.addAction(self.ui.actionFill)
+        self.fillgroup.addAction(self.ui.actionNofill)
+        self.fillgroup.setExclusive(True)
+        self.fillgroup.triggered.connect(self.setFill)
 
+        self.setup_examples()
 
     def setup_examples(self):
         filemenu = self.ui.filemenu
@@ -477,6 +483,33 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.pynguin.pendown()
             self.interpretereditor.addcmd('pendown()\n')
+
+    def setFill(self, ev):
+        '''toggle fill on / off
+
+        sets the fill for the primary pynguin only. For other later
+            added pynguins, use p.fill() or p.nofill()
+        '''
+        if ev == self.ui.actionFill:
+            self.pynguin.fill()
+            self.interpretereditor.addcmd('fill()\n')
+        else:
+            self.pynguin.nofill()
+            self.interpretereditor.addcmd('nofill()\n')
+
+    def setFillColor(self):
+        '''use a color selection dialog to set the fill color
+
+        sets the fill color for the primary pynguin only. For other
+            later added pynguins, use p.fillcolor()
+        '''
+        icolor = self.pynguin.gitem.brush.color()
+        ncolor = QtGui.QColorDialog.getColor(icolor, self)
+        if ncolor.isValid():
+            r, g, b, a = ncolor.getRgb()
+            self.pynguin.fillcolor(r, g, b)
+            cmd = 'fillcolor(%s, %s, %s)\n' % (r, g, b)
+            self.interpretereditor.addcmd(cmd)
 
     def setImage(self, ev):
         '''select which image to show
@@ -963,6 +996,8 @@ class RItem(object):
         self.setPos(QtCore.QPointF(0, 0))
         self._pen = True
         self.ang = 0
+        self.color = (255, 255, 255)
+        self.fillcolor = (100, 220, 110)
 
     def pos(self):
         return self._pos
@@ -1281,6 +1316,18 @@ class Pynguin(object):
     def width(self, w=None):
         self.qmove(self._width, (w,))
 
+    def _fillcolor(self, r=None, g=None, b=None):
+        color = QtGui.QColor.fromRgb(r, g, b)
+        self.gitem.brush.setColor(color)
+        self._item_forward(self.gitem, 0)
+
+    def fillcolor(self, r=None, g=None, b=None):
+        if r is g is b is None:
+            return self.ritem.fillcolor
+        else:
+            self.ritem.fillcolor = (r, g, b)
+            self.qmove(self._fillcolor, (r, g, b))
+
     def _gitem_fillmode(self, start):
         if start:
             self.gitem._fillmode = True
@@ -1468,7 +1515,7 @@ class PynguinGraphicsItem(GraphicsItem):
         self.pen = QtGui.QPen(QtCore.Qt.white)
         self.pen.setWidth(2)
 
-        color = QtGui.QColor(255, 130, 160)
+        color = QtGui.QColor(100, 220, 110)
         self.brush = QtGui.QBrush(color)
         self._fillmode = False
 
