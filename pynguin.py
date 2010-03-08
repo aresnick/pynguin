@@ -172,6 +172,15 @@ class MainWindow(QtGui.QMainWindow):
                 self.open_example(fp)
             action = examplemenu.addAction(fn, excb)
 
+    def open_example(self, fp):
+        if not self.maybe_save():
+            return
+        else:
+            self._filepath = None
+
+        self._new()
+        self._openfile(fp, False)
+
     def setup_settings(self):
         settings = QtCore.QSettings()
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
@@ -199,10 +208,10 @@ class MainWindow(QtGui.QMainWindow):
             if not fn:
                 continue
             def excb(fp=fp):
-                self.open_example(fp)
+                self.open_recent(fp)
             examplemenu.addAction(fn, excb)
 
-    def open_example(self, fp):
+    def open_recent(self, fp):
         if not self.maybe_save():
             return
         else:
@@ -378,7 +387,7 @@ class MainWindow(QtGui.QMainWindow):
             self._filepath = fp
             self._openfile(fp)
 
-    def _openfile(self, fp):
+    def _openfile(self, fp, add_to_recent=True):
         z = zipfile.ZipFile(fp, 'r')
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
@@ -403,7 +412,8 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = False
         self.setWindowModified(False)
 
-        self.addrecentfile(self._filepath)
+        if add_to_recent:
+            self.addrecentfile(self._filepath)
 
     def export(self):
         '''save the current drawing'''
