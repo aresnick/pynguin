@@ -207,7 +207,10 @@ class MainWindow(QtGui.QMainWindow):
             return
         else:
             self._filepath = None
+
+        self._fdir, _ = os.path.split(fp)
         self._new()
+        self._filepath = fp
         self._openfile(fp)
 
     def new_pynguin(self):
@@ -315,7 +318,8 @@ class MainWindow(QtGui.QMainWindow):
         for n in range(settings.beginReadArray('recent')):
             settings.setArrayIndex(n)
             fname = settings.value('fname').toString()
-            recent.append(fname)
+            if fname and fname not in recent:
+                recent.append(fname)
         settings.endArray()
 
         recent = recent[:6]
