@@ -450,8 +450,9 @@ class MainWindow(QtGui.QMainWindow):
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
         docname = str(self.ui.mselect.itemText(idx))
-        self.editor.switchto(docname)
-        self.editor.setFocus()
+        if docname in self.editor.documents:
+            self.editor.switchto(docname)
+            self.editor.setFocus()
 
     def removedoc(self):
         '''throw away the currently displayed editor document'''
@@ -461,7 +462,13 @@ class MainWindow(QtGui.QMainWindow):
         mselect.removeItem(idx)
         if mselect.count():
             self.changedoc(0)
-        del self.editor.documents[docname]
+            mselect.setCurrentIndex(0)
+        else:
+            self.editor._doc.setPlainText('')
+            self.editor.settitle('NEW')
+
+        if docname in self.editor.documents:
+            del self.editor.documents[docname]
 
         self._modified = True
         self.setWindowModified(True)
