@@ -642,18 +642,23 @@ class CodeArea(HighlightedTextEdit):
         Return = QtCore.Qt.Key_Return
         lead = 0
         if k == Return:
-            cpos = self.textCursor().position()
+            curs = self.textCursor()
+            cpos = curs.position()
             cblk = self._doc.findBlock(cpos)
-            cblktxt = str(cblk.text())
-            ts = cblktxt.split()
-            if ts:
-                lead = cblktxt.find(ts[0])
+            atstart = curs.atBlockStart()
+            if atstart:
+                lead = 0
+            else:
+                cblktxt = str(cblk.text())
+                ts = cblktxt.split()
+                if ts:
+                    lead = cblktxt.find(ts[0])
 
-            char = self._doc.characterAt(cpos-1)
-            colon = QtCore.QChar(':')
-            if char == colon:
-                # auto indent
-                lead += 4
+                char = self._doc.characterAt(cpos-1)
+                colon = QtCore.QChar(':')
+                if char == colon:
+                    # auto indent
+                    lead += 4
 
         HighlightedTextEdit.keyPressEvent(self, ev)
         if lead:
