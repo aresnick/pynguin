@@ -9,3 +9,5 @@ Extend lines during animation, rather than always drawing new lines
 Create a non-graphical turtle library?
 Update menu selections when pen / fill / image set from code
 Fix auto-indent when pressing enter before non-blank line
+Changing to "instant" speed while code is running can cause trouble
+    switching during welcome.pyn conch can trigger the problem
