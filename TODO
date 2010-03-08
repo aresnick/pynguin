@@ -8,5 +8,3 @@ Figure out how to kill infinite loops
 Extend lines during animation, rather than always drawing new lines
 Create a non-graphical turtle library?
 Update menu selections when pen / fill / image set from code
-Changing to "instant" speed while code is running can cause trouble
-    switching during welcome.pyn conch can trigger the problem

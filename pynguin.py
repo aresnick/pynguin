@@ -603,8 +603,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def _setSpeed(self, speed):
         for pynguin in self.pynguins:
-            pynguin.drawspeed = 2 * speed
-            pynguin.turnspeed = 4 * speed
+            pynguin._drawspeed_pending = 2 * speed
+            pynguin._turnspeed_pending = 4 * speed
     def setSpeed(self, ev=None):
         '''select drawing speed setting. Sets the speed for _all_ pynguins!'''
         if ev is None:
@@ -1105,6 +1105,8 @@ class Pynguin(object):
         self.ritem = RItem() #real location, angle, etc.
         self.gitem.setZValue(9999999)
         self.drawn_items = []
+        self._drawspeed_pending = None
+        self._turnspeed_pending = None
         self.drawspeed = 1
         self.turnspeed = 4
         self.gitem._drawn = self.drawspeed
@@ -1244,6 +1246,8 @@ class Pynguin(object):
             move forward by distance, but it will be done in steps that
             depend on the drawspeed setting
         '''
+        self._check_drawspeed_change()
+
         drawspeed = self.drawspeed
         if distance >= 0:
             perstep = drawspeed
@@ -1265,6 +1269,13 @@ class Pynguin(object):
             self.qmove(self._item_forward, (self.gitem, step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+    def _check_drawspeed_change(self):
+        if self._drawspeed_pending is not None:
+            self.drawspeed = self._drawspeed_pending
+            self._drawspeed_pending = None
+            self.turnspeed = self._turnspeed_pending
+            self._turnspeed_pending = None
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
@@ -1295,6 +1306,8 @@ class Pynguin(object):
         item._turned -= (abs(degrees))
         item.rotate(-degrees)
     def _gitem_turn(self, degrees):
+        self._check_drawspeed_change()
+
         turnspeed = self.turnspeed
         if degrees >= 0:
             perstep = self.turnspeed
