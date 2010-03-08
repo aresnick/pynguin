@@ -27,9 +27,8 @@ RUNNING:
 
         python pynguin.py
 
-    For a quick introduction, choose File->Open
-        browse to the doc/examples folder and
-        choose welcome.pyn
+    For a quick introduction, choose welcome.pyn
+        from the File->Examples menu
 
 
 DEVELOPMENT:
@@ -39,5 +38,17 @@ DEVELOPMENT:
         http://code.google.com/p/pynguin/issues/list
 
 
-    Changes in pybotwar-0.1:
-        - initial public release
+    Changes in pynguin-0.2:
+        - added fill mode
+        - added basic auto-indent in editor
+        - added quick links to recent documents
+        - added quick links to example files
+        - even out speeds when drawing short line segments
+        - added animated circle drawing
+        - now exports entire drawing, even if not visible on screen
+        - fixed initial drawing speed to match menu
+        - fixed-width fonts in editor and interactive interpreter
+        - added classic turtle image
+        - file browser now starts in user's home directory
+        - removed scrollbars on graphic view
+        - now extends lines when animating
