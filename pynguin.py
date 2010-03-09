@@ -36,7 +36,8 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'begin_fill', 'end_fill', 'goto', 'turnto', ]
+                        'begin_fill', 'end_fill', 'goto', 'turnto',
+                        'write', ]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -1359,6 +1360,19 @@ class Pynguin(object):
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
         self._item_setangle(item, 0)
+
+    def _write(self, text):
+        font = QtGui.QFont('Arial', 22)
+        item = self.gitem.scene().addSimpleText(text, font)
+        item.setPen(self.gitem.pen)
+        item.setBrush(self.gitem.pen.color())
+        x, y = self.gitem.x(), self.gitem.y()
+        item.translate(x, y)
+        item.rotate(self.gitem.ang)
+        self.drawn_items.append(item)
+
+    def write(self, text):
+        self.qmove(self._write, (text,))
 
     def home(self):
         self._item_home(self.ritem)
