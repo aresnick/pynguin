@@ -18,12 +18,12 @@
 
 import os
 import sys
-import math
-PI = math.pi
 import code
 import Queue
 import zipfile
 import glob
+from math import atan2, degrees, radians, hypot, cos, sin, pi
+PI = pi
 
 from PyQt4 import QtCore, QtGui, QtSvg, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
@@ -37,7 +37,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'begin_fill', 'end_fill', 'goto', 'turnto',
-                        'write', ]
+                        'write', 'toward', 'distance', 'lineto',]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -114,7 +114,7 @@ class MainWindow(QtGui.QMainWindow):
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
         ilocals = {'p': self.pynguin,
-                    'PI':math.pi,
+                    'PI':pi,
                     'new_pynguin':self.new_pynguin,
                     'history': self.history}
         for fname in pynguin_functions:
@@ -1211,8 +1211,8 @@ class Pynguin(object):
 
         ang = item.ang
         rad = ang * (PI / 180)
-        dx = distance * math.cos(rad)
-        dy = distance * math.sin(rad)
+        dx = distance * cos(rad)
+        dy = distance * sin(rad)
 
         p1 = item.pos()
 
@@ -1357,6 +1357,32 @@ class Pynguin(object):
     def turnto(self, ang):
         self._item_setangle(self.ritem, ang)
         self.qmove(self._item_setangle, (self.gitem, ang,))
+
+    def toward(self, x, y):
+        '''turn toward the given coordinates'''
+        cpos = self.ritem.pos()
+        cx = cpos.x()
+        cy = cpos.y()
+        dx = x-cx
+        dy = y-cy
+
+        rad = atan2(dy, dx)
+        ang = degrees(rad)
+
+        self.turnto(ang)
+
+    def distance(self, x, y):
+        '''return the distance to the given coordinates'''
+        cpos = self.ritem.pos()
+        cx = cpos.x()
+        cy = cpos.y()
+        dx = x-cx
+        dy = y-cy
+        return hypot(dx, dy)
+
+    def lineto(self, x, y):
+        self.toward(x, y)
+        self.forward(self.distance(x, y))
 
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
@@ -1578,8 +1604,8 @@ class Pynguin(object):
             radians = (((PI*2)/360.) * ritem.ang)
             tocenter = radians + PI/2
 
-            dx = r * math.cos(tocenter)
-            dy = r * math.sin(tocenter)
+            dx = r * cos(tocenter)
+            dy = r * sin(tocenter)
 
             tocpt = QtCore.QPointF(dx, dy)
             cpt = cpt + tocpt
