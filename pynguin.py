@@ -36,7 +36,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'begin_fill', 'end_fill', ]
+                        'begin_fill', 'end_fill', 'goto', 'turnto', ]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -1343,9 +1343,18 @@ class Pynguin(object):
         item.setPos(pos)
         item.set_transform()
 
+    def goto(self, x, y):
+        pos = QtCore.QPointF(x, y)
+        self._item_goto(self.ritem, pos)
+        self.qmove(self._item_goto, (self.gitem, pos))
+
     def _item_setangle(self, item, ang):
         item.ang = ang
         item.set_transform()
+
+    def turnto(self, ang):
+        self._item_setangle(self.ritem, ang)
+        self.qmove(self._item_setangle, (self.gitem, ang,))
 
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
