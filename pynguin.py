@@ -1347,6 +1347,7 @@ class Pynguin(object):
     def goto(self, x, y):
         pos = QtCore.QPointF(x, y)
         self._item_goto(self.ritem, pos)
+        self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._item_goto, (self.gitem, pos))
 
     def _item_setangle(self, item, ang):
@@ -1423,6 +1424,7 @@ class Pynguin(object):
             return self.ritem.color
         else:
             self.ritem.color = (r, g, b)
+            self.qmove(self._item_forward, (self.gitem, 0))
             self.qmove(self._color, (r, g, b))
 
     def _width(self, w=None):
@@ -1432,6 +1434,7 @@ class Pynguin(object):
             self.gitem.pen.setWidth(w)
 
     def width(self, w=None):
+        self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._width, (w,))
 
     def _fillcolor(self, r=None, g=None, b=None):
