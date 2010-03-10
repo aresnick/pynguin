@@ -19,4 +19,14 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 
 Changes in pynguin-0.3:
+    - added new commands
+        - goto
+        - turnto
+        - lineto
+        - distance
+        - toward
+        - write
+    - added more examples
+    - fixed problem when changing speed while code is running
+    - editor auto-indent improvement
     - remembered to update about dialog

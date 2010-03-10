@@ -1,4 +1,4 @@
-pynguin is a python-based turtle graphics application.
+Pynguin is a python-based turtle graphics application.
 It combines an editor, interactive interpreter, and
 graphics display area.
 
@@ -32,23 +32,21 @@ RUNNING:
 
 
 DEVELOPMENT:
-    pynguin is released under GPLv3.
+    Pynguin is released under GPLv3.
 
     please report any problems here:
         http://code.google.com/p/pynguin/issues/list
 
 
-    Changes in pynguin-0.2:
-        - added fill mode
-        - added basic auto-indent in editor
-        - added quick links to recent documents
-        - added quick links to example files
-        - even out speeds when drawing short line segments
-        - added animated circle drawing
-        - now exports entire drawing, even if not visible on screen
-        - fixed initial drawing speed to match menu
-        - fixed-width fonts in editor and interactive interpreter
-        - added classic turtle image
-        - file browser now starts in user's home directory
-        - removed scrollbars on graphic view
-        - now extends lines when animating
+    Changes in pynguin-0.3:
+        - added new commands
+            - goto
+            - turnto
+            - lineto
+            - distance
+            - toward
+            - write
+        - added more examples
+        - fixed problem when changing speed while code is running
+        - editor auto-indent improvement
+        - remembered to update about dialog
