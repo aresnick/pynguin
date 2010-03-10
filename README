@@ -1,0 +1,52 @@
+Pynguin is a python-based turtle graphics application.
+It combines an editor, interactive interpreter, and
+graphics display area.
+
+http://pynguin.googlecode.com/
+
+
+INSTALLATION:
+    There is no support currently for installing pynguin.
+
+    Make sure the dependencies are installed, and run the
+    application from the unpacked archive directly.
+
+
+DEPENDENCIES:
+    python:
+        http://python.org/
+            (tested with python-2.6.4)
+
+    pyqt4:
+        http://www.riverbankcomputing.co.uk/software/pyqt/
+            (tested with pyqt-4.6)
+
+
+RUNNING:
+    Run the pynguin.py program with Python:
+
+        python pynguin.py
+
+    For a quick introduction, choose welcome.pyn
+        from the File->Examples menu
+
+
+DEVELOPMENT:
+    Pynguin is released under GPLv3.
+
+    please report any problems here:
+        http://code.google.com/p/pynguin/issues/list
+
+
+    Changes in pynguin-0.3:
+        - added new commands
+            - goto
+            - turnto
+            - lineto
+            - distance
+            - toward
+            - write
+        - added more examples
+        - fixed problem when changing speed while code is running
+        - editor auto-indent improvement
+        - remembered to update about dialog
