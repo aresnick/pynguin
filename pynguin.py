@@ -500,11 +500,42 @@ class MainWindow(QtGui.QMainWindow):
         docname = str(self.ui.mselect.currentText())
         code = str(self.editor.documents[docname])
         try:
-            exec code in self.interpreter_locals
+            compile(code, 'current file', 'exec')
         except SyntaxError, e:
             self.editor.selectline(e.lineno)
             self.interpretereditor.addcmd('Syntax Error in line %s\n' % e.lineno)
+            self.editor.setFocus()
         else:
+            self.interpretereditor.setFocus()
+            sys.stdout = self.interpretereditor
+            sys.stderr = self.interpretereditor
+            if self.interpretereditor.cmdthread is None:
+                self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, code)
+                cmdthread = self.interpretereditor.cmdthread
+                cmdthread.start()
+                while not cmdthread.wait(0) and not self.interpretereditor.controlC:
+                    for pynguin in self.pynguins:
+                        pynguin._r_process_moves()
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                if self.interpretereditor.controlC:
+                    cmdthread.terminate()
+                    for pynguin in self.pynguins:
+                        pynguin._empty_move_queue()
+                        pynguin._r_process_moves()
+                        pynguin._sync_items()
+                    self.interpretereditor.append('KeyboardInterrupt\n')
+                    self.interpretereditor.controlC = False
+                    self.interpretereditor.needmore = False
+                    self.interpretereditor.interpreter.resetbuffer()
+                    sys.stdout = self.interpretereditor.save_stdout
+                    sys.stderr = self.interpretereditor.save_stderr
+                    self.interpretereditor.write('>>> ')
+                self.interpretereditor.cmdthread = None
+            else:
+                self.interpretereditor.write('not starting...\n')
+                self.interpretereditor.write('code already running\n')
+                self.interpretereditor.write('>>> ')
+
             line0 = code.split('\n')[0]
             if line0.startswith('def ') and line0.endswith(':'):
                 firstparen = line0.find('(')
@@ -763,7 +794,9 @@ class CmdThread(QtCore.QThread):
         ed = self.ed
         sys.stdout = ed
         sys.stderr = ed
-        ed.needmore = ed.interpreter.push(self.txt)
+        lines = self.txt.split('\n')
+        for line in lines:
+            ed.needmore = ed.interpreter.push(line)
         sys.stdout = ed.save_stdout
         sys.stderr = ed.save_stderr
 
@@ -972,7 +1005,8 @@ class Interpreter(HighlightedTextEdit):
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 self.controlC = True
             else:
-                self.addcmd('KeyboardInterrupt\n')
+                self.write('KeyboardInterrupt\n')
+                self.write('>>> ')
 
         elif (self._check_control_key and k==A) or k == Home:
             self.movetostart()
