@@ -9,6 +9,4 @@ Create a non-graphical turtle library?
 Update menu selections when pen / fill / image set from code
 Show all available commands in a menu
 auto-indent in the console?
-Running code directly from editor (no function) can cause problems
-Sometimes whitespace at the end of file causes trouble
 Undo
