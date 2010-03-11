@@ -503,7 +503,8 @@ class MainWindow(QtGui.QMainWindow):
             compile(code, 'current file', 'exec')
         except SyntaxError, e:
             self.editor.selectline(e.lineno)
-            self.interpretereditor.addcmd('Syntax Error in line %s\n' % e.lineno)
+            self.interpretereditor.write('Syntax Error in line %s\n' % e.lineno)
+            self.interpretereditor.write('>>> ')
             self.editor.setFocus()
         else:
             self.interpretereditor.setFocus()
@@ -531,18 +532,20 @@ class MainWindow(QtGui.QMainWindow):
                     sys.stderr = self.interpretereditor.save_stderr
                     self.interpretereditor.write('>>> ')
                 self.interpretereditor.cmdthread = None
+
+                line0 = code.split('\n')[0]
+                if line0.startswith('def ') and line0.endswith(':'):
+                    firstparen = line0.find('(')
+                    lastparen = line0.rfind(')')
+                    if firstparen > -1 and lastparen > -1:
+                        tocall = line0[4:lastparen+1]
+                        self.interpretereditor.addcmd(tocall)
+
             else:
                 self.interpretereditor.write('not starting...\n')
                 self.interpretereditor.write('code already running\n')
                 self.interpretereditor.write('>>> ')
 
-            line0 = code.split('\n')[0]
-            if line0.startswith('def ') and line0.endswith(':'):
-                firstparen = line0.find('(')
-                lastparen = line0.rfind(')')
-                if firstparen > -1 and lastparen > -1:
-                    tocall = line0[4:lastparen+1]
-                    self.interpretereditor.addcmd(tocall)
         self.interpretereditor.setFocus()
 
     def setPenColor(self):
