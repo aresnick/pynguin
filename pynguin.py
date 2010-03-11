@@ -722,6 +722,40 @@ class CodeArea(HighlightedTextEdit):
         else:
             title = txt
 
+        if title in self.documents and self.title=='Untitled':
+            # This is probably a copy/paste of another page
+            copyn = 0
+            for othertitle in self.documents.keys():
+                if othertitle==title or \
+                    (title[-5:-4]=='#' and othertitle.startswith(title[4:-6])) or \
+                    (othertitle[:-5]==title[:-5]) or \
+                    (title == othertitle[4:-6] and othertitle[-5:-4]=='#'):
+                    copyn += 1
+
+            if title[-5:-4]=='#':
+                title = title[:-5]
+
+            title = txt
+            titleadd = '#%04d' % copyn
+            fblk = self._doc.firstBlock()
+            fblklen = fblk.length()
+
+            fblktxt = str(fblk.text())
+            if fblktxt[-5:-4] == '#':
+                curs = QtGui.QTextCursor(self._doc)
+                curs.setPosition(fblklen-6, 0)
+                curs.setPosition(fblklen-1, 1)
+                self.setTextCursor(curs)
+                curs.removeSelectedText()
+                fblklen = fblk.length()
+                title = str(fblk.text()).rstrip()
+
+            curs = QtGui.QTextCursor(self._doc)
+            curs.setPosition(fblklen-1, 0)
+            self.setTextCursor(curs)
+            self.insertPlainText(titleadd)
+            title = title + titleadd
+
         if title != self.title:
             if txt != 'NEW':
                 idx = self.mselect.findText(self.title)
