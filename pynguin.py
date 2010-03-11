@@ -500,6 +500,25 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.savecurrent()
         docname = str(self.ui.mselect.currentText())
         code = str(self.editor.documents[docname])
+
+        # fix up the code a bit first...
+        # make sure the last line ends with newline
+        # and make sure the code does not end with
+        # lines that have only indentation
+        lines = code.split('\n')
+        lines.reverse()
+        blankend = True
+        rewrite = []
+        for line in lines:
+            if line.isspace() and blankend:
+                pass
+            else:
+                blankend = False
+                rewrite.append(line)
+        rewrite.reverse()
+        code = '%s\n' % '\n'.join(rewrite)
+        self.editor.setPlainText(code)
+
         try:
             compile(code, 'current file', 'exec')
         except SyntaxError, e:
