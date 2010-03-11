@@ -22,6 +22,7 @@ import code
 import Queue
 import zipfile
 import glob
+from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 
@@ -1483,12 +1484,14 @@ class Pynguin(object):
         self.gitem.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
 
     def color(self, r=None, g=None, b=None):
-        if r is g is b is None:
+        if r == 'random':
+            r, g, b = [randrange(256) for cc in range(3)]
+        elif r is g is b is None:
             return self.ritem.color
-        else:
-            self.ritem.color = (r, g, b)
-            self.qmove(self._item_forward, (self.gitem, 0))
-            self.qmove(self._color, (r, g, b))
+
+        self.ritem.color = (r, g, b)
+        self.qmove(self._item_forward, (self.gitem, 0))
+        self.qmove(self._color, (r, g, b))
 
     def _width(self, w=None):
         if w is None:
