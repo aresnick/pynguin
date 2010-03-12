@@ -12,3 +12,4 @@ auto-indent in the console?
 Undo
 Separate the editor part
 Sometimes ctrl key gets stuck activated
+ctrl-c during block does not completely reset interpreter
