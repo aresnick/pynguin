@@ -38,7 +38,8 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'begin_fill', 'end_fill', 'goto', 'turnto',
-                        'write', 'toward', 'distance', 'lineto',]
+                        'write', 'toward', 'distance', 'lineto',
+                        'onscreen',]
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 uidir = 'data/ui'
@@ -225,8 +226,7 @@ class MainWindow(QtGui.QMainWindow):
         self._openfile(fp)
 
     def new_pynguin(self):
-        p = Pynguin((0, 0), 0, self.rend)
-        self.scene.addItem(p.gitem)
+        p = Pynguin(self.scene, (0, 0), 0, self.rend)
         self.pynguins.append(p)
         self.setSpeed()
 
@@ -1192,8 +1192,10 @@ class RItem(object):
 
 
 class Pynguin(object):
-    def __init__(self, pos, ang, rend):
+    def __init__(self, scene, pos, ang, rend):
+        self.scene = scene
         self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
+        self.scene.addItem(self.gitem)
         self.ritem = RItem() #real location, angle, etc.
         self.gitem.setZValue(9999999)
         self.drawn_items = []
@@ -1714,6 +1716,19 @@ class Pynguin(object):
         else:
             # animated circles
             self._slowcircle(crect, r, center)
+
+    def viewrect(self):
+        view = self.scene.view
+        viewportrect = view.viewport().geometry()
+        tl = viewportrect.topLeft()
+        br = viewportrect.bottomRight()
+        tlt = view.mapToScene(tl)
+        brt = view.mapToScene(br)
+        return QtCore.QRectF(tlt, brt)
+
+    def onscreen(self):
+        pos = self.ritem.pos()
+        return pos in self.viewrect()
 
 
 class GraphicsItem(QtGui.QGraphicsItem):
