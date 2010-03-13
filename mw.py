@@ -311,6 +311,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.addrecentfile(self._filepath)
 
+        self._verify_saved(self._filepath)
+
         return True
 
     def addrecentfile(self, fp):
@@ -407,6 +409,22 @@ class MainWindow(QtGui.QMainWindow):
 
         if add_to_recent:
             self.addrecentfile(self._filepath)
+
+    def _verify_saved(self, fp):
+        '''verify that the saved file contains the correct data.'''
+        z = zipfile.ZipFile(fp, 'r')
+        for ename in z.namelist():
+            fo = z.open(ename, 'rU')
+            data = fo.read()
+            if ename.startswith('##'):
+                hdr = ename[0:9]
+                if hdr.startswith('##') and hdr.endswith('##'):
+                    docid = ename[11:]
+                    if data != self.editor.documents[docid]:
+                        QtGui.QMessageBox.warning(self,
+                                'Unable to save',
+                                'Files not saved!')
+                        break
 
     def export(self):
         '''save the current drawing'''
