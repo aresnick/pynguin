@@ -542,6 +542,9 @@ class MainWindow(QtGui.QMainWindow):
 
                 line0 = code.split('\n')[0]
                 if line0.startswith('def ') and line0.endswith(':'):
+                    self.interpretereditor.movetoend()
+                    self.interpretereditor.erasetostart()
+
                     firstparen = line0.find('(')
                     lastparen = line0.rfind(')')
                     if firstparen > -1 and lastparen > -1:
