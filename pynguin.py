@@ -1062,7 +1062,8 @@ class Interpreter(HighlightedTextEdit):
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 self.controlC = True
             else:
-                self.write('KeyboardInterrupt\n')
+                self.write('\nKeyboardInterrupt\n')
+                self.interpreter.resetbuffer()
                 self.write('>>> ')
 
         elif (self._check_control_key and k==A) or k == Home:
