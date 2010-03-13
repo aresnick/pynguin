@@ -370,10 +370,12 @@ class Pynguin(object):
         self.qmove(self._item_home, (self.gitem,))
         self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._item_setangle, (self.gitem, 0,))
+        self.qmove(self._gitem_fillmode, (0,))
 
     def reset(self):
         self.qmove(self._reset)
         self._item_home(self.ritem)
+        self.nofill()
 
     def _pendown(self, down=True):
         self.gitem._pen = down
