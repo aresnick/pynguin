@@ -25,7 +25,7 @@ DEPENDENCIES:
 RUNNING:
     Run the pynguin.py program with Python:
 
-        python pynguin.py
+        python main.py
 
     For a quick introduction, choose welcome.pyn
         from the File->Examples menu
