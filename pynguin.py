@@ -296,8 +296,12 @@ class Pynguin(object):
         item.set_transform()
 
     def turnto(self, ang):
-        self._item_setangle(self.ritem, ang)
-        self.qmove(self._item_setangle, (self.gitem, ang,))
+        ang0 = self.ritem.ang
+        turn = abs(ang - ang0)
+        if ang0 < ang:
+            self.right(turn)
+        else:
+            self.left(turn)
 
     def toward(self, x, y):
         '''turn toward the given coordinates'''
