@@ -552,8 +552,8 @@ class MainWindow(QtGui.QMainWindow):
         icolor = self.pynguin.gitem.pen.brush().color()
         ncolor = QtGui.QColorDialog.getColor(icolor, self)
         if ncolor.isValid():
-            self.pynguin.gitem.pen.setColor(ncolor)
             r, g, b, a = ncolor.getRgb()
+            self.pynguin.color(r, g, b)
             cmd = 'color(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
