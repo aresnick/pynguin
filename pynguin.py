@@ -471,9 +471,13 @@ class Pynguin(object):
         gitem.setPos(pos)
         gitem.ang = ang
         gitem.pen = pen
+        gitem._drawn = ogitem._drawn
+        gitem._turned = ogitem._turned
+        gitem._current_line = ogitem._current_line
         scene.removeItem(ogitem)
         scene.addItem(gitem)
         self.gitem = gitem
+        gitem.set_transform()
 
     def _circle(self, crect):
         '''instant circle'''
