@@ -62,6 +62,7 @@ class MainWindow(QtGui.QMainWindow):
         view.show()
         view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        view.mousePressEvent = self.onclick
 
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
@@ -134,6 +135,18 @@ class MainWindow(QtGui.QMainWindow):
         self.setup_recent()
 
         self.setup_examples()
+
+    def onclick(self, ev):
+        button = ev.button()
+        calls = {QtCore.Qt.LeftButton: self.leftclick,}
+        call = calls.get(button, None)
+        if call is not None:
+            call(ev)
+
+    def leftclick(self, ev):
+        evpos = ev.pos()
+        scpos = self.scene.view.mapToScene(evpos)
+        self.pynguin.onclick(scpos.x(), scpos.y())
 
     def setup_examples(self):
         filemenu = self.ui.filemenu
@@ -549,7 +562,11 @@ class MainWindow(QtGui.QMainWindow):
                     lastparen = line0.rfind(')')
                     if firstparen > -1 and lastparen > -1:
                         tocall = line0[4:lastparen+1]
-                        self.interpretereditor.addcmd(tocall)
+                        funcname = line0[4:firstparen]
+                        if funcname == 'onclick':
+                            self.pynguin.onclick = self.interpreter_locals['onclick']
+                        else:
+                            self.interpretereditor.addcmd(tocall)
 
             else:
                 self.interpretereditor.write('not starting...\n')

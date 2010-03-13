@@ -599,6 +599,9 @@ class Pynguin(object):
         pos = self.ritem.pos()
         return pos in self.viewrect()
 
+    def onclick(self, x, y):
+        self.goto(x, y)
+
 
 class RItem(object):
     '''Used to track the "real" state of the pynguin (as opposed
