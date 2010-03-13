@@ -407,8 +407,9 @@ class Pynguin(object):
 
     def width(self, w=None):
         if w is None:
-            return self.gitem.pen.width()
+            return self.ritem.penwidth
         else:
+            self.ritem.penwidth = w
             self.qmove(self._item_forward, (self.gitem, 0))
             self.qmove(self._width, (w,))
 
@@ -605,6 +606,7 @@ class RItem(object):
         self.ang = 0
         self.color = (255, 255, 255)
         self.fillcolor = (100, 220, 110)
+        self.penwidth = 2
 
     def pos(self):
         return self._pos
