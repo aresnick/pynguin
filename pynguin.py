@@ -419,11 +419,13 @@ class Pynguin(object):
         self._item_forward(self.gitem, 0)
 
     def fillcolor(self, r=None, g=None, b=None):
-        if r is g is b is None:
+        if r == 'random':
+            r, g, b = [randrange(256) for cc in range(3)]
+        elif r is g is b is None:
             return self.ritem.fillcolor
-        else:
-            self.ritem.fillcolor = (r, g, b)
-            self.qmove(self._fillcolor, (r, g, b))
+
+        self.ritem.fillcolor = (r, g, b)
+        self.qmove(self._fillcolor, (r, g, b))
 
     def _gitem_fillmode(self, start):
         if start:
