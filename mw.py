@@ -295,9 +295,9 @@ class MainWindow(QtGui.QMainWindow):
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
-            ename = str(mselect.itemText(n))
-            efile = self.editor.documents[ename]
-            arcname = '##%5s##__%s' % (n, ename)
+            docid = str(mselect.itemData(n).toString())
+            efile = str(self.editor.documents[docid])
+            arcname = '##%5s##__%s' % (n, docid)
             z.writestr(arcname, efile)
 
         historyname = '@@history@@'
@@ -456,9 +456,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
-        docname = str(self.ui.mselect.itemText(idx))
-        if docname in self.editor.documents:
-            self.editor.switchto(docname)
+        docid = str(self.ui.mselect.itemData(idx).toString())
+        if docid in self.editor.documents:
+            self.editor.switchto(docid)
             self.editor.setFocus()
 
     def removedoc(self):
@@ -490,7 +490,9 @@ class MainWindow(QtGui.QMainWindow):
         '''
         self.editor.savecurrent()
         docname = str(self.ui.mselect.currentText())
-        code = str(self.editor.documents[docname])
+        idx = self.ui.mselect.currentIndex()
+        docid = str(self.ui.mselect.itemData(idx).toString())
+        code = str(self.editor.documents[docid])
 
         # fix up the code a bit first...
         # make sure the last line ends with newline

@@ -27,8 +27,9 @@ class CodeArea(HighlightedTextEdit):
         self.mw = mw
         self.mselect = mw.ui.mselect
         self.documents = {}
-        self.title = ''
-        self.settitle('Untitled')
+        self.title = None
+        self.docid = None
+        self.new()
 
     def clear(self):
         self._doc.clear()
@@ -80,79 +81,53 @@ class CodeArea(HighlightedTextEdit):
         '''
         if txt.startswith('def ') and txt.endswith(':'):
             title = txt[4:-1]
-        elif txt=='NEW' or txt=='':
+        elif txt=='':
             title = 'Untitled'
         else:
             title = txt
 
-        if title in self.documents and self.title=='Untitled':
-            # This is probably a copy/paste of another page
-            copyn = 0
-            for othertitle in self.documents.keys():
-                if othertitle==title or \
-                    (title[-5:-4]=='#' and othertitle.startswith(title[4:-6])) or \
-                    (othertitle[:-5]==title[:-5]) or \
-                    (title == othertitle[4:-6] and othertitle[-5:-4]=='#'):
-                    copyn += 1
+        if title == self.title:
+            return
 
-            if title[-5:-4]=='#':
-                title = title[:-5]
+        idx = 0
+        for idx in range(self.mselect.count()):
+            item_docid = self.mselect.itemData(idx)
+            if item_docid == self.docid:
+                self.mselect.setItemText(idx, title)
+                break
 
-            title = txt
-            titleadd = '#%04d' % copyn
-            fblk = self._doc.firstBlock()
-            fblklen = fblk.length()
-
-            fblktxt = str(fblk.text())
-            if fblktxt[-5:-4] == '#':
-                curs = QtGui.QTextCursor(self._doc)
-                curs.setPosition(fblklen-6, 0)
-                curs.setPosition(fblklen-1, 1)
-                self.setTextCursor(curs)
-                curs.removeSelectedText()
-                fblklen = fblk.length()
-                title = str(fblk.text()).rstrip()
-
-            curs = QtGui.QTextCursor(self._doc)
-            curs.setPosition(fblklen-1, 0)
-            self.setTextCursor(curs)
-            self.insertPlainText(titleadd)
-            title = title + titleadd
-
-        if title != self.title:
-            if txt != 'NEW':
-                idx = self.mselect.findText(self.title)
-                if idx > -1:
-                    self.mselect.removeItem(idx)
-                if self.title in self.documents:
-                    self.documents[title] = self.documents[self.title]
-                    del self.documents[self.title]
-            self.title = title
-            self.mselect.addItem(title)
-
-        idx = self.mselect.findText(self.title)
         self.mselect.setCurrentIndex(idx)
 
     def savecurrent(self):
         '''get the text of the current document and save it in the
             documents dictionary, keyed by title
         '''
-        title = self.title
-        text = str(self._doc.toPlainText())
-        if title != 'Untitled' or text:
-            self.documents[title] = text
+        if self.docid is not None:
+            self.documents[self.docid] = str(self._doc.toPlainText())
 
     def new(self):
         '''save the current document and start a new blank document'''
         self.savecurrent()
         self._doc.setPlainText('')
-        self.settitle('NEW')
 
-    def switchto(self, docname):
+        import uuid
+        docid = uuid.uuid4().hex
+        self.mselect.addItem('', docid)
+        self.documents[docid] = ''
+        idx = self.mselect.count() - 1
+        self.mselect.setCurrentIndex(idx)
+        self.docid = docid
+
+        self.settitle('')
+
+    def switchto(self, docid):
         '''save the current document and switch to the document titled docname'''
         self.savecurrent()
-        self._doc.setPlainText(self.documents[docname])
-        self.title = docname
+        doctxt = self.documents[docid]
+        self.docid = docid
+        self._doc.setPlainText(doctxt)
+        firstline = str(doctxt.split('\n')[0])
+        self.settitle(firstline)
 
     def add(self, txt):
         '''add a new document with txt as the contents'''
