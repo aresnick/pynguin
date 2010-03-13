@@ -331,10 +331,6 @@ class Pynguin(object):
         self.toward(x, y)
         self.forward(self.distance(x, y))
 
-    def _item_home(self, item):
-        self._item_goto(item, QtCore.QPointF(0, 0))
-        self._item_setangle(item, 0)
-
     def _write(self, text):
         font = QtGui.QFont('Arial', 22)
         item = self.gitem.scene().addSimpleText(text, font)
@@ -347,6 +343,10 @@ class Pynguin(object):
 
     def write(self, text):
         self.qmove(self._write, (text,))
+
+    def _item_home(self, item):
+        self._item_goto(item, QtCore.QPointF(0, 0))
+        self._item_setangle(item, 0)
 
     def home(self):
         self._item_home(self.ritem)
