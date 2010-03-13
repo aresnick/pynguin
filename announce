@@ -19,6 +19,7 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 
 Changes in pynguin-0.4:
+    - improved document switcher
     - fixed crash when changing to alternate view image
     - factored in to multiple files
 
