@@ -56,7 +56,7 @@ class Interpreter(HighlightedTextEdit):
 
         self._check_control_key = False
 
-        self.setWordWrapMode(QtGui.QTextOption.WordWrap)
+        self.setWordWrapMode(QtGui.QTextOption.WrapAnywhere)
 
         self.cmdthread = None
         self.controlC = False
