@@ -402,15 +402,15 @@ class Pynguin(object):
         self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._color, (r, g, b))
 
-    def _width(self, w=None):
+    def _width(self, w):
+        self.gitem.pen.setWidth(w)
+
+    def width(self, w=None):
         if w is None:
             return self.gitem.pen.width()
         else:
-            self.gitem.pen.setWidth(w)
-
-    def width(self, w=None):
-        self.qmove(self._item_forward, (self.gitem, 0))
-        self.qmove(self._width, (w,))
+            self.qmove(self._item_forward, (self.gitem, 0))
+            self.qmove(self._width, (w,))
 
     def _fillcolor(self, r=None, g=None, b=None):
         color = QtGui.QColor.fromRgb(r, g, b)
