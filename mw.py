@@ -585,6 +585,8 @@ class MainWindow(QtGui.QMainWindow):
                         funcname = line0[4:firstparen]
                         if funcname == 'onclick':
                             self.pynguin.onclick = self.interpreter_locals['onclick']
+                            self.interpretereditor.write('# set onclick handler\n')
+                            self.interpretereditor.write('>>> ')
                         else:
                             self.interpretereditor.addcmd(tocall)
 
