@@ -16,18 +16,12 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#import os
-#import sys
-#import code
 import Queue
-#import zipfile
-#import glob
 from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 
 from PyQt4 import QtCore, QtGui, QtSvg
-#from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 
 from util import sign
 from conf import uidir
