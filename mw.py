@@ -17,9 +17,11 @@
 
 
 import os
+import sys
 from math import pi
 import code
 import glob
+import zipfile
 
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
@@ -27,7 +29,8 @@ from PyQt4.Qt import QHBoxLayout
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
 from util import getrend
 from codearea import CodeArea
-from interpreter import Interpreter
+from interpreter import Interpreter, CmdThread
+from about import AboutDialog
 from conf import uidir
 
 
