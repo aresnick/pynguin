@@ -572,6 +572,7 @@ class Pynguin(object):
 
         crect = QtCore.QRectF(ul, sz)
 
+        self._check_drawspeed_change()
         if self.drawspeed == 0:
             # instant circles
             self.qmove(self._circle, (crect,))
