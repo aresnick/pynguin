@@ -16,7 +16,7 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit
 
