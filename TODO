@@ -14,6 +14,4 @@ Separate the editor part
 Sometimes ctrl key gets stuck activated
 Sometimes console gets out of sync
 Verify saved file and warn if not verified
-Onclick action
-Break up pynguin.py
 Paren matching
