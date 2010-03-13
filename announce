@@ -18,6 +18,9 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
+Changes in pynguin-0.4:
+    - fixed crash when changing to alternate view image
+
 Changes in pynguin-0.3:
     - added new commands
         - goto
