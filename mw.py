@@ -405,6 +405,9 @@ class MainWindow(QtGui.QMainWindow):
         self.changedoc(0)
 
         self._modified = False
+        fdir, fname = os.path.split(fp)
+        windowtitle = '%s [*] - Pynguin' % fname
+        self.setWindowTitle(windowtitle)
         self.setWindowModified(False)
 
         if add_to_recent:
