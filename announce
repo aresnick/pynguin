@@ -30,6 +30,7 @@ Changes in pynguin-0.4:
         - added method to switch between winding/oddeven fill
     - show file name in window header
     - more examples
+    - added default values for examples that take paremeters
     - fixed star example for even number of sides
     - fixed crash when changing to alternate view image
     - fixed problem running code with blank lines
