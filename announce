@@ -10,7 +10,7 @@ http://pynguin.googlecode.com/
 
 
 This release continues adding basic functionality and
-    corrects some annoyances. If you are interested,
+    correcting some annoyances. If you are interested,
     please take a look and let me know what you think.
 
 
@@ -20,7 +20,16 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 Changes in pynguin-0.4:
     - improved document switcher
+    - added easy 'random' color access
+    - added new commands
+        - onscreen
+        - onclick
+    - show file name in window header
+    - more examples
+    - fixed star example for even number of sides
     - fixed crash when changing to alternate view image
+    - fixed problem running code with blank lines
+    - allow keypad Enter same as Return
     - factored in to multiple files
 
 Changes in pynguin-0.3:
