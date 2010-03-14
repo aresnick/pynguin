@@ -10,8 +10,8 @@ http://pynguin.googlecode.com/
 
 
 This release continues adding basic functionality and
-    correcting some annoyances. If you are interested,
-    please take a look and let me know what you think.
+    refining the interface. If you are interested, please
+    take a look and let me know what you think.
 
 
 Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
