@@ -142,6 +142,7 @@ class MainWindow(QtGui.QMainWindow):
         call = calls.get(button, None)
         if call is not None:
             call(ev)
+        self.interpretereditor.setFocus()
 
     def leftclick(self, ev):
         evpos = ev.pos()
