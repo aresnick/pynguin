@@ -13,3 +13,4 @@ Undo
 Separate the editor part
 Sometimes console gets out of sync
 Paren matching
+clear command to empty screen, but don't change other state
