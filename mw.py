@@ -523,7 +523,6 @@ class MainWindow(QtGui.QMainWindow):
         lines.reverse()
         blankend = True
         rewrite = []
-        clean = []
         for line in lines:
             if blankend and (not line or line.isspace()):
                 pass
@@ -532,15 +531,9 @@ class MainWindow(QtGui.QMainWindow):
                 line = line.rstrip()
                 rewrite.append(line)
 
-            if line and not line.isspace():
-                clean.append(line)
-
         rewrite.reverse()
         code = '%s\n' % '\n'.join(rewrite)
         self.editor.setPlainText(code)
-
-        clean.reverse()
-        cleancode = '%s\n' % '\n'.join(clean)
 
         try:
             compile(code, 'current file', 'exec')
@@ -554,7 +547,7 @@ class MainWindow(QtGui.QMainWindow):
             sys.stdout = self.interpretereditor
             sys.stderr = self.interpretereditor
             if self.interpretereditor.cmdthread is None:
-                self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, cleancode)
+                self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, code)
                 cmdthread = self.interpretereditor.cmdthread
                 cmdthread.start()
                 while not cmdthread.wait(0) and not self.interpretereditor.controlC:

@@ -36,8 +36,10 @@ class CmdThread(QtCore.QThread):
         sys.stdout = ed
         sys.stderr = ed
         lines = self.txt.split('\n')
-        for line in lines:
-            ed.needmore = ed.interpreter.push(line)
+        if len(lines) > 1:
+            ed.interpreter.runcode(self.txt)
+        else:
+            ed.needmore = ed.interpreter.push(self.txt)
         sys.stdout = ed.save_stdout
         sys.stderr = ed.save_stderr
 
