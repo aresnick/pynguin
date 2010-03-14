@@ -33,7 +33,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'begin_fill', 'end_fill', 'goto', 'turnto',
                         'write', 'toward', 'distance', 'lineto',
-                        'onscreen','stamp']
+                        'onscreen', 'viewcoords', 'stamp']
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 
@@ -592,7 +592,7 @@ class Pynguin(object):
             # animated circles
             self._slowcircle(crect, r, center)
 
-    def viewrect(self):
+    def _viewrect(self):
         view = self.scene.view
         viewportrect = view.viewport().geometry()
         tl = viewportrect.topLeft()
@@ -603,7 +603,10 @@ class Pynguin(object):
 
     def onscreen(self):
         pos = self.ritem.pos()
-        return pos in self.viewrect()
+        return pos in self._viewrect()
+
+    def viewcoords(self):
+        return self._viewrect().getCoords()
 
     def onclick(self, x, y):
         self.goto(x, y)

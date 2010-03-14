@@ -25,6 +25,7 @@ Changes in pynguin-0.4:
         - onscreen
         - onclick
         - stamp
+        - viewcoords
     - winding fill now default
         - added method to switch between winding/oddeven fill
     - show file name in window header
@@ -32,6 +33,7 @@ Changes in pynguin-0.4:
     - fixed star example for even number of sides
     - fixed crash when changing to alternate view image
     - fixed problem running code with blank lines
+    - fixed problem with ctrl key getting stuck on
     - allow keypad Enter same as Return
     - factored in to multiple files
 
