@@ -97,6 +97,7 @@ class Interpreter(HighlightedTextEdit):
 
     def keyPressEvent(self, ev):
         k = ev.key()
+        mdf = ev.modifiers()
 
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
@@ -237,14 +238,11 @@ class Interpreter(HighlightedTextEdit):
 
             passthru = False
 
-        elif k == Control:
-            self._check_control_key = True
-
-        elif self._check_control_key and k==U:
+        elif mdf & QtCore.Qt.ControlModifier and k==U:
             #erase from cursor to beginning of line
             self.erasetostart()
 
-        elif self._check_control_key and k==C:
+        elif mdf & QtCore.Qt.ControlModifier and k==C:
             #send keyboard interrupt
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 self.controlC = True
@@ -253,11 +251,11 @@ class Interpreter(HighlightedTextEdit):
                 self.interpreter.resetbuffer()
                 self.write('>>> ')
 
-        elif (self._check_control_key and k==A) or k == Home:
+        elif (mdf & QtCore.Qt.ControlModifier and k==A) or k == Home:
             self.movetostart()
             passthru = False
 
-        elif (self._check_control_key and k==E):
+        elif mdf & QtCore.Qt.ControlModifier and k==E:
             self.movetoend()
             passthru = False
 
@@ -282,13 +280,6 @@ class Interpreter(HighlightedTextEdit):
 
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
-
-    def keyReleaseEvent(self, ev):
-        k = ev.key()
-        Control = QtCore.Qt.Key_Control
-        if k == Control:
-            self._check_control_key = False
-
 
     def mousePressEvent(self, ev):
         curs = self.cursorForPosition(ev.pos())
@@ -330,9 +321,8 @@ class Interpreter(HighlightedTextEdit):
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         pos = cblk.position()
-        endpos = pos + cblk.length() - 1
 
         curs = self.textCursor()
         curs.setPosition(pos+4, 0)
-        curs.setPosition(endpos, 1)
+        curs.setPosition(cpos, 1)
         curs.removeSelectedText()
