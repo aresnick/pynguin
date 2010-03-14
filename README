@@ -36,17 +36,3 @@ DEVELOPMENT:
 
     please report any problems here:
         http://code.google.com/p/pynguin/issues/list
-
-
-    Changes in pynguin-0.3:
-        - added new commands
-            - goto
-            - turnto
-            - lineto
-            - distance
-            - toward
-            - write
-        - added more examples
-        - fixed problem when changing speed while code is running
-        - editor auto-indent improvement
-        - remembered to update about dialog
