@@ -31,7 +31,7 @@ from util import getrend
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread
 from about import AboutDialog
-from conf import uidir
+from conf import uidir, bug_url
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -701,6 +701,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def about(self):
         AboutDialog().exec_()
+
+    def reportbug(self):
+        QtGui.QDesktopServices().openUrl(QtCore.QUrl(bug_url))
 
 
 class Scene(QtGui.QGraphicsScene):
