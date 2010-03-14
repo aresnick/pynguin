@@ -60,7 +60,7 @@ class Pynguin(object):
         self._checktime = QtCore.QTime()
         self._checktime.start()
         self._zvalue = 0
-        self.fillrule('oddeven')
+        self.fillrule('winding')
 
     def _set_item_pos(self, item, pos):
         item.setPos(pos)
@@ -166,11 +166,13 @@ class Pynguin(object):
             if cl is None:
                 ppath = QtGui.QPainterPath(p1)
                 ppath.lineTo(p2)
+                if self.gitem._fillmode:
+                    ppath.setFillRule(self.gitem._fillrule)
+
                 line = item.scene().addPath(ppath, item.pen)
 
                 if self.gitem._fillmode:
                     line.setBrush(self.gitem.brush)
-                    ppath.setFillRule(self._fillrule)
 
                 line.setZValue(self._zvalue)
                 self._zvalue += 1
@@ -453,12 +455,15 @@ class Pynguin(object):
     def end_fill(self):
         self.nofill()
 
+    def _gitem_fillrule(self, rule):
+        self.gitem._fillrule = rule
     def fillrule(self, rule):
         if rule == 'oddeven':
             fr = QtCore.Qt.OddEvenFill
         elif rule == 'winding':
             fr = QtCore.Qt.WindingFill
-        self._fillrule = fr
+        self.ritem._fillrule = fr
+        self.qmove(self._gitem_fillrule, (fr,))
 
     def setImageid(self, imageid):
         '''change the visible (avatar) image'''

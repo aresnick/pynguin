@@ -25,6 +25,8 @@ Changes in pynguin-0.4:
         - onscreen
         - onclick
         - stamp
+    - winding fill now default
+        - added method to switch between winding/oddeven fill
     - show file name in window header
     - more examples
     - fixed star example for even number of sides
