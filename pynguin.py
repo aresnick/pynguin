@@ -33,7 +33,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'begin_fill', 'end_fill', 'goto', 'turnto',
                         'write', 'toward', 'distance', 'lineto',
-                        'onscreen',]
+                        'onscreen','stamp']
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 
@@ -603,6 +603,22 @@ class Pynguin(object):
     def onclick(self, x, y):
         self.goto(x, y)
 
+    def _stamp(self, x, y, imageid=None):
+        gitem = self.gitem
+        if imageid is None:
+            imageid = gitem.imageid
+        item = PynguinGraphicsItem(gitem.rend, imageid)
+        item.ang = gitem.ang
+        item.setPos(gitem.pos())
+        item.setZValue(self._zvalue)
+        self._zvalue += 1
+        gitem.scene().addItem(item)
+        self.drawn_items.append(item)
+    def stamp(self, imageid=None):
+        pos = self.ritem.pos()
+        x, y = pos.x(), pos.y()
+        self.qmove(self._stamp, (x, y, imageid))
+
 
 class RItem(object):
     '''Used to track the "real" state of the pynguin (as opposed
@@ -711,6 +727,7 @@ class PynguinGraphicsItem(GraphicsItem):
         self.set_transform()
 
     def setImageid(self, imageid):
+        self.imageid = imageid
         self.item = QtSvg.QGraphicsSvgItem(self)
         self.item.setSharedRenderer(self.rend)
         self.item.setElementId(imageid)
