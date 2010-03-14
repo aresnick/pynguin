@@ -24,6 +24,7 @@ Changes in pynguin-0.4:
     - added new commands
         - onscreen
         - onclick
+        - stamp
     - show file name in window header
     - more examples
     - fixed star example for even number of sides
