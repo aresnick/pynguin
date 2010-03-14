@@ -101,6 +101,7 @@ class Interpreter(HighlightedTextEdit):
         Backspace = QtCore.Qt.Key_Backspace
         Left = QtCore.Qt.Key_Left
         Return = QtCore.Qt.Key_Return
+        Enter = QtCore.Qt.Key_Enter
         Up = QtCore.Qt.Key_Up
         Down = QtCore.Qt.Key_Down
         Control = QtCore.Qt.Key_Control
@@ -117,7 +118,7 @@ class Interpreter(HighlightedTextEdit):
 
         passthru = True
 
-        if k == Return:
+        if k in (Return, Enter):
             self.movetoend()
 
             cpos = self.textCursor().position()
