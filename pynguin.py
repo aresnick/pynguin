@@ -389,8 +389,12 @@ class Pynguin(object):
         Move directly to the given coordinates. Always draws a line,
             no matter the state of the pen before the call.
         '''
+        pen = self.pen
+        self.pendown()
         self.toward(x, y)
         self.forward(self.distance(x, y))
+        if not pen:
+            self.penup()
 
     def _write(self, text):
         font = QtGui.QFont('Arial', 22)
