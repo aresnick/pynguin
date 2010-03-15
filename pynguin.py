@@ -399,6 +399,8 @@ class Pynguin(object):
             r, g, b = [randrange(256) for cc in range(3)]
         elif r is g is b is None:
             return self.ritem.color
+        elif r is None or g is None or b is None:
+            raise TypeError
 
         self.ritem.color = (r, g, b)
         self.qmove(self._item_forward, (self.gitem, 0))
@@ -425,6 +427,8 @@ class Pynguin(object):
             r, g, b = [randrange(256) for cc in range(3)]
         elif r is g is b is None:
             return self.ritem.fillcolor
+        elif r is None or g is None or b is None:
+            raise TypeError
 
         self.ritem.fillcolor = (r, g, b)
         self.qmove(self._fillcolor, (r, g, b))
