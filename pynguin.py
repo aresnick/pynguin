@@ -411,7 +411,8 @@ class Pynguin(object):
 
         Draw a text message at the current location.
         '''
-        self.qmove(self._write, (text,))
+        strtxt = str(text)
+        self.qmove(self._write, (strtxt,))
 
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
