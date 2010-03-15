@@ -14,6 +14,5 @@ Separate the editor part
 Sometimes console gets out of sync
 Paren matching
 clear command to empty screen, but don't change other state
-reset should put pendown
 fill(color=r, g, b) instead of fillcolor?
 fill(color= , rule= ) ?

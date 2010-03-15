@@ -447,6 +447,10 @@ class Pynguin(object):
         self.qmove(self._item_forward, (self.gitem, 0))
         self.qmove(self._item_setangle, (self.gitem, 0,))
         self.qmove(self._gitem_fillmode, (0,))
+        self.qmove(self._width, (2,))
+        self.qmove(self._color, (255, 255, 255))
+        self.qmove(self._fillcolor, (100, 220, 110))
+        self.qmove(self._gitem_fillrule, (QtCore.Qt.WindingFill,))
 
     def reset(self):
         '''reset()
@@ -457,6 +461,10 @@ class Pynguin(object):
         self.qmove(self._reset)
         self._item_home(self.ritem)
         self.nofill()
+        self.width(2)
+        self.color(255, 255, 255)
+        self.fillcolor(100, 220, 110)
+        self.fillrule('winding')
 
     def _pendown(self, down=True):
         self.gitem._pen = down
