@@ -16,3 +16,6 @@ Paren matching
 clear command to empty screen, but don't change other state
 fill(color=r, g, b) instead of fillcolor?
 fill(color= , rule= ) ?
+Need to check types being passed to methods that will later
+    be passed through to delayed graphic draw methods so that
+    error messages will be seen at the right place.
