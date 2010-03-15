@@ -31,7 +31,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'begin_fill', 'end_fill', 'goto', 'turnto',
+                        'goto', 'turnto',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
@@ -235,11 +235,29 @@ class Pynguin(object):
                 break
 
     def forward(self, distance):
+        '''forward(distance) # in pixels | aka: fd(distance)
+
+        Move the pynguin forward by distance pixels. Note that
+            forward depends on which direction the pynguin is
+            facing when you tell him to go forward.
+
+        If the pen is down, this will also draw a line as the
+            pynguin moves forward.
+        '''
         self._item_forward(self.ritem, distance, False)
         self._gitem_move(distance)
     fd = forward
 
     def backward(self, distance):
+        '''backward(distance) # in pixels | aka: bk(distance)
+
+        Move the pynguin backward by distance pixels. Note that
+            forward depends on which direction the pynguin is
+            facing when you tell him to go forward.
+
+        If the pen is down, this will also draw a line as the
+            pynguin moves backward.
+        '''
         self.forward(-distance)
     bk = backward
 
@@ -275,11 +293,25 @@ class Pynguin(object):
             self.qmove(self._item_left, (self.gitem, step,))
 
     def left(self, degrees):
+        '''left(angle) # in degrees | aka: lt(angle)
+
+        Rotate the pynguin counter-clockwise by angle degrees. Note
+            that the final angle will depend on the initial angle.
+
+        To turn the pynguin directly to a particular angle, use turnto
+        '''
         self._item_left(self.ritem, degrees)
         self._gitem_turn(degrees)
     lt = left
 
     def right(self, degrees):
+        '''right(angle) # in degrees | aka: rt(angle)
+
+        Rotate the pynguin clockwise by angle degrees. Note
+            that the final angle will depend on the initial angle.
+
+        To turn the pynguin directly to a particular angle, use turnto
+        '''
         self.left(-degrees)
     rt = right
 
@@ -288,6 +320,14 @@ class Pynguin(object):
         item.set_transform()
 
     def goto(self, x, y):
+        '''goto(x, y) # in pixels.
+
+        Jump the pynguin directly to the coordinates given in x and y.
+            The (0, 0) location is in the center of the screen, with
+            positive x values to the right, and positive y values down.
+
+        No line will be drawn, no matter what the state of the pen.
+        '''
         pos = QtCore.QPointF(x, y)
         self._item_goto(self.ritem, pos)
         self.qmove(self._item_forward, (self.gitem, 0))
@@ -298,6 +338,15 @@ class Pynguin(object):
         item.set_transform()
 
     def turnto(self, ang):
+        '''turnto(angle) # in degrees
+
+        Turn the pynguin directly to the given angle. The angle is given
+            in degrees with 0 degrees being to the right, positive angles
+            clockwise, and negative angles counter-clockwise.
+
+        The final angle will be the angle specified, not an angle relative
+            to the initial angle. For relative angles, use left or right.
+        '''
         ang0 = self.ritem.ang
         turn = abs(ang - ang0)
         if ang0 < ang:
@@ -306,7 +355,11 @@ class Pynguin(object):
             self.left(turn)
 
     def toward(self, x, y):
-        '''turn toward the given coordinates'''
+        '''toward(x, y) # in pixels
+
+        Turn toward the given coordinates. After this command, the pynguin
+            will be facing directly toward the given coordinates.
+        '''
         cpos = self.ritem.pos()
         cx = cpos.x()
         cy = cpos.y()
@@ -319,7 +372,10 @@ class Pynguin(object):
         self.turnto(ang)
 
     def distance(self, x, y):
-        '''return the distance to the given coordinates'''
+        '''distance(x, y) # in pixels
+
+        return the distance (in pixels) to the given coordinates
+        '''
         cpos = self.ritem.pos()
         cx = cpos.x()
         cy = cpos.y()
@@ -328,6 +384,11 @@ class Pynguin(object):
         return hypot(dx, dy)
 
     def lineto(self, x, y):
+        '''line(x, y) # in pixels
+
+        Move directly to the given coordinates. Always draws a line,
+            no matter the state of the pen before the call.
+        '''
         self.toward(x, y)
         self.forward(self.distance(x, y))
 
@@ -342,6 +403,10 @@ class Pynguin(object):
         self.drawn_items.append(item)
 
     def write(self, text):
+        '''write(text)
+
+        Draw a text message at the current location.
+        '''
         self.qmove(self._write, (text,))
 
     def _item_home(self, item):
@@ -349,6 +414,10 @@ class Pynguin(object):
         self._item_setangle(item, 0)
 
     def home(self):
+        '''home()
+
+        Move directly to the home location (0, 0) and turn to angle 0
+        '''
         self._item_home(self.ritem)
         self._item_setangle(self.ritem, 0)
         self.qmove(self._item_home, (self.gitem,))
@@ -375,6 +444,11 @@ class Pynguin(object):
         self.qmove(self._gitem_fillmode, (0,))
 
     def reset(self):
+        '''reset()
+
+        Move to home location and angle and restore state
+            to the initial values (pen, fill, etc).
+        '''
         self.qmove(self._reset)
         self._item_home(self.ritem)
         self.nofill()
@@ -383,11 +457,19 @@ class Pynguin(object):
         self.gitem._pen = down
 
     def penup(self):
+        '''penup()
+
+        Put the pen in the up (non-drawing) position.
+        '''
         self.pen = self.ritem._pen = False
         self.qmove(self._pendown, (False,))
         self.qmove(self._item_forward, (self.gitem, 0))
 
     def pendown(self):
+        '''pendown()
+
+        Put the pen in the down (drawing) position.
+        '''
         self.pen = self.ritem._pen = True
         self.qmove(self._pendown)
 
@@ -395,6 +477,13 @@ class Pynguin(object):
         self.gitem.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
 
     def color(self, r=None, g=None, b=None):
+        '''color(red, green, blue) # 0-255 for each value
+        color() # return the current color
+
+        Set the line color for drawing. The color should be given as
+            3 integers between 0 and 255, specifying the red, blue, and
+            green components of the color.
+        '''
         if r == 'random':
             r, g, b = [randrange(256) for cc in range(3)]
         elif r is g is b is None:
@@ -410,6 +499,11 @@ class Pynguin(object):
         self.gitem.pen.setWidth(w)
 
     def width(self, w=None):
+        '''width(w) # in pixels
+        width() # return the current width
+
+        Set the line width for drawing.
+        '''
         if w is None:
             return self.ritem.penwidth
         else:
@@ -418,6 +512,13 @@ class Pynguin(object):
             self.qmove(self._width, (w,))
 
     def _fillcolor(self, r=None, g=None, b=None):
+        '''fillcolor(red, green, blue) # 0-255 for each value
+        fillcolor() # return the current fill color
+
+        Set the fill color for drawing. The color should be given as
+            3 integers between 0 and 255, specifying the red, blue, and
+            green components of the color.
+        '''
         color = QtGui.QColor.fromRgb(r, g, b)
         self.gitem.brush.setColor(color)
         self._item_forward(self.gitem, 0)
@@ -442,26 +543,29 @@ class Pynguin(object):
             self._item_forward(self.gitem, 0)
 
     def fill(self):
-        '''go in to fill mode. Anything drawn will be filled until
+        '''fill()
+
+        Go in to fill mode. Anything drawn will be filled until
             nofill() is called.
         '''
         self.ritem._fillmode = True
         self.qmove(self._gitem_fillmode, (True,))
 
     def nofill(self):
-        '''turn off fill mode'''
+        '''nofill()
+
+        Turn off fill mode.
+        '''
         self.ritem._fillmode = False
         self.qmove(self._gitem_fillmode, (False,))
-
-    def begin_fill(self):
-        self.fill()
-
-    def end_fill(self):
-        self.nofill()
 
     def _gitem_fillrule(self, rule):
         self.gitem._fillrule = rule
     def fillrule(self, rule):
+        '''fillrule(method) # 'oddeven' or 'winding'
+
+        Set the fill method to OddEvenFill or WindingFill.
+        '''
         if rule == 'oddeven':
             fr = QtCore.Qt.OddEvenFill
         elif rule == 'winding':
@@ -563,11 +667,13 @@ class Pynguin(object):
         self.qmove(self._item_setangle, (self.gitem, ang0,))
 
     def circle(self, r, center=False):
-        '''Draw a circle of radius r.
+        '''circle(radius, center) # radius in pixels
 
-            If center is True, the current position will be the center of
-                the circle. Otherwise, the circle will be drawn with the
-                current position and rotation being a tangent to the circle.
+        Draw a circle of radius r.
+
+        If center is True, the current position will be the center of
+            the circle. Otherwise, the circle will be drawn with the
+            current position and rotation being a tangent to the circle.
         '''
 
         ritem = self.ritem
@@ -606,13 +712,31 @@ class Pynguin(object):
         return QtCore.QRectF(tlt, brt)
 
     def onscreen(self):
+        '''onscreen()
+
+        return True if the pynguin is in the visible area, or
+            False if it is outside the visible area.
+        '''
         pos = self.ritem.pos()
         return pos in self._viewrect()
 
     def viewcoords(self):
+        '''viewcoords()
+
+        return the coordinates of the boundaries of the visible area.
+
+        Get the coords with code like this:
+            xmin, xmax, ymin, ymax = viewcoords()
+        '''
         return self._viewrect().getCoords()
 
     def onclick(self, x, y):
+        '''This method will be called automatically when the user clicks
+            the mouse in the viewable area.
+
+        To override this method, define a new function called onclick(x, y)
+            and it will be inserted for automatic calling.
+        '''
         self.goto(x, y)
 
     def _stamp(self, x, y, imageid=None):
@@ -627,6 +751,13 @@ class Pynguin(object):
         gitem.scene().addItem(item)
         self.drawn_items.append(item)
     def stamp(self, imageid=None):
+        '''stamp()
+        stamp(imagename) # 'pynguin', 'robot', 'turtle', or 'arrow'
+
+        Leave a stamp of the current pynguin image at the current location.
+
+        Can also stamp the other images by including the image name.
+        '''
         pos = self.ritem.pos()
         x, y = pos.x(), pos.y()
         self.qmove(self._stamp, (x, y, imageid))
