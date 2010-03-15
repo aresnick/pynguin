@@ -14,3 +14,8 @@ Separate the editor part
 Sometimes console gets out of sync
 Paren matching
 clear command to empty screen, but don't change other state
+Have lineto set/reset pen before/after call
+Call str on text before sending it to write
+reset should put pendown
+fill(color=r, g, b) instead of fillcolor?
+fill(color= , rule= ) ?
