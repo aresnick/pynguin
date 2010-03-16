@@ -38,8 +38,9 @@ interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 
 class Pynguin(object):
-    def __init__(self, scene, pos, ang, rend):
-        self.scene = scene
+    def __init__(self, mw, pos, ang, rend):
+        self.scene = mw.scene
+        self.mw = mw
         self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
         self.scene.addItem(self.gitem)
         self.ritem = RItem() #real location, angle, etc.
@@ -111,13 +112,24 @@ class Pynguin(object):
         delay = self.delay
         etime = self._checktime.elapsed()
         if not drawspeed or etime > delay:
+            ied = self.mw.interpretereditor
             while True:
                 try:
                     move, args = self._moves.get(block=False)
                 except Queue.Empty:
                     break
                 else:
-                    move(*args)
+
+                    try:
+                        move(*args)
+                    except Exception, e:
+                        ied.write(str(e))
+                        ied.write('\n')
+                        if ied.cmdthread is not None:
+                            ied.cmdthread.terminate()
+                            ied.cmdthread = None
+                        self._empty_move_queue()
+                        ied.write('>>> ')
 
                 #print 'dt', self.gitem._drawn, self.gitem._turned
 

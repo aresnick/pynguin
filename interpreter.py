@@ -33,15 +33,11 @@ class CmdThread(QtCore.QThread):
         self.txt = txt
     def run(self):
         ed = self.ed
-        sys.stdout = ed
-        sys.stderr = ed
         lines = self.txt.split('\n')
         if len(lines) > 1:
             ed.interpreter.runcode(self.txt)
         else:
             ed.needmore = ed.interpreter.push(self.txt)
-        sys.stdout = ed.save_stdout
-        sys.stderr = ed.save_stderr
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self, parent):
@@ -55,6 +51,9 @@ class Interpreter(HighlightedTextEdit):
         self.save_stdout = sys.stdout
         self.save_stdin = sys.stdin
         self.save_stderr = sys.stderr
+
+        sys.stdout = self
+        sys.stderr = self
 
         self._check_control_key = False
 
@@ -158,8 +157,6 @@ class Interpreter(HighlightedTextEdit):
                     self.controlC = False
                     self.needmore = False
                     self.interpreter.resetbuffer()
-                    sys.stdout = self.save_stdout
-                    sys.stderr = self.save_stderr
                 self.cmdthread = None
 
                 if not self.needmore:

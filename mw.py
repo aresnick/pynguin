@@ -218,7 +218,7 @@ class MainWindow(QtGui.QMainWindow):
         self._openfile(fp)
 
     def new_pynguin(self):
-        p = Pynguin(self.scene, (0, 0), 0, self.rend)
+        p = Pynguin(self, (0, 0), 0, self.rend)
         self.pynguins.append(p)
         self.setSpeed()
 
@@ -545,8 +545,6 @@ class MainWindow(QtGui.QMainWindow):
             self.editor.setFocus()
         else:
             self.interpretereditor.setFocus()
-            sys.stdout = self.interpretereditor
-            sys.stderr = self.interpretereditor
             if self.interpretereditor.cmdthread is None:
                 self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, code)
                 cmdthread = self.interpretereditor.cmdthread
@@ -565,8 +563,6 @@ class MainWindow(QtGui.QMainWindow):
                     self.interpretereditor.controlC = False
                     self.interpretereditor.needmore = False
                     self.interpretereditor.interpreter.resetbuffer()
-                    sys.stdout = self.interpretereditor.save_stdout
-                    sys.stderr = self.interpretereditor.save_stderr
                     self.interpretereditor.write('>>> ')
                 self.interpretereditor.cmdthread = None
 
