@@ -18,36 +18,8 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.4:
-    - improved document switcher
-    - added easy 'random' color access
-    - added new commands
-        - onscreen
-        - onclick
-        - stamp
-        - viewcoords
-    - winding fill now default
-        - added method to switch between winding/oddeven fill
-    - show file name in window header
-    - more examples
-    - added default values for examples that take parameters
-    - fixed star example for even number of sides
-    - fixed crash when changing to alternate view image
-    - fixed problem running code with blank lines
-    - fixed problem with ctrl key getting stuck on
-    - added bug report option in Help menu
-    - allow keypad Enter same as Return
-    - factored in to multiple files
-
-Changes in pynguin-0.3:
-    - added new commands
-        - goto
-        - turnto
-        - lineto
-        - distance
-        - toward
-        - write
-    - added more examples
-    - fixed problem when changing speed while code is running
-    - editor auto-indent improvement
-    - remembered to update about dialog
+Changes in pynguin-0.5:
+    - catch errors when processing graphic move queue
+    - capture and hold stdout and stderr
+    - call str() on argument to write
+    - guard against sending non-int to color

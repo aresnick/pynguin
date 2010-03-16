@@ -61,7 +61,7 @@
       </font>
      </property>
      <property name="text">
-      <string>pynguin 0.4</string>
+      <string>pynguin 0.5</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
