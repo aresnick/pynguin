@@ -567,12 +567,23 @@ class Pynguin(object):
             self.gitem._fillmode = False
             self._item_forward(self.gitem, 0)
 
-    def fill(self):
+    def fill(self, color=None, rule=None):
         '''fill()
 
         Go in to fill mode. Anything drawn will be filled until
             nofill() is called.
+
+        Set the fill color by passing in an (r, g, b) tuple.
+
+        Change the fill rule by passing in either
+            'winding' (default) or 'oddeven'
         '''
+        if color is not None:
+            self.fillcolor(*color)
+
+        if rule is not None:
+            self.fillrule(rule)
+
         self.ritem._fillmode = True
         self.qmove(self._gitem_fillmode, (True,))
 

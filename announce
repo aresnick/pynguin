@@ -18,6 +18,10 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
+Changes in pynguin-0.6:
+    - add keyword args for fill -- fill(color=..., rule=...)
+
+
 Changes in pynguin-0.5:
     - catch errors when processing graphic move queue
     - capture and hold stdout and stderr
