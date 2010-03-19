@@ -579,7 +579,10 @@ class Pynguin(object):
             'winding' (default) or 'oddeven'
         '''
         if color is not None:
-            self.fillcolor(*color)
+            if color == 'random':
+                self.fillcolor(color)
+            else:
+                self.fillcolor(*color)
 
         if rule is not None:
             self.fillrule(rule)
