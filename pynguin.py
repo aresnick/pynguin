@@ -41,26 +41,30 @@ class Pynguin(object):
     def __init__(self, mw, pos, ang, rend):
         self.scene = mw.scene
         self.mw = mw
-        self.gitem = PynguinGraphicsItem(rend, 'pynguin') #display only
-        self.scene.addItem(self.gitem)
+        self.rend = rend
         self.ritem = RItem() #real location, angle, etc.
-        self.gitem.setZValue(9999999)
+        self.gitem = None # Gets set up later in the main thread
+        self._zvalue = 0
         self.drawn_items = []
         self._drawspeed_pending = None
         self._turnspeed_pending = None
         self.drawspeed = 1
         self.turnspeed = 4
-        self.gitem._drawn = self.drawspeed
-        self.gitem._turned = self.turnspeed
-        self.gitem._current_line = None
         self.ritem._drawn = self.drawspeed
         self.ritem._turned = self.turnspeed
         self.delay = 50
         self._moves = Queue.Queue(50) # max number of items in queue
-        self.pendown()
         self._checktime = QtCore.QTime()
         self._checktime.start()
-        self._zvalue = 0
+
+    def _gitem_setup(self):
+        self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
+        self.scene.addItem(self.gitem)
+        self.gitem.setZValue(9999999)
+        self.gitem._drawn = self.drawspeed
+        self.gitem._turned = self.turnspeed
+        self.gitem._current_line = None
+        self.pendown()
         self.fillrule('winding')
 
     def _set_item_pos(self, item, pos):
@@ -151,14 +155,13 @@ class Pynguin(object):
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             self._checktime.restart()
 
+    def _gitem_new_line(self):
+        self.gitem._current_line = None
+
     def _item_forward(self, item, distance, draw=True):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
-        if not distance and item is self.gitem:
-            self.gitem._current_line = None
-            return
-
         item._drawn -= abs(distance)
 
         ang = item.ang
@@ -198,6 +201,9 @@ class Pynguin(object):
                     cl.setPath(ppath)
 
     def _gitem_move(self, distance):
+        self._item_forward(self.gitem, distance)
+
+    def _gitem_breakup_move(self, distance):
         '''used to break up movements for graphic animations. gitem will
             move forward by distance, but it will be done in steps that
             depend on the drawspeed setting
@@ -222,7 +228,7 @@ class Pynguin(object):
                 step = perstep
             d += drawspeed
 
-            self.qmove(self._item_forward, (self.gitem, step,))
+            self.qmove(self._gitem_move, (step,))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
@@ -257,7 +263,7 @@ class Pynguin(object):
             pynguin moves forward.
         '''
         self._item_forward(self.ritem, distance, False)
-        self._gitem_move(distance)
+        self._gitem_breakup_move(distance)
     fd = forward
 
     def backward(self, distance):
@@ -280,6 +286,8 @@ class Pynguin(object):
         item._turned -= (abs(degrees))
         item.rotate(-degrees)
     def _gitem_turn(self, degrees):
+        self._item_left(self.gitem, degrees)
+    def _gitem_breakup_turn(self, degrees):
         self._check_drawspeed_change()
 
         turnspeed = self.turnspeed
@@ -302,7 +310,7 @@ class Pynguin(object):
             n += 1
             a += self.turnspeed
 
-            self.qmove(self._item_left, (self.gitem, step,))
+            self.qmove(self._gitem_turn, (step,))
 
     def left(self, degrees):
         '''left(angle) # in degrees | aka: lt(angle)
@@ -313,7 +321,7 @@ class Pynguin(object):
         To turn the pynguin directly to a particular angle, use turnto
         '''
         self._item_left(self.ritem, degrees)
-        self._gitem_turn(degrees)
+        self._gitem_breakup_turn(degrees)
     lt = left
 
     def right(self, degrees):
@@ -331,6 +339,8 @@ class Pynguin(object):
         item.setPos(pos)
         item.set_transform()
 
+    def _gitem_goto(self, pos):
+        self._item_goto(self.gitem, pos)
     def goto(self, x, y):
         '''goto(x, y) # in pixels.
 
@@ -342,9 +352,11 @@ class Pynguin(object):
         '''
         pos = QtCore.QPointF(x, y)
         self._item_goto(self.ritem, pos)
-        self.qmove(self._item_forward, (self.gitem, 0))
-        self.qmove(self._item_goto, (self.gitem, pos))
+        self.qmove(self._gitem_new_line)
+        self.qmove(self._gitem_goto, (pos,))
 
+    def _gitem_setangle(self, ang):
+        self._item_setangle(self.gitem, ang)
     def _item_setangle(self, item, ang):
         item.ang = ang
         item.set_transform()
@@ -438,8 +450,8 @@ class Pynguin(object):
         self._item_home(self.ritem)
         self._item_setangle(self.ritem, 0)
         self.qmove(self._item_home, (self.gitem,))
-        self.qmove(self._item_forward, (self.gitem, 0))
-        self.qmove(self._item_setangle, (self.gitem, 0,))
+        self.qmove(self._gitem_new_line)
+        self.qmove(self._gitem_setangle, (0,))
 
     def _empty_move_queue(self):
         while 1:
@@ -456,8 +468,8 @@ class Pynguin(object):
         if self._moves:
             self._empty_move_queue()
         self.qmove(self._item_home, (self.gitem,))
-        self.qmove(self._item_forward, (self.gitem, 0))
-        self.qmove(self._item_setangle, (self.gitem, 0,))
+        self.qmove(self._gitem_new_line)
+        self.qmove(self._gitem_setangle, (0,))
         self.qmove(self._gitem_fillmode, (0,))
         self.qmove(self._width, (2,))
         self.qmove(self._color, (255, 255, 255))
@@ -488,7 +500,7 @@ class Pynguin(object):
         '''
         self.pen = self.ritem._pen = False
         self.qmove(self._pendown, (False,))
-        self.qmove(self._item_forward, (self.gitem, 0))
+        self.qmove(self._gitem_new_line)
 
     def pendown(self):
         '''pendown()
@@ -517,7 +529,7 @@ class Pynguin(object):
             raise TypeError
 
         self.ritem.color = (r, g, b)
-        self.qmove(self._item_forward, (self.gitem, 0))
+        self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b))
 
     def _width(self, w):
@@ -533,7 +545,7 @@ class Pynguin(object):
             return self.ritem.penwidth
         else:
             self.ritem.penwidth = w
-            self.qmove(self._item_forward, (self.gitem, 0))
+            self.qmove(self._gitem_new_line)
             self.qmove(self._width, (w,))
 
     def _fillcolor(self, r=None, g=None, b=None):
@@ -546,7 +558,7 @@ class Pynguin(object):
         '''
         color = QtGui.QColor.fromRgb(r, g, b)
         self.gitem.brush.setColor(color)
-        self._item_forward(self.gitem, 0)
+        self._gitem_new_line()
 
     def fillcolor(self, r=None, g=None, b=None):
         if r == 'random':
@@ -562,10 +574,10 @@ class Pynguin(object):
     def _gitem_fillmode(self, start):
         if start:
             self.gitem._fillmode = True
-            self._item_forward(self.gitem, 0)
+            self._gitem_new_line()
         else:
             self.gitem._fillmode = False
-            self._item_forward(self.gitem, 0)
+            self._gitem_new_line()
 
     def fill(self, color=None, rule=None):
         '''fill()
@@ -612,8 +624,7 @@ class Pynguin(object):
         self.ritem._fillrule = fr
         self.qmove(self._gitem_fillrule, (fr,))
 
-    def setImageid(self, imageid):
-        '''change the visible (avatar) image'''
+    def _setImageid(self, imageid):
         ogitem = self.gitem
         pos = ogitem.pos()
         ang = ogitem.ang
@@ -633,11 +644,15 @@ class Pynguin(object):
         scene.addItem(gitem)
         self.gitem = gitem
         gitem.set_transform()
+    def setImageid(self, imageid):
+        '''change the visible (avatar) image'''
+        self._imageid = imageid
+        self.qmove(self._setImageid, (imageid,))
 
     def _circle(self, crect):
         '''instant circle'''
         gitem = self.gitem
-        self._item_forward(gitem, 0)
+        self._gitem_new_line()
         scene = gitem.scene()
         circle = scene.addEllipse(crect, gitem.pen)
         if gitem._fillmode:
@@ -658,7 +673,7 @@ class Pynguin(object):
             # with a real ellipse item
             self.drawn_items.pop()
             scene.removeItem(cl)
-            self._item_forward(gitem, 0)
+            self._gitem_new_line()
             circle = scene.addEllipse(crect, self.gitem.pen)
             if gitem._fillmode:
                 circle.setBrush(gitem.brush)
@@ -677,18 +692,16 @@ class Pynguin(object):
     def _slowcircle(self, crect, r, center):
         '''Animated circle drawing
         '''
-        self.qmove(self._item_forward, (self.gitem, 0))
+        self.qmove(self._gitem_new_line)
         pos0 = self.ritem.pos()
         ang0 = self.ritem.ang
-        sangle = self.gitem.ang
         if center:
             pen = self.pen
             self.penup()
-            self._gitem_move(r)
-            self._gitem_turn(-90)
+            self._gitem_breakup_move(r)
+            self._gitem_breakup_turn(-90)
             if pen:
                 self.pendown()
-            sangle += 90
 
         circumference = 2 * PI * r
         for n in range(1, 90):
@@ -697,13 +710,13 @@ class Pynguin(object):
 
         if center:
             self.penup()
-            self._gitem_turn(-90)
-            self._gitem_move(r)
-            self._gitem_turn(180)
+            self._gitem_breakup_turn(-90)
+            self._gitem_breakup_move(r)
+            self._gitem_breakup_turn(180)
             if pen:
                 self.pendown()
-        self.qmove(self._item_goto, (self.gitem, pos0,))
-        self.qmove(self._item_setangle, (self.gitem, ang0,))
+        self.qmove(self._gitem_goto, (pos0,))
+        self.qmove(self._gitem_setangle, (ang0,))
 
     def circle(self, r, center=False):
         '''circle(radius, center) # radius in pixels

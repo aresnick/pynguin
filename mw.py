@@ -223,10 +223,14 @@ class MainWindow(QtGui.QMainWindow):
         self.setSpeed()
 
         if self._primary_pynguin:
+            p._gitem_setup()
             p._process_moves()
             self._primary_pynguin = False
         else:
+            self.pynguin.qmove(p._gitem_setup)
             self.pynguin.qmove(p._process_moves)
+            while p.gitem is None:
+                pass
 
         return p
 
