@@ -19,4 +19,3 @@ Need to check types being passed to methods that will later
     error messages will be seen at the right place.
 Render about screen directly from svg
 Need to make new_pynguin thread safe
-Remove problem spaces when saving files

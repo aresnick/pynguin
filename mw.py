@@ -297,9 +297,11 @@ class MainWindow(QtGui.QMainWindow):
         mselect = self.ui.mselect
         for n in range(mselect.count()):
             docid = str(mselect.itemData(n).toString())
-            efile = str(self.editor.documents[docid])
+            code = str(self.editor.documents[docid])
             arcname = '##%5s##__%s' % (n, docid)
-            z.writestr(arcname, efile)
+            code = self.cleancode(code)
+            self.editor.documents[docid] = code
+            z.writestr(arcname, code)
 
         historyname = '@@history@@'
         history = '\n'.join(self.interpretereditor.history)
@@ -512,24 +514,12 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = True
         self.setWindowModified(True)
 
-    def testcode(self):
-        '''exec the code in the current editor window and load it in
-            to the interpreter local namespace
-
-            If the first line looks like a function definition, use
-            it to feed a line to the interpreter set up to call the
-            function.
+    def cleancode(self, code):
+        '''fix up the code a bit first...
+        make sure the last line ends with newline
+        and make sure the code does not end with
+        lines that have only indentation
         '''
-        self.editor.savecurrent()
-        docname = str(self.ui.mselect.currentText())
-        idx = self.ui.mselect.currentIndex()
-        docid = str(self.ui.mselect.itemData(idx).toString())
-        code = str(self.editor.documents[docid])
-
-        # fix up the code a bit first...
-        # make sure the last line ends with newline
-        # and make sure the code does not end with
-        # lines that have only indentation
         lines = code.split('\n')
         lines.reverse()
         blankend = True
@@ -544,6 +534,23 @@ class MainWindow(QtGui.QMainWindow):
 
         rewrite.reverse()
         code = '%s\n' % '\n'.join(rewrite)
+        return code
+
+    def testcode(self):
+        '''exec the code in the current editor window and load it in
+            to the interpreter local namespace
+
+            If the first line looks like a function definition, use
+            it to feed a line to the interpreter set up to call the
+            function.
+        '''
+        self.editor.savecurrent()
+        docname = str(self.ui.mselect.currentText())
+        idx = self.ui.mselect.currentIndex()
+        docid = str(self.ui.mselect.itemData(idx).toString())
+        code = str(self.editor.documents[docid])
+
+        code = self.cleancode(code)
         self.editor.setPlainText(code)
 
         try:
