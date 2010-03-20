@@ -20,12 +20,22 @@ import os
 
 from PyQt4 import QtGui, uic
 
+from util import getrend
 from conf import uidir
 
 
 class AboutDialog(QtGui.QDialog):
-    def __init__(self):
+    def __init__(self, app):
         QtGui.QDialog.__init__(self)
         uifile = 'about.ui'
         uipath = os.path.join(uidir, uifile)
-        uic.loadUi(uipath, self)
+        self.ui = uic.loadUi(uipath, self)
+
+        rend = getrend(app)
+        img = QtGui.QPixmap(225, 144)
+        self.img = img
+        painter = QtGui.QPainter(img)
+        rend.render(painter, 'splash')
+        painter.end()
+
+        self.ui.splasharea.setPixmap(self.img)

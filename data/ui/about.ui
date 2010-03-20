@@ -28,12 +28,9 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="splasharea">
      <property name="text">
       <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>data/images/about.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -54,7 +51,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="progtitle">
      <property name="font">
       <font>
        <pointsize>16</pointsize>
@@ -69,7 +66,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="progurl">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -104,7 +101,7 @@ p, li { white-space: pre-wrap; }
     </spacer>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="okbutton">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -134,7 +131,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>okbutton</sender>
    <signal>accepted()</signal>
    <receiver>about</receiver>
    <slot>accept()</slot>
@@ -150,7 +147,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>okbutton</sender>
    <signal>rejected()</signal>
    <receiver>about</receiver>
    <slot>reject()</slot>

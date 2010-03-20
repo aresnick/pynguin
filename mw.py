@@ -717,7 +717,7 @@ class MainWindow(QtGui.QMainWindow):
         self._setSpeed(speed)
 
     def about(self):
-        AboutDialog().exec_()
+        AboutDialog(self.app).exec_()
 
     def reportbug(self):
         QtGui.QDesktopServices().openUrl(QtCore.QUrl(bug_url))
