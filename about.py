@@ -21,7 +21,7 @@ import os
 from PyQt4 import QtGui, uic
 
 from util import getrend
-from conf import uidir
+from conf import uidir, version
 
 
 class AboutDialog(QtGui.QDialog):
@@ -39,3 +39,4 @@ class AboutDialog(QtGui.QDialog):
         painter.end()
 
         self.ui.splasharea.setPixmap(self.img)
+        self.ui.progtitle.setText(version)
