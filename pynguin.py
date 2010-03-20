@@ -20,6 +20,7 @@ import Queue
 from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
+import random
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
@@ -31,7 +32,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'goto', 'turnto',
+                        'goto', 'xy', 'turnto',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
 interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
@@ -85,6 +86,11 @@ class Pynguin(object):
         'Getter for the position property.'
         return self.ritem.pos()
     pos = property(_get_pos, _set_pos)
+
+    def xy(self):
+        pos = self.ritem.pos()
+        x, y = pos.x(), pos.y()
+        return x, y
 
     def _process_moves(self):
         '''regular timer tick to make sure graphics are being updated'''
@@ -341,7 +347,7 @@ class Pynguin(object):
 
     def _gitem_goto(self, pos):
         self._item_goto(self.gitem, pos)
-    def goto(self, x, y):
+    def goto(self, x, y=None):
         '''goto(x, y) # in pixels.
 
         Jump the pynguin directly to the coordinates given in x and y.
@@ -350,10 +356,20 @@ class Pynguin(object):
 
         No line will be drawn, no matter what the state of the pen.
         '''
-        pos = QtCore.QPointF(x, y)
-        self._item_goto(self.ritem, pos)
-        self.qmove(self._gitem_new_line)
-        self.qmove(self._gitem_goto, (pos,))
+        if x != 'random':
+            pos = QtCore.QPointF(x, y)
+            self._item_goto(self.ritem, pos)
+            self.qmove(self._gitem_new_line)
+            self.qmove(self._gitem_goto, (pos,))
+        elif y != None:
+            # passed in 'random' plus something else...
+            # That can't be right
+            raise ValueError, "'random' must be passed alone."
+        else:
+            xmin, ymin, xmax, ymax = self.viewcoords()
+            x = random.randrange(xmin, xmax)
+            y = random.randrange(ymin, ymax)
+            self.goto(x, y)
 
     def _gitem_setangle(self, ang):
         self._item_setangle(self.gitem, ang)
