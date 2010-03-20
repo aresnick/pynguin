@@ -359,7 +359,14 @@ class MainWindow(QtGui.QMainWindow):
         else:
             return False
 
-        return self._savestate()
+        retval = self._savestate()
+
+        fdir, fname = os.path.split(self._filepath)
+        windowtitle = '%s [*] - Pynguin' % fname
+        self.setWindowTitle(windowtitle)
+        self.setWindowModified(False)
+
+        return retval
 
     def open(self):
         '''read in a previously written .pyn file (written by _savestate)
