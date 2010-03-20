@@ -403,8 +403,11 @@ class MainWindow(QtGui.QMainWindow):
                     if data.startswith('def '):
                         try:
                             exec data in self.interpreter_locals
-                        except:
-                            print 'problem', title
+                        except Exception, e:
+                            print 'problem', e
+                            print 'in...'
+                            line1 = data.split('\n')[0]
+                            print str(line1)
             elif ename.startswith('@@history@@'):
                 history = data.split('\n')
                 self.interpretereditor.history = history
