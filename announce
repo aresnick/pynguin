@@ -19,7 +19,14 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 
 Changes in pynguin-0.6:
-    - add keyword args for fill -- fill(color=..., rule=...)
+    - fixed crash when using new_pynguin()
+    - added goto('random') and xy() to easily get coordinates
+    - added keyword args for fill -- fill(color=..., rule=...)
+    - added easier access for fillcolor 'random'
+    - set window title when using Save As...
+    - better error messages when loading file with errors
+    - whitespace cleanup when saving files
+    - more examples
 
 
 Changes in pynguin-0.5:
