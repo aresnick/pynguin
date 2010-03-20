@@ -21,3 +21,4 @@ Render about screen directly from svg
 Need to make new_pynguin thread safe
 Need better error message when opening problem file
 Remove problem spaces when saving files
+Window title not set when saving file from example
