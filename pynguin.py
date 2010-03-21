@@ -60,6 +60,7 @@ class Pynguin(object):
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
+        self.imageid = 'pynguin'
         self.scene.addItem(self.gitem)
         self.gitem.setZValue(9999999)
         self.gitem._drawn = self.drawspeed
@@ -458,6 +459,9 @@ class Pynguin(object):
         self._item_goto(item, QtCore.QPointF(0, 0))
         self._item_setangle(item, 0)
 
+    def _gitem_home(self):
+        self._item_home(self.gitem)
+
     def home(self):
         '''home()
 
@@ -483,14 +487,17 @@ class Pynguin(object):
         self.drawn_items = []
         if self._moves:
             self._empty_move_queue()
-        self.qmove(self._item_home, (self.gitem,))
-        self.qmove(self._gitem_new_line)
-        self.qmove(self._gitem_setangle, (0,))
-        self.qmove(self._gitem_fillmode, (0,))
-        self.qmove(self._width, (2,))
-        self.qmove(self._color, (255, 255, 255))
-        self.qmove(self._fillcolor, (100, 220, 110))
-        self.qmove(self._gitem_fillrule, (QtCore.Qt.WindingFill,))
+        self._gitem_home()
+        self._gitem_new_line()
+        self._gitem_setangle(0)
+        self._gitem_fillmode(0)
+        self._width(2)
+        self._color(255, 255, 255)
+        self._fillcolor(100, 220, 110)
+        self._gitem_fillrule(QtCore.Qt.WindingFill)
+
+        if self is self.mw.pynguin:
+            self._remove_other_pynguins()
 
     def reset(self):
         '''reset()
@@ -498,6 +505,11 @@ class Pynguin(object):
         Move to home location and angle and restore state
             to the initial values (pen, fill, etc).
         '''
+        if self is self.mw.pynguin:
+            for pyn in self.mw.pynguins:
+                if pyn is not self:
+                    pyn.reset()
+
         self.qmove(self._reset)
         self._item_home(self.ritem)
         self.nofill()
@@ -505,6 +517,14 @@ class Pynguin(object):
         self.color(255, 255, 255)
         self.fillcolor(100, 220, 110)
         self.fillrule('winding')
+
+    def _remove_other_pynguins(self):
+        pynguins = self.mw.pynguins
+        pynguins.remove(self)
+        while pynguins:
+            pyn = pynguins.pop()
+            self.scene.removeItem(pyn.gitem)
+        pynguins.append(self)
 
     def _pendown(self, down=True):
         self.gitem._pen = down

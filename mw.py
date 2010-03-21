@@ -73,7 +73,7 @@ class MainWindow(QtGui.QMainWindow):
         self.speedgroup.triggered.connect(self.setSpeed)
 
         self.pynguins = []
-        self._primary_pynguin = True
+        self.pynguin = None
         self.pynguin = self.new_pynguin()
         trans = QtGui.QTransform()
         #trans.scale(0.15, 0.15)
@@ -222,10 +222,10 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguins.append(p)
         self.setSpeed()
 
-        if self._primary_pynguin:
+        if self.pynguin is None:
             p._gitem_setup()
             p._process_moves()
-            self._primary_pynguin = False
+
         else:
             self.pynguin.qmove(p._gitem_setup)
             self.pynguin.qmove(p._process_moves)
@@ -254,11 +254,7 @@ class MainWindow(QtGui.QMainWindow):
             pass
 
     def _new(self):
-        for pynguin in self.pynguins:
-            pynguin.reset()
-            if pynguin is not self.pynguin:
-                self.scene.removeItem(pynguin.gitem)
-                self.pynguins.remove(pynguin)
+        self.pynguin.reset()
         del_later = []
         for name in self.interpreter_locals:
             if name not in pynguin_functions and name not in interpreter_protect:
