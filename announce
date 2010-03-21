@@ -9,9 +9,10 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release continues adding basic functionality and
-    refining the interface. If you are interested, please
-    take a look and let me know what you think.
+This release fixes a couple of serious problems that could
+    cause the program to crash or not start up at all.
+    If you were having trouble before, please take another
+    look and let me know what you think.
 
 
 Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
@@ -20,12 +21,16 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 Changes in pynguin-0.6:
     - fixed crash when using new_pynguin()
+    - fixed possible crash during startup (due to race condition)
     - added goto('random') and xy() to easily get coordinates
     - added keyword args for fill -- fill(color=..., rule=...)
     - added easier access for fillcolor 'random'
+    - added examples using multiple pynguins
+    - remove any added pynguins when using reset()
     - set window title when using Save As...
     - better error messages when loading file with errors
     - whitespace cleanup when saving files
+    - render About image and title at runtime
     - more examples
 
 
