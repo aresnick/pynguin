@@ -43,7 +43,6 @@ class Interpreter(HighlightedTextEdit):
     def __init__(self, parent):
         HighlightedTextEdit.__init__(self)
         self.mw = parent
-        self.pynguin = parent.pynguin
         self.history = []
         self._outputq = []
         self.historyp = -1

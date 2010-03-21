@@ -72,15 +72,6 @@ class MainWindow(QtGui.QMainWindow):
         self.speedgroup.setExclusive(True)
         self.speedgroup.triggered.connect(self.setSpeed)
 
-        self.pynguins = []
-        self.pynguin = None
-        self.pynguin = self.new_pynguin()
-        trans = QtGui.QTransform()
-        #trans.scale(0.15, 0.15)
-        trans.scale(1, 1)
-        self.scene.view.setTransform(trans)
-        view.centerOn(self.pynguin.gitem)
-
         self.editor = CodeArea(self)
         hbox = QHBoxLayout(self.ui.edframe)
         hbox.setSpacing(0)
@@ -94,18 +85,30 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        ilocals = {'p': self.pynguin,
+        ilocals = {'p': None, # will be set to pynguin later
                     'PI':pi,
                     'new_pynguin':self.new_pynguin,
                     'history': self.history}
-        for fname in pynguin_functions:
-            function = getattr(self.pynguin, fname)
-            ilocals[fname] = function
         self.interpreter_locals = ilocals
         self.interpreter = code.InteractiveConsole(self.interpreter_locals)
         self.interpretereditor.interpreter = self.interpreter
-
         self.interpretereditor.setFocus()
+
+        self.pynguins = []
+        self.pynguin = None
+        self.pynguin = self.new_pynguin()
+        trans = QtGui.QTransform()
+        #trans.scale(0.15, 0.15)
+        trans.scale(1, 1)
+        self.scene.view.setTransform(trans)
+        view.centerOn(self.pynguin.gitem)
+
+        self.interpretereditor.pynguin = self.pynguin
+        ilocals['pynguin'] = self.pynguin
+        ilocals['p'] = self.pynguin
+        for fname in pynguin_functions:
+            function = getattr(self.pynguin, fname)
+            ilocals[fname] = function
 
         self.ui.rsplitter.setSizes([390, 110])
         self.ui.wsplitter.setSizes([550, 350])
