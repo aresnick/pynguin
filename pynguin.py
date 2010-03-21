@@ -685,6 +685,7 @@ class Pynguin(object):
         gitem.ang = ang
         gitem.pen = pen
         gitem._pen = ogitem._pen
+        gitem._fillrule = ogitem._fillrule
         gitem._drawn = ogitem._drawn
         gitem._turned = ogitem._turned
         gitem._current_line = ogitem._current_line
