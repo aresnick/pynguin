@@ -395,6 +395,18 @@ class Pynguin(object):
         else:
             self.left(turn)
 
+    def _closest_turn(self, ang):
+        '''return the angle to turn most quickly from current angle to ang
+        '''
+        ang0 = self.ritem.ang
+        dang = ang - ang0
+        dang = dang % 360
+        if dang > 180:
+            dang = dang - 360
+        elif dang < -180:
+            dang = dang + 360
+        return dang
+
     def toward(self, x, y):
         '''toward(x, y) # in pixels
 
@@ -410,7 +422,7 @@ class Pynguin(object):
         rad = atan2(dy, dx)
         ang = degrees(rad)
 
-        self.turnto(ang)
+        self.right(self._closest_turn(ang))
 
     def distance(self, x, y):
         '''distance(x, y) # in pixels
