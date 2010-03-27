@@ -146,6 +146,7 @@ class Interpreter(HighlightedTextEdit):
                     for pynguin in self.mw.pynguins:
                         pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
                 if self.controlC:
                     self.cmdthread.terminate()
                     for pynguin in self.mw.pynguins:
@@ -156,6 +157,7 @@ class Interpreter(HighlightedTextEdit):
                     self.controlC = False
                     self.needmore = False
                     self.interpreter.resetbuffer()
+
                 self.cmdthread = None
 
                 if not self.needmore:
