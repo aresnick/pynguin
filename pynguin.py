@@ -39,6 +39,8 @@ interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
 
 
 class Pynguin(object):
+    min_delay = 1
+
     def __init__(self, mw, pos, ang, rend):
         self.scene = mw.scene
         self.mw = mw
@@ -97,7 +99,7 @@ class Pynguin(object):
         '''regular timer tick to make sure graphics are being updated'''
         self._r_process_moves()
         if self.drawspeed == 0:
-            delay = 2
+            delay = self.min_delay
         else:
             delay = self.delay
         QtCore.QTimer.singleShot(delay, self._process_moves)

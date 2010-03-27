@@ -223,6 +223,21 @@ class MainWindow(QtGui.QMainWindow):
     def new_pynguin(self):
         p = Pynguin(self, (0, 0), 0, self.rend)
         self.pynguins.append(p)
+
+        # enforce maximum of 150 pynguins
+        npyn = len(self.pynguins)
+        if npyn > 150:
+            class TooManyPynguins(RuntimeError):
+                pass
+            self.pynguins.remove(p)
+            raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
+
+        # increase minimum delay as more pynguins are added
+        # to avoid deadlocks at "instant" speed
+        delays = [(6, 1), (16, 2), (120, 6), (160, 10)]
+        delays = [d for d in delays if d[0] >= npyn]
+        Pynguin.min_delay = delays[0][1]
+
         self.setSpeed()
 
         if self.pynguin is None:
