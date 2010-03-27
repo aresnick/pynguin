@@ -97,7 +97,7 @@ class Pynguin(object):
         '''regular timer tick to make sure graphics are being updated'''
         self._r_process_moves()
         if self.drawspeed == 0:
-            delay = 1
+            delay = 2
         else:
             delay = self.delay
         QtCore.QTimer.singleShot(delay, self._process_moves)
