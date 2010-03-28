@@ -390,12 +390,17 @@ class Pynguin(object):
         The final angle will be the angle specified, not an angle relative
             to the initial angle. For relative angles, use left or right.
         '''
-        ang0 = self.ritem.ang
-        turn = abs(ang - ang0)
-        if ang0 < ang:
-            self.right(turn)
+        if ang != 'random':
+            ang0 = self.ritem.ang
+            turn = abs(ang - ang0)
+            if ang0 < ang:
+                self.right(turn)
+            else:
+                self.left(turn)
+
         else:
-            self.left(turn)
+            ang = random.randrange(360)
+            self.turnto(ang)
 
     def _closest_turn(self, ang):
         '''return the angle to turn most quickly from current angle to ang
@@ -438,18 +443,28 @@ class Pynguin(object):
         dy = y-cy
         return hypot(dx, dy)
 
-    def lineto(self, x, y):
+    def lineto(self, x, y=None):
         '''line(x, y) # in pixels
 
         Move directly to the given coordinates. Always draws a line,
             no matter the state of the pen before the call.
         '''
-        pen = self.pen
-        self.pendown()
-        self.toward(x, y)
-        self.forward(self.distance(x, y))
-        if not pen:
-            self.penup()
+        if x != 'random':
+            pen = self.pen
+            self.pendown()
+            self.toward(x, y)
+            self.forward(self.distance(x, y))
+            if not pen:
+                self.penup()
+        elif y != None:
+            # passed in 'random' plus something else...
+            # That can't be right
+            raise ValueError, "'random' must be passed alone."
+        else:
+            xmin, ymin, xmax, ymax = self.viewcoords()
+            x = random.randrange(xmin, xmax)
+            y = random.randrange(ymin, ymax)
+            self.lineto(x, y)
 
     def _write(self, text):
         font = QtGui.QFont('Arial', 22)
