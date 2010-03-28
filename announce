@@ -23,6 +23,7 @@ Changes in pynguin-0.7:
     - fixed deadlock when running with many pynguins at instant speed
     - added turnto('random') and lineto('random')
     - more multi-pynguin examples
+    - recenter on (0, 0) when moving view splitter
 
 
 Changes in pynguin-0.6:
