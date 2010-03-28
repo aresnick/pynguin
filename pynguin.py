@@ -35,7 +35,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'turnto',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
-interpreter_protect = ['p', 'new_pynguin', 'PI', 'history']
+interpreter_protect = ['p', 'pynguin', 'new_pynguin', 'pynguins', 'PI', 'history']
 
 
 class Pynguin(object):

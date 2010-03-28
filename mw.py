@@ -106,6 +106,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.pynguin = self.pynguin
         ilocals['pynguin'] = self.pynguin
         ilocals['p'] = self.pynguin
+        ilocals['pynguins'] = self.pynguins
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
