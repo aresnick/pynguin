@@ -113,6 +113,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ui.rsplitter.setSizes([390, 110])
         self.ui.wsplitter.setSizes([550, 350])
+        self.ui.wsplitter.splitterMoved.connect(self.recenter)
 
         self.viewgroup = QtGui.QActionGroup(self)
         self.viewgroup.addAction(self.ui.actionPynguin)
@@ -152,6 +153,10 @@ class MainWindow(QtGui.QMainWindow):
         evpos = ev.pos()
         scpos = self.scene.view.mapToScene(evpos)
         self.pynguin.onclick(scpos.x(), scpos.y())
+
+    def recenter(self):
+        center = QtCore.QPointF(0, 0)
+        self.ui.view.centerOn(center)
 
     def setup_examples(self):
         filemenu = self.ui.filemenu
