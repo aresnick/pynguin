@@ -18,4 +18,3 @@ Need to check types being passed to methods that will later
     be passed through to delayed graphic draw methods so that
     error messages will be seen at the right place.
 2nd tab in editor is going to wrong tab stop
-Fix freeze when running scatter at instant speed
