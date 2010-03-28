@@ -957,6 +957,7 @@ class PynguinGraphicsItem(GraphicsItem):
         color = QtGui.QColor(100, 220, 110)
         self.brush = QtGui.QBrush(color)
         self._fillmode = False
+        self._fillrule = QtCore.Qt.WindingFill
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)
