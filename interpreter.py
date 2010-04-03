@@ -17,6 +17,7 @@
 
 
 import sys
+import logging
 
 from PyQt4 import QtCore, QtGui
 
@@ -143,16 +144,18 @@ class Interpreter(HighlightedTextEdit):
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
                 while not self.cmdthread.wait(0) and not self.controlC:
-                    for pynguin in self.mw.pynguins:
-                        pynguin._r_process_moves()
+                    self.mw.pynguin._r_process_moves()
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
                 if self.controlC:
+                    logging.debug('CC')
                     self.cmdthread.terminate()
+                    self.cmdthread.wait()
+                    logging.debug('CCT')
+                    self.mw.pynguin._empty_move_queue()
                     for pynguin in self.mw.pynguins:
-                        pynguin._empty_move_queue()
-                        pynguin._r_process_moves()
                         pynguin._sync_items()
+                    logging.debug('synced')
                     self.append('KeyboardInterrupt\n')
                     self.controlC = False
                     self.needmore = False

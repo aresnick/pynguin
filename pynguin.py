@@ -21,6 +21,7 @@ from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 import random
+import logging
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
@@ -40,6 +41,18 @@ interpreter_protect = ['p', 'pynguin', 'new_pynguin', 'pynguins', 'PI', 'history
 
 class Pynguin(object):
     min_delay = 1
+    delay = 50
+
+    _moves = Queue.Queue(50) # max number of items in queue
+    _checktime = QtCore.QTime()
+    _checktime.start()
+
+    _drawspeed_pending = None
+    _turnspeed_pending = None
+    drawspeed = 1
+    turnspeed = 4
+    _drawn = drawspeed
+    _turned = turnspeed
 
     def __init__(self, mw, pos, ang, rend):
         self.scene = mw.scene
@@ -49,27 +62,17 @@ class Pynguin(object):
         self.gitem = None # Gets set up later in the main thread
         self._zvalue = 0
         self.drawn_items = []
-        self._drawspeed_pending = None
-        self._turnspeed_pending = None
-        self.drawspeed = 1
-        self.turnspeed = 4
-        self.ritem._drawn = self.drawspeed
-        self.ritem._turned = self.turnspeed
-        self.delay = 50
-        self._moves = Queue.Queue(50) # max number of items in queue
-        self._checktime = QtCore.QTime()
-        self._checktime.start()
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
         self.imageid = 'pynguin'
         self.scene.addItem(self.gitem)
         self.gitem.setZValue(9999999)
-        self.gitem._drawn = self.drawspeed
-        self.gitem._turned = self.turnspeed
-        self.gitem._current_line = None
         self.pendown()
         self.fillrule('winding')
+        self.gitem._current_line = None
+
+        self.gitem.ready = True
 
     def _set_item_pos(self, item, pos):
         item.setPos(pos)
@@ -95,14 +98,33 @@ class Pynguin(object):
         x, y = pos.x(), pos.y()
         return x, y
 
-    def _process_moves(self):
+    @classmethod
+    def _process_moves(cls):
         '''regular timer tick to make sure graphics are being updated'''
-        self._r_process_moves()
-        if self.drawspeed == 0:
-            delay = self.min_delay
+        logging.debug('_pm')
+        cls._r_process_moves()
+        if cls.drawspeed == 0:
+            delay = cls.min_delay
         else:
-            delay = self.delay
-        QtCore.QTimer.singleShot(delay, self._process_moves)
+            delay = cls.delay
+
+    @classmethod
+    def _empty_move_queue(cls):
+        while 1:
+            logging.debug('________________emq')
+            try:
+                logging.debug('1')
+                logging.debug('________________1emq %s' % cls._moves.qsize())
+                move, args = cls._moves.get(block=False)
+                logging.debug('2')
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                logging.debug('________________2emq %s' % cls._moves.qsize())
+            except Queue.Empty:
+                logging.debug('EMPTY')
+                break
+
+            logging.debug('4')
+        logging.debug('5')
 
     def _sync_items(self):
         '''Sometimes, after running code is interrupted (like by Ctrl-C)
@@ -117,18 +139,20 @@ class Pynguin(object):
         self.ritem.setPos(self.gitem.pos())
         self.ritem.ang = self.gitem.ang
 
-    def _r_process_moves(self):
+    @classmethod
+    def _r_process_moves(cls):
         '''apply the queued commands for the graphical display item
             This must be done from the main thread
         '''
-        drawspeed = self.drawspeed
-        delay = self.delay
-        etime = self._checktime.elapsed()
+        drawspeed = cls.drawspeed
+        delay = cls.delay
+        etime = cls._checktime.elapsed()
         if not drawspeed or etime > delay:
-            ied = self.mw.interpretereditor
+            ied = cls.mw.interpretereditor
             while True:
+                logging.debug('_____rpm')
                 try:
-                    move, args = self._moves.get(block=False)
+                    move, args = cls._moves.get(block=False)
                 except Queue.Empty:
                     break
                 else:
@@ -141,7 +165,7 @@ class Pynguin(object):
                         if ied.cmdthread is not None:
                             ied.cmdthread.terminate()
                             ied.cmdthread = None
-                        self._empty_move_queue()
+                        cls._empty_move_queue()
                         ied.write('>>> ')
 
                 #print 'dt', self.gitem._drawn, self.gitem._turned
@@ -150,19 +174,22 @@ class Pynguin(object):
                     delay -= 1
                     if delay < 0:
                         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                        delay = 5 * self.delay
-                elif self.gitem._drawn > 0 and self.gitem._turned > 0:
+                        delay = cls.min_delay
+                        break
+                elif cls._drawn > 0 and cls._turned > 0:
+                    logging.debug('dt %s %s' % (cls._drawn, cls._turned))
                     continue
                 else:
-                    self.gitem._drawn = self.drawspeed
-                    self.gitem._turned = self.turnspeed
+                    cls._drawn = cls.drawspeed
+                    cls._turned = cls.turnspeed
                     break
 
-                if self.drawspeed:
+                if cls.drawspeed:
                     break
 
-            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-            self._checktime.restart()
+            cls._checktime.restart()
+
+        QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def _gitem_new_line(self):
         self.gitem._current_line = None
@@ -171,7 +198,7 @@ class Pynguin(object):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
-        item._drawn -= abs(distance)
+        Pynguin._drawn -= abs(distance)
 
         ang = item.ang
         rad = ang * (PI / 180)
@@ -241,12 +268,13 @@ class Pynguin(object):
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
-    def _check_drawspeed_change(self):
-        if self._drawspeed_pending is not None:
-            self.drawspeed = self._drawspeed_pending
-            self._drawspeed_pending = None
-            self.turnspeed = self._turnspeed_pending
-            self._turnspeed_pending = None
+    @classmethod
+    def _check_drawspeed_change(cls):
+        if cls._drawspeed_pending is not None:
+            cls.drawspeed = cls._drawspeed_pending
+            cls._drawspeed_pending = None
+            cls.turnspeed = cls._turnspeed_pending
+            cls._turnspeed_pending = None
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
@@ -255,7 +283,9 @@ class Pynguin(object):
             args = ()
         while 1:
             try:
+                logging.debug('qb')
                 self._moves.put_nowait((func, args))
+                logging.debug('qp')
             except Queue.Full:
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             else:
@@ -292,7 +322,7 @@ class Pynguin(object):
         item.rotate(-degrees)
 
     def _item_left(self, item, degrees):
-        item._turned -= (abs(degrees))
+        Pynguin._turned -= (abs(degrees))
         item.rotate(-degrees)
     def _gitem_turn(self, degrees):
         self._item_left(self.gitem, degrees)
@@ -360,10 +390,15 @@ class Pynguin(object):
         No line will be drawn, no matter what the state of the pen.
         '''
         if x != 'random':
+            logging.debug('g1')
             pos = QtCore.QPointF(x, y)
+            logging.debug('g2')
             self._item_goto(self.ritem, pos)
+            logging.debug('g3')
             self.qmove(self._gitem_new_line)
+            logging.debug('g4')
             self.qmove(self._gitem_goto, (pos,))
+            logging.debug('g5')
         elif y != None:
             # passed in 'random' plus something else...
             # That can't be right
@@ -502,19 +537,11 @@ class Pynguin(object):
         self.qmove(self._gitem_new_line)
         self.qmove(self._gitem_setangle, (0,))
 
-    def _empty_move_queue(self):
-        while 1:
-            try:
-                move, args = self._moves.get(block=False)
-            except Queue.Empty:
-                break
-
     def _reset(self):
         for item in self.drawn_items:
-            scene = item.scene()
-            scene.removeItem(item)
+            self.scene.removeItem(item)
         self.drawn_items = []
-        if self._moves:
+        if self is self.mw.pynguin and self._moves:
             self._empty_move_queue()
         self._gitem_home()
         self._gitem_new_line()
@@ -533,6 +560,8 @@ class Pynguin(object):
 
         Move to home location and angle and restore state
             to the initial values (pen, fill, etc).
+
+        Also removes any added pynguins.
         '''
         if self is self.mw.pynguin:
             for pyn in self.mw.pynguins:
@@ -703,8 +732,6 @@ class Pynguin(object):
         gitem.pen = pen
         gitem._pen = ogitem._pen
         gitem._fillrule = ogitem._fillrule
-        gitem._drawn = ogitem._drawn
-        gitem._turned = ogitem._turned
         gitem._current_line = ogitem._current_line
         scene.removeItem(ogitem)
         scene.addItem(gitem)
@@ -958,6 +985,8 @@ class PynguinGraphicsItem(GraphicsItem):
         self.brush = QtGui.QBrush(color)
         self._fillmode = False
         self._fillrule = QtCore.Qt.WindingFill
+
+        self.ready = False
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)

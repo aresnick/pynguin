@@ -22,6 +22,7 @@ from math import pi
 import code
 import glob
 import zipfile
+import logging
 
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
@@ -94,6 +95,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.interpreter = self.interpreter
         self.interpretereditor.setFocus()
 
+        Pynguin.mw = self
         self.pynguins = []
         self.pynguin = None
         self.pynguin = self.new_pynguin()
@@ -240,26 +242,29 @@ class MainWindow(QtGui.QMainWindow):
 
         # increase minimum delay as more pynguins are added
         # to avoid deadlocks at "instant" speed
-        delays = [(6, 1), (16, 2), (120, 6), (160, 10)]
-        delays = [d for d in delays if d[0] >= npyn]
-        Pynguin.min_delay = delays[0][1]
+        #delays = [(6, 1), (16, 2), (120, 6), (160, 10)]
+        #delays = [d for d in delays if d[0] >= npyn]
+        #Pynguin.min_delay = delays[0][1]
 
         self.setSpeed()
 
         if self.pynguin is None:
             p._gitem_setup()
-            p._process_moves()
+            self.startTimer(p.delay)
 
         else:
             self.pynguin.qmove(p._gitem_setup)
-            self.pynguin.qmove(p._process_moves)
-            while p.gitem is None:
+            while p.gitem is None or not p.gitem.ready:
                 pass
 
         return p
 
+    def timerEvent(self, ev):
+        Pynguin._process_moves()
+
     def closeEvent(self, ev=None):
         if self.maybe_save():
+            self.interpretereditor.cmdthread = None
             ev.accept()
         else:
             ev.ignore()
@@ -720,9 +725,8 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin.setImageid(choices[ev])
 
     def _setSpeed(self, speed):
-        for pynguin in self.pynguins:
-            pynguin._drawspeed_pending = 2 * speed
-            pynguin._turnspeed_pending = 4 * speed
+        Pynguin._drawspeed_pending = 2 * speed
+        Pynguin._turnspeed_pending = 4 * speed
     def setSpeed(self, ev=None):
         '''select drawing speed setting. Sets the speed for _all_ pynguins!'''
         if ev is None:

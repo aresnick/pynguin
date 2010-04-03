@@ -23,10 +23,10 @@ from PyQt4 import QtGui
 
 # Need to use logging when debugging, since stdout and stderr
 #  are redirected to the internal console.
-#import logging
-#LOG_FILENAME = 'logfile.log'
-#logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
-#logging.debug('Logging started')
+import logging
+LOG_FILENAME = 'logfile.log'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+logging.debug('Logging started')
 
 
 from mw import MainWindow
