@@ -22,7 +22,7 @@ from math import pi
 import code
 import glob
 import zipfile
-import logging
+#import logging
 
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
@@ -594,23 +594,8 @@ class MainWindow(QtGui.QMainWindow):
             if self.interpretereditor.cmdthread is None:
                 self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, code)
                 cmdthread = self.interpretereditor.cmdthread
+                cmdthread.finished.connect(self.interpretereditor.testthreaddone)
                 cmdthread.start()
-                while not cmdthread.wait(0) and not self.interpretereditor.controlC:
-                    for pynguin in self.pynguins:
-                        pynguin._r_process_moves()
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                if self.interpretereditor.controlC:
-                    cmdthread.terminate()
-                    for pynguin in self.pynguins:
-                        pynguin._empty_move_queue()
-                        pynguin._r_process_moves()
-                        pynguin._sync_items()
-                    self.interpretereditor.append('KeyboardInterrupt\n')
-                    self.interpretereditor.controlC = False
-                    self.interpretereditor.needmore = False
-                    self.interpretereditor.interpreter.resetbuffer()
-                    self.interpretereditor.write('>>> ')
-                self.interpretereditor.cmdthread = None
 
                 line0 = code.split('\n')[0]
                 if line0.startswith('def ') and line0.endswith(':'):

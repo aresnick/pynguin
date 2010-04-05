@@ -17,11 +17,12 @@
 
 
 import sys
-import logging
+#import logging
 
 from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit
+import pynguin
 
 
 class CmdThread(QtCore.QThread):
@@ -39,6 +40,9 @@ class CmdThread(QtCore.QThread):
             ed.interpreter.runcode(self.txt)
         else:
             ed.needmore = ed.interpreter.push(self.txt)
+
+
+        #logging.debug('THREAD DONE')
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self, parent):
@@ -59,8 +63,8 @@ class Interpreter(HighlightedTextEdit):
 
         self.setWordWrapMode(QtGui.QTextOption.WrapAnywhere)
 
+        self.needmore = False
         self.cmdthread = None
-        self.controlC = False
 
         QtCore.QTimer.singleShot(10, self.writeoutputq)
 
@@ -93,6 +97,19 @@ class Interpreter(HighlightedTextEdit):
             self.insertPlainText(text)
             QtCore.QTimer.singleShot(100, self.scrolldown)
         QtCore.QTimer.singleShot(10, self.writeoutputq)
+
+    def testthreaddone(self):
+        self.cmdthread = None
+
+    def threaddone(self):
+        #logging.debug('self.threaddone')
+
+        self.cmdthread = None
+
+        if not self.needmore:
+            self.write('>>> ')
+        else:
+            self.write('... ')
 
     def keyPressEvent(self, ev):
         k = ev.key()
@@ -142,31 +159,8 @@ class Interpreter(HighlightedTextEdit):
 
             if self.cmdthread is None:
                 self.cmdthread = CmdThread(self, txt)
+                self.cmdthread.finished.connect(self.threaddone)
                 self.cmdthread.start()
-                while not self.cmdthread.wait(0) and not self.controlC:
-                    self.mw.pynguin._r_process_moves()
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-
-                if self.controlC:
-                    logging.debug('CC')
-                    self.cmdthread.terminate()
-                    self.cmdthread.wait()
-                    logging.debug('CCT')
-                    self.mw.pynguin._empty_move_queue()
-                    for pynguin in self.mw.pynguins:
-                        pynguin._sync_items()
-                    logging.debug('synced')
-                    self.append('KeyboardInterrupt\n')
-                    self.controlC = False
-                    self.needmore = False
-                    self.interpreter.resetbuffer()
-
-                self.cmdthread = None
-
-                if not self.needmore:
-                    self.write('>>> ')
-                else:
-                    self.write('... ')
 
                 passthru = False
             else:
@@ -246,7 +240,17 @@ class Interpreter(HighlightedTextEdit):
         elif mdf & QtCore.Qt.ControlModifier and k==C:
             #send keyboard interrupt
             if self.cmdthread is not None and self.cmdthread.isRunning():
-                self.controlC = True
+                #logging.debug('CC')
+                pynguin.Pynguin.ControlC = True
+                #logging.debug('CCT')
+                self.mw.pynguin._empty_move_queue()
+                for pyn in self.mw.pynguins:
+                    pyn._sync_items()
+                #logging.debug('synced')
+                self.needmore = False
+                self.interpreter.resetbuffer()
+                pynguin.Pynguin.ControlC = False
+
             else:
                 self.write('\nKeyboardInterrupt\n')
                 self.interpreter.resetbuffer()

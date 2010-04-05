@@ -21,7 +21,7 @@ from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 import random
-import logging
+#import logging
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
@@ -40,6 +40,8 @@ interpreter_protect = ['p', 'pynguin', 'new_pynguin', 'pynguins', 'PI', 'history
 
 
 class Pynguin(object):
+    ControlC = False
+
     min_delay = 1
     delay = 50
 
@@ -101,7 +103,7 @@ class Pynguin(object):
     @classmethod
     def _process_moves(cls):
         '''regular timer tick to make sure graphics are being updated'''
-        logging.debug('_pm')
+        #logging.debug('_pm')
         cls._r_process_moves()
         if cls.drawspeed == 0:
             delay = cls.min_delay
@@ -111,20 +113,20 @@ class Pynguin(object):
     @classmethod
     def _empty_move_queue(cls):
         while 1:
-            logging.debug('________________emq')
+            #logging.debug('________________emq')
             try:
-                logging.debug('1')
-                logging.debug('________________1emq %s' % cls._moves.qsize())
+                #logging.debug('1')
+                #logging.debug('________________1emq %s' % cls._moves.qsize())
                 move, args = cls._moves.get(block=False)
-                logging.debug('2')
+                #logging.debug('2')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                logging.debug('________________2emq %s' % cls._moves.qsize())
+                #logging.debug('________________2emq %s' % cls._moves.qsize())
             except Queue.Empty:
-                logging.debug('EMPTY')
+                #logging.debug('EMPTY')
                 break
 
-            logging.debug('4')
-        logging.debug('5')
+            #logging.debug('4')
+        #logging.debug('5')
 
     def _sync_items(self):
         '''Sometimes, after running code is interrupted (like by Ctrl-C)
@@ -150,7 +152,7 @@ class Pynguin(object):
         if not drawspeed or etime > delay:
             ied = cls.mw.interpretereditor
             while True:
-                logging.debug('_____rpm')
+                #logging.debug('_____rpm')
                 try:
                     move, args = cls._moves.get(block=False)
                 except Queue.Empty:
@@ -177,7 +179,7 @@ class Pynguin(object):
                         delay = cls.min_delay
                         break
                 elif cls._drawn > 0 and cls._turned > 0:
-                    logging.debug('dt %s %s' % (cls._drawn, cls._turned))
+                    #logging.debug('dt %s %s' % (cls._drawn, cls._turned))
                     continue
                 else:
                     cls._drawn = cls.drawspeed
@@ -279,14 +281,18 @@ class Pynguin(object):
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
 
+        if self.ControlC:
+            raise KeyboardInterrupt
+
         if args is None:
             args = ()
         while 1:
             try:
-                logging.debug('qb')
+                #logging.debug('qb')
                 self._moves.put_nowait((func, args))
-                logging.debug('qp')
+                #logging.debug('qp')
             except Queue.Full:
+                #logging.debug('Full')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             else:
                 break
@@ -390,15 +396,15 @@ class Pynguin(object):
         No line will be drawn, no matter what the state of the pen.
         '''
         if x != 'random':
-            logging.debug('g1')
+            #logging.debug('g1')
             pos = QtCore.QPointF(x, y)
-            logging.debug('g2')
+            #logging.debug('g2')
             self._item_goto(self.ritem, pos)
-            logging.debug('g3')
+            #logging.debug('g3')
             self.qmove(self._gitem_new_line)
-            logging.debug('g4')
+            #logging.debug('g4')
             self.qmove(self._gitem_goto, (pos,))
-            logging.debug('g5')
+            #logging.debug('g5')
         elif y != None:
             # passed in 'random' plus something else...
             # That can't be right
