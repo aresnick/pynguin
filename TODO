@@ -18,7 +18,7 @@ Need to check types being passed to methods that will later
     be passed through to delayed graphic draw methods so that
     error messages will be seen at the right place.
 2nd tab in editor is going to wrong tab stop
-reset with multiple pynguins is not removing drawn items
-    - likely due to original pynguin thread getting to
-        run first and running _remove_other_pynguins
-        before they get a chance to run _reset
+
+Intermittent crash/freeze
+  - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
+    Aborted
