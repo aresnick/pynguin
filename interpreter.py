@@ -17,12 +17,23 @@
 
 
 import sys
-#import logging
+import code
+import logging
 
 from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit
 import pynguin
+
+
+class Console(code.InteractiveConsole):
+    def __init__(self, ilocals, editor):
+        code.InteractiveConsole.__init__(self, ilocals)
+        self.editor = editor
+
+    def showtraceback(self):
+        code.InteractiveConsole.showtraceback(self)
+        self.editor.write('>>> ')
 
 
 class CmdThread(QtCore.QThread):

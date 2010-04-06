@@ -19,7 +19,6 @@
 import os
 import sys
 from math import pi
-import code
 import glob
 import zipfile
 #import logging
@@ -30,7 +29,7 @@ from PyQt4.Qt import QHBoxLayout
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
 from util import getrend
 from codearea import CodeArea
-from interpreter import Interpreter, CmdThread
+from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
 from conf import uidir, bug_url
 
@@ -91,7 +90,7 @@ class MainWindow(QtGui.QMainWindow):
                     'new_pynguin':self.new_pynguin,
                     'history': self.history}
         self.interpreter_locals = ilocals
-        self.interpreter = code.InteractiveConsole(self.interpreter_locals)
+        self.interpreter = Console(self.interpreter_locals, self.interpretereditor)
         self.interpretereditor.interpreter = self.interpreter
         self.interpretereditor.setFocus()
 
