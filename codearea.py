@@ -16,6 +16,8 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import logging
+
 from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit

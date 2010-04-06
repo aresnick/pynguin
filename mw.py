@@ -535,7 +535,7 @@ class MainWindow(QtGui.QMainWindow):
             mselect.setCurrentIndex(0)
         else:
             self.editor._doc.setPlainText('')
-            self.editor.settitle('NEW')
+            self.newdoc()
 
         if docname in self.editor.documents:
             del self.editor.documents[docname]
