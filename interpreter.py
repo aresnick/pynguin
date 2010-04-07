@@ -33,7 +33,8 @@ class Console(code.InteractiveConsole):
 
     def showtraceback(self):
         code.InteractiveConsole.showtraceback(self)
-        self.editor.write('>>> ')
+        self.error = True
+        #logging.debug('foo')
 
 
 class CmdThread(QtCore.QThread):
@@ -46,12 +47,12 @@ class CmdThread(QtCore.QThread):
         self.txt = txt
     def run(self):
         ed = self.ed
+        ed.interpreter.error = False
         lines = self.txt.split('\n')
         if len(lines) > 1:
             ed.interpreter.runcode(self.txt)
         else:
             ed.needmore = ed.interpreter.push(self.txt)
-
 
         #logging.debug('THREAD DONE')
 
@@ -110,17 +111,23 @@ class Interpreter(HighlightedTextEdit):
         QtCore.QTimer.singleShot(10, self.writeoutputq)
 
     def testthreaddone(self):
+        #logging.debug('self.testthreaddone')
+        if self.interpreter.error:
+            self.write('>>> ')
+
+        self.interpreter.error = False
         self.cmdthread = None
 
     def threaddone(self):
         #logging.debug('self.threaddone')
 
-        self.cmdthread = None
-
         if not self.needmore:
             self.write('>>> ')
         else:
             self.write('... ')
+
+        self.interpreter.error = False
+        self.cmdthread = None
 
     def keyPressEvent(self, ev):
         k = ev.key()
