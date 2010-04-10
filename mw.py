@@ -291,6 +291,11 @@ class MainWindow(QtGui.QMainWindow):
             del self.interpreter_locals[name]
         self.editor.clear()
         self.interpretereditor.clear()
+        self.newdoc()
+        self._modified = False
+        windowtitle = 'pynguin'
+        self.setWindowTitle(windowtitle)
+        self.setWindowModified(False)
         self._filepath = None
 
     def maybe_save(self):
