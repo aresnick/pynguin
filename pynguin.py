@@ -667,7 +667,6 @@ class Pynguin(object):
 
     def fillcolor(self, r=None, g=None, b=None):
         r, g, b = choose_color(r, g, b)
-        print r, g, b
         if r is g is b is None:
             return self.ritem.fillcolor
         self.ritem.fillcolor = (r, g, b)
