@@ -9,10 +9,10 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release fixes a couple of serious problems that could
-    cause the program to crash or not start up at all.
-    If you were having trouble before, please take another
-    look and let me know what you think.
+This release changes the method of starting and stopping
+    the separate code-running threads. It should be much
+    less susceptible to lock-ups and crashes, though I
+    am still experiencing occasional problems.
 
 
 Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
@@ -21,9 +21,11 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 Changes in pynguin-0.7:
     - fixed deadlock when running with many pynguins at instant speed
-    - added turnto('random') and lineto('random')
-    - more multi-pynguin examples
-    - recenter on (0, 0) when moving view splitter
+    - new threading model greatly reduces problems with lock-ups
+    - added more multi-pynguin examples
+    - added commands turnto('random') and lineto('random')
+    - added equation plotting examples
+    - re-center on (0, 0) when moving view splitter
 
 
 Changes in pynguin-0.6:
