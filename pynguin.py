@@ -25,7 +25,7 @@ import random
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
-from util import sign
+from util import sign, choose_color
 from conf import uidir
 
 
@@ -619,7 +619,8 @@ class Pynguin(object):
         self.qmove(self._pendown)
 
     def _color(self, r=None, g=None, b=None):
-        self.gitem.pen.setColor(QtGui.QColor.fromRgb(r, g, b))
+        c = QtGui.QColor(r, g, b)
+        self.gitem.pen.setColor(c)
 
     def color(self, r=None, g=None, b=None):
         '''color(red, green, blue) # 0-255 for each value
@@ -629,13 +630,9 @@ class Pynguin(object):
             3 integers between 0 and 255, specifying the red, blue, and
             green components of the color.
         '''
-        if r == 'random':
-            r, g, b = [randrange(256) for cc in range(3)]
-        elif r is g is b is None:
+        r, g, b = choose_color(r, g, b)
+        if r is g is b is None:
             return self.ritem.color
-        elif r is None or g is None or b is None:
-            raise TypeError
-
         self.ritem.color = (r, g, b)
         self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b))
@@ -669,13 +666,10 @@ class Pynguin(object):
         self._gitem_new_line()
 
     def fillcolor(self, r=None, g=None, b=None):
-        if r == 'random':
-            r, g, b = [randrange(256) for cc in range(3)]
-        elif r is g is b is None:
+        r, g, b = choose_color(r, g, b)
+        print r, g, b
+        if r is g is b is None:
             return self.ritem.fillcolor
-        elif r is None or g is None or b is None:
-            raise TypeError
-
         self.ritem.fillcolor = (r, g, b)
         self.qmove(self._fillcolor, (r, g, b))
 
@@ -699,10 +693,8 @@ class Pynguin(object):
             'winding' (default) or 'oddeven'
         '''
         if color is not None:
-            if color == 'random':
-                self.fillcolor(color)
-            else:
-                self.fillcolor(*color)
+            c = choose_color(color)
+            self.fillcolor(*c)
 
         if rule is not None:
             self.fillrule(rule)

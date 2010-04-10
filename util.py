@@ -17,8 +17,9 @@
 
 
 import os
+from random import randrange
 
-from PyQt4 import QtCore, QtSvg
+from PyQt4 import QtCore, QtSvg, QtGui
 
 
 def sign(x):
@@ -33,3 +34,24 @@ def getrend(app):
     rend = QtSvg.QSvgRenderer(fp, app)
     return rend
 
+def choose_color(r=None, g=None, b=None):
+    if r == 'random':
+        r, g, b = [randrange(256) for cc in range(3)]
+    elif r == 'rlight':
+        r, g, b = [randrange(200, 256) for cc in range(3)]
+    elif r == 'rmedium':
+        r, g, b = [randrange(100, 200) for cc in range(3)]
+    elif r == 'rdark':
+        r, g, b = [randrange(100) for cc in range(3)]
+    elif r is g is b is None:
+        return None, None, None
+    elif g is not None and b is not None:
+        c = QtGui.QColor.fromRgb(r, g, b)
+        r, g, b = c.red(), c.green(), c.blue()
+    elif r is not None:
+        c = QtGui.QColor(r)
+        r, g, b = c.red(), c.green(), c.blue()
+    elif r is None or g is None or b is None:
+        raise TypeError
+
+    return r, g, b
