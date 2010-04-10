@@ -24,6 +24,8 @@ Changes in pynguin-0.7:
     - new threading model greatly reduces problems with lock-ups
     - added more multi-pynguin examples
     - added commands turnto('random') and lineto('random')
+    - added more random color possibilities ('rlight', 'rmedium', 'rdark')
+    - allow named colors and html-style colors
     - added command clear()
     - added equation plotting examples
     - re-center on (0, 0) when moving view splitter
