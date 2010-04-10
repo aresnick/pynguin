@@ -510,6 +510,8 @@ class Pynguin(object):
     def _write(self, text):
         font = QtGui.QFont('Arial', 22)
         item = self.gitem.scene().addSimpleText(text, font)
+        item.setZValue(self._zvalue)
+        self._zvalue += 1
         item.setPen(self.gitem.pen)
         item.setBrush(self.gitem.pen.color())
         x, y = self.gitem.x(), self.gitem.y()
