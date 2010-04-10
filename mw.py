@@ -277,11 +277,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def new(self):
         if self.maybe_save():
-            self._new()
+            self._new(newdoc=True)
         else:
             pass
 
-    def _new(self):
+    def _new(self, newdoc=False):
         self.pynguin.reset()
         del_later = []
         for name in self.interpreter_locals:
@@ -291,7 +291,8 @@ class MainWindow(QtGui.QMainWindow):
             del self.interpreter_locals[name]
         self.editor.clear()
         self.interpretereditor.clear()
-        self.newdoc()
+        if newdoc:
+            self.newdoc()
         self._modified = False
         windowtitle = 'pynguin'
         self.setWindowTitle(windowtitle)
