@@ -33,7 +33,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'goto', 'xy', 'turnto',
+                        'goto', 'xy', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
 interpreter_protect = ['p', 'pynguin', 'new_pynguin', 'pynguins', 'PI', 'history']
@@ -545,12 +545,18 @@ class Pynguin(object):
         self.qmove(self._gitem_new_line)
         self.qmove(self._gitem_setangle, (0,))
 
-    def _reset(self):
+    def _clear(self):
         for item in self.drawn_items:
             self.scene.removeItem(item)
         self.drawn_items = []
+
+    def clear(self):
+        self.qmove(self._clear)
+
+    def _reset(self):
         if self is self.mw.pynguin and self._moves:
             self._empty_move_queue()
+        self._clear()
         self._gitem_home()
         self._gitem_new_line()
         self._gitem_setangle(0)
