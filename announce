@@ -27,8 +27,9 @@ Changes in pynguin-0.7:
     - added more random color possibilities ('rlight', 'rmedium', 'rdark')
     - allow named colors and html-style colors
     - added command clear()
-    - added equation plotting examples
+    - added equation plotting examples - cartesian and polar
     - re-center on (0, 0) when moving view splitter
+    - added svg/pdf worksheets
 
 
 Changes in pynguin-0.6:
