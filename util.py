@@ -49,8 +49,14 @@ def choose_color(r=None, g=None, b=None):
         c = QtGui.QColor.fromRgb(r, g, b)
         r, g, b = c.red(), c.green(), c.blue()
     elif r is not None:
-        c = QtGui.QColor(r)
-        r, g, b = c.red(), c.green(), c.blue()
+        try:
+            rr, gg, bb = r
+            rr, gg, bb = int(rr), int(gg), int(bb)
+        except ValueError:
+            c = QtGui.QColor(r)
+            r, g, b = c.red(), c.green(), c.blue()
+        else:
+            r, g, b = rr, gg, bb
     elif r is None or g is None or b is None:
         raise TypeError
 
