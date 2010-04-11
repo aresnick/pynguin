@@ -21,3 +21,9 @@ Need to check types being passed to methods that will later
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
     Aborted
+  - X Error: BadDrawable (invalid Pixmap or Window parameter) 9
+    Major opcode: 64 (X_PolyPoint)
+    Resource id:  0x2ae000
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2ae000
