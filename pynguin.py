@@ -565,6 +565,7 @@ class Pynguin(object):
         self._color(255, 255, 255)
         self._fillcolor(100, 220, 110)
         self._gitem_fillrule(QtCore.Qt.WindingFill)
+        self._setImageid('pynguin')
 
         if self is self.mw.pynguin:
             self._remove_other_pynguins()
