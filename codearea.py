@@ -40,7 +40,10 @@ class CodeArea(HighlightedTextEdit):
 
     def keyPressEvent(self, ev):
         k = ev.key()
+        mdf = ev.modifiers()
 
+        Up = QtCore.Qt.Key_Up
+        Down = QtCore.Qt.Key_Down
         Return = QtCore.Qt.Key_Return
         lead = 0
         if k == Return:
@@ -61,6 +64,14 @@ class CodeArea(HighlightedTextEdit):
                 if char == colon:
                     # auto indent
                     lead += 4
+
+        elif mdf & QtCore.Qt.ControlModifier and k==Up:
+            self.promote()
+            return
+
+        elif mdf & QtCore.Qt.ControlModifier and k==Down:
+            self.demote()
+            return
 
         HighlightedTextEdit.keyPressEvent(self, ev)
         if lead:
@@ -158,3 +169,26 @@ class CodeArea(HighlightedTextEdit):
         curs.setPosition(doccharstart, 0)
         curs.setPosition(doccharend, 1)
         self.setTextCursor(curs)
+
+    def promote(self):
+        '''move the current document up 1 place in the stack'''
+        self.savecurrent()
+        idx = self.mselect.currentIndex()
+        title = self.mselect.itemText(idx)
+        item_docid = self.mselect.itemData(idx)
+        if idx > 0:
+            self.mselect.removeItem(idx)
+            self.mselect.insertItem(idx-1, title, item_docid)
+            self.mselect.setCurrentIndex(idx-1)
+
+    def demote(self):
+        '''move the current document down 1 place in the stack'''
+        self.savecurrent()
+        idx = self.mselect.currentIndex()
+        title = self.mselect.itemText(idx)
+        item_docid = self.mselect.itemData(idx)
+        count = self.mselect.count()
+        if idx < count-1:
+            self.mselect.removeItem(idx)
+            self.mselect.insertItem(idx+1, title, item_docid)
+            self.mselect.setCurrentIndex(idx+1)
