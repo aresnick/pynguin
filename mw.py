@@ -44,6 +44,8 @@ class MainWindow(QtGui.QMainWindow):
         self._filepath = None
         self._modified = False
 
+        self._mainthread = QtCore.QThread.currentThread()
+
         import pynguin
         appdir, _ = os.path.split(os.path.abspath(pynguin.__file__))
         self.appdir = appdir

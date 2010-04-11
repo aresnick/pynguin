@@ -286,6 +286,14 @@ class Pynguin(object):
 
         if args is None:
             args = ()
+
+        thread = QtCore.QThread.currentThread()
+        if thread == self.mw._mainthread:
+            # Coming from main thread. Could be an onclick handler
+            #   or a menu-item action
+            func(*args)
+            return
+
         while 1:
             try:
                 #logging.debug('qb')
