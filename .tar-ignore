@@ -3,3 +3,4 @@
 *.pyc
 doc/screenshots
 doc/examples/test
+*.log
