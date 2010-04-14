@@ -88,8 +88,8 @@ class MainWindow(QtGui.QMainWindow):
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
         ilocals = {'p': None, # will be set to pynguin later
-                    'PI':pi,
-                    'new_pynguin':self.new_pynguin,
+                    'PI': pi,
+                    'Pynguin': Pynguin,
                     'history': self.history}
         self.interpreter_locals = ilocals
         self.interpreter = Console(self.interpreter_locals, self.interpretereditor)
@@ -97,6 +97,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.setFocus()
 
         Pynguin.mw = self
+        Pynguin.rend = self.rend
         self.pynguins = []
         self.pynguin = None
         self.pynguin = self.new_pynguin()
@@ -230,34 +231,7 @@ class MainWindow(QtGui.QMainWindow):
         self._openfile(fp)
 
     def new_pynguin(self):
-        p = Pynguin(self, (0, 0), 0, self.rend)
-        self.pynguins.append(p)
-
-        # enforce maximum of 150 pynguins
-        npyn = len(self.pynguins)
-        if npyn > 150:
-            class TooManyPynguins(RuntimeError):
-                pass
-            self.pynguins.remove(p)
-            raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
-
-        # increase minimum delay as more pynguins are added
-        # to avoid deadlocks at "instant" speed
-        #delays = [(6, 1), (16, 2), (120, 6), (160, 10)]
-        #delays = [d for d in delays if d[0] >= npyn]
-        #Pynguin.min_delay = delays[0][1]
-
-        self.setSpeed()
-
-        if self.pynguin is None:
-            p._gitem_setup()
-            self.startTimer(p.delay)
-
-        else:
-            self.pynguin.qmove(p._gitem_setup)
-            while p.gitem is None or not p.gitem.ready:
-                pass
-
+        p = Pynguin()
         return p
 
     def timerEvent(self, ev):

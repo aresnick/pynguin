@@ -36,8 +36,10 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
-interpreter_protect = ['p', 'pynguin', 'new_pynguin', 'pynguins', 'PI', 'history']
+interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
 
+class TooManyPynguins(RuntimeError):
+    pass
 
 class Pynguin(object):
     ControlC = False
@@ -56,14 +58,36 @@ class Pynguin(object):
     _drawn = drawspeed
     _turned = turnspeed
 
-    def __init__(self, mw, pos, ang, rend):
-        self.scene = mw.scene
-        self.mw = mw
-        self.rend = rend
+    mw = None # set by MainWindow before any Pynguin get instantiated
+    rend = None # set by MainWindow before any Pynguin get instantiated
+
+    def __init__(self, pos=(0, 0), ang=0):
+        self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
         self.gitem = None # Gets set up later in the main thread
         self._zvalue = 0
         self.drawn_items = []
+        self._setup()
+
+    def _setup(self):
+        self.mw.pynguins.append(self)
+
+        # enforce maximum of 150 pynguins
+        npyn = len(self.mw.pynguins)
+        if npyn > 150:
+            self.pynguins.remove(p)
+            raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
+
+        self.mw.setSpeed()
+
+        if self.mw.pynguin is None:
+            self._gitem_setup()
+            self.mw.startTimer(self.delay)
+
+        else:
+            self.qmove(self._gitem_setup)
+            while self.gitem is None or not self.gitem.ready:
+                pass
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
