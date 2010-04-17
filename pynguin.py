@@ -296,11 +296,11 @@ class Pynguin(object):
 
     @classmethod
     def _check_drawspeed_change(cls):
-        if cls._drawspeed_pending is not None:
-            cls.drawspeed = cls._drawspeed_pending
-            cls._drawspeed_pending = None
-            cls.turnspeed = cls._turnspeed_pending
-            cls._turnspeed_pending = None
+        if Pynguin._drawspeed_pending is not None:
+            Pynguin.drawspeed = Pynguin._drawspeed_pending
+            Pynguin._drawspeed_pending = None
+            Pynguin.turnspeed = Pynguin._turnspeed_pending
+            Pynguin._turnspeed_pending = None
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
