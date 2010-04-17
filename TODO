@@ -18,6 +18,7 @@ Need to check types being passed to methods that will later
     error messages will be seen at the right place.
 2nd tab in editor is going to wrong tab stop
 Add color nudge function
+Add ability to "lock" documents in to place
 
 
 Intermittent crash/freeze
