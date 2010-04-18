@@ -61,3 +61,41 @@ def choose_color(r=None, g=None, b=None):
         raise TypeError
 
     return r, g, b
+
+def nudge_color(color, red=None, blue=None, green=None):
+    """Change the pen color by given amounts.
+
+    Amounts can be either integer numbers (to be added to the RGB
+    tuple components), or percentages (to increase or decrease
+    that component by given percent)
+
+    >>> color==(100, 100, 100) then calling
+    >>> nudge_color(color, red=50, blue=-10, green="75%")
+    (150, 90, 75)
+    """
+
+    r, g, b = color
+    if red is not None:
+        try:
+            r += red
+        except TypeError:
+            r *= (float(red[:-1]) / 100.0)
+    if blue is not None:
+        try:
+            b += blue
+        except TypeError:
+            b *= (float(blue[:-1]) / 100.0)
+    if green is not None:
+        try:
+            g += green
+        except TypeError:
+            g *= (float(green[:-1]) / 100.0)
+
+    r = min(r, 255)
+    g = min(g, 255)
+    b = min(b, 255)
+    r = max(r, 0)
+    g = max(g, 0)
+    b = max(b, 0)
+
+    return (r, g, b)
