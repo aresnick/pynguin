@@ -471,7 +471,23 @@ class MainWindow(QtGui.QMainWindow):
         scene = self.scene
         view = scene.view
 
-        scene.setSceneRect(scene.sceneRect().united(scene.itemsBoundingRect()))
+        ibr = scene.itemsBoundingRect()
+
+        tl = ibr.topLeft()
+        tlx, tly = tl.x(), tl.y()
+        tlx -= 20
+        tly -= 20
+        tlp = QtCore.QPointF(tlx, tly)
+        ibr.setTopLeft(tlp)
+
+        br = ibr.bottomRight()
+        brx, bry = br.x(), br.y()
+        brx += 20
+        bry += 20
+        brp = QtCore.QPointF(brx, bry)
+        ibr.setBottomRight(brp)
+
+        scene.setSceneRect(scene.sceneRect().united(ibr))
 
         src = scene.sceneRect()
         szf = src.size()
