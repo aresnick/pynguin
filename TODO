@@ -18,6 +18,7 @@ Need to check types being passed to methods that will later
     error messages will be seen at the right place.
 2nd tab in editor is going to wrong tab stop
 Add ability to "lock" documents in to place
+Periodic autosave
 
 
 Intermittent crash/freeze
@@ -29,3 +30,33 @@ Intermittent crash/freeze
     X Error: BadRequest (invalid request code or no such operation) 1
     Major opcode: 0 ()
     Resource id:  0x2ae000
+  - X Error: BadPixmap (invalid Pixmap parameter) 4
+    Major opcode: 56 (X_ChangeGC)
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    249 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x20799
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Extension:    133 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x20799
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Extension:    153 (RENDER)
+    Minor opcode: 0 (RenderQueryVersion)
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    241 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    164 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x20799
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 93 (X_CreateCursor)
+    Resource id:  0x20799
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 21 (X_ListProperties)
+    Resource id:  0x20799
+    main.py: Fatal IO error: client killed
