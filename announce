@@ -19,36 +19,5 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.7:
-    - fixed deadlock when running with many pynguins at instant speed
-    - new threading model greatly reduces problems with lock-ups
-    - added more multi-pynguin examples
-    - added commands turnto('random') and lineto('random')
-    - added more random color possibilities ('rlight', 'rmedium', 'rdark')
-    - allow named colors and html-style colors
-    - added command clear()
-    - added equation plotting examples - cartesian and polar
-    - re-center on (0, 0) when moving view splitter
-    - added svg/pdf worksheets
-
-
-Changes in pynguin-0.6:
-    - fixed crash when using new_pynguin()
-    - fixed possible crash during startup (due to race condition)
-    - added goto('random') and xy() to easily get coordinates
-    - added keyword args for fill -- fill(color=..., rule=...)
-    - added easier access for fillcolor 'random'
-    - added examples using multiple pynguins
-    - remove any added pynguins when using reset()
-    - set window title when using Save As...
-    - better error messages when loading file with errors
-    - whitespace cleanup when saving files
-    - render About image and title at runtime
-    - more examples
-
-
-Changes in pynguin-0.5:
-    - catch errors when processing graphic move queue
-    - capture and hold stdout and stderr
-    - call str() on argument to write
-    - guard against sending non-int to color
+Changes in pynguin-0.8:
+    - add support for pygments syntax highlighting
