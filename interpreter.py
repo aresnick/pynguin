@@ -207,7 +207,10 @@ class Interpreter(HighlightedTextEdit):
 
             txt = str(cblk.text()[4:]).strip()
 
-            if not self.history:
+            if self.cmdthread is not None:
+                pass
+
+            elif not self.history:
                 QtGui.QApplication.beep()
 
             else:
