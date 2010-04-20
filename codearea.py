@@ -17,15 +17,93 @@
 
 
 #import logging
+import time
 
 from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit
 
+try:
+    from highlighter import Highlighter, QFormatter, Formatter
+    from highlighter import get_lexer_by_name, hex2QColor
+    from pygments.style import Style
+    from pygments.token import Keyword, Name, Comment, String, Error
+    from pygments.token import  Number, Operator, Generic, Literal
+
+    class CodeFormatter(QFormatter):
+        custom_colors = {
+            Operator: 'FFFFFF',
+            Literal.Number.Integer: 'AAAA22',
+            Keyword: '80F080',
+            Name.Builtin.Pseudo: 'F0F060',
+            Name.Function: '8080FF',}
+
+        def __init__(self):
+            Formatter.__init__(self, style='default')
+            self.data=[]
+
+            self.customize()
+
+            # Create a dictionary of text styles, indexed
+            # by pygments token names, containing QTextCharFormat
+            # instances according to pygments' description
+            # of each style
+
+            self.styles={}
+            for token, style in self.style:
+                font = QtGui.QFont('Courier')
+                font.setFixedPitch(True)
+                font.setWeight(QtGui.QFont.DemiBold)
+                qtf=QtGui.QTextCharFormat()
+                qtf.setFontPointSize(16)
+                qtf.setFont(font)
+                qtf.setFontPointSize(16)
+
+                if style['color']:
+                    qtf.setForeground(hex2QColor(style['color']))
+                if style['bgcolor']:
+                    qtf.setBackground(hex2QColor(style['bgcolor']))
+                if style['bold']:
+                    qtf.setFontWeight(QtGui.QFont.Bold)
+                if style['italic']:
+                    qtf.setFontItalic(True)
+                if style['underline']:
+                    qtf.setFontUnderline(True)
+                self.styles[str(token)]=qtf
+
+        def show_all_styles(self):
+            z = self.style._styles.keys()
+            z.sort()
+            for a in z:
+                print a, self.style._styles[a]
+
+        def custom_color(self, style, color):
+            self.style._styles[style][0] = color
+
+        def customize(self):
+            for style, color in self.custom_colors.items():
+                self.custom_color(style, color)
+
+    class CodeHighlighter(Highlighter):
+        def __init__(self, parent, mode):
+            Highlighter.__init__(self, parent, mode)
+            self.tstamp=time.time()
+
+            # Keep the formatter and lexer, initializing them
+            # may be costly.
+            self.formatter=CodeFormatter()
+            self.lexer=get_lexer_by_name(mode)
+
+except ImportError:
+    # probably caused by missing pygments library
+    CodeHighlighter = None
+
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mw):
         HighlightedTextEdit.__init__(self)
+        if CodeHighlighter is not None:
+            self.highlighter = CodeHighlighter(self._doc, 'python')
         self.mw = mw
         self.mselect = mw.ui.mselect
         self.documents = {}
