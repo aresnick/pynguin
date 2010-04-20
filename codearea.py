@@ -34,6 +34,7 @@ try:
         custom_colors = {
             Operator: 'FFFFFF',
             Literal.Number.Integer: 'AAAA22',
+            Literal.Number.Float: 'AAAA55',
             Keyword: '80F080',
             Name.Builtin.Pseudo: 'F0F060',
             Name.Function: '8080FF',}
