@@ -174,6 +174,19 @@ class MainWindow(QtGui.QMainWindow):
         self.examplespath = examplespath
         examplesglob = '%s/*.pyn' % examplespath
         examples = glob.glob(examplesglob)
+
+        # push some of the examples to the top of the list
+        ordered = ['welcome', 'somex', 'morex']
+        topex = []
+        for o in ordered:
+            fn = '%s.pyn' % o
+            for ex in examples:
+                if ex.endswith(fn):
+                    topex.append(ex)
+        for place, ex in enumerate(topex):
+            examples.remove(ex)
+            examples.insert(place, ex)
+
         for ex in examples:
             pth, fn = os.path.split(ex)
             def excb(fp=ex):
