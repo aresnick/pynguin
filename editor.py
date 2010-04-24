@@ -307,7 +307,8 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
             elif k == Backtab:
                 curs.setPosition(blk0, 0)
                 self.setTextCursor(curs)
-
+            else:
+                QtGui.QTextEdit.keyPressEvent(self, ev)
         else:
             QtGui.QTextEdit.keyPressEvent(self, ev)
 
