@@ -662,6 +662,9 @@ class Pynguin(object):
         Set the line color for drawing. The color should be given as
             3 integers between 0 and 255, specifying the red, blue, and
             green components of the color.
+
+        return the color being used for drawing -- makes getting
+            randomly selected colors easier.
         '''
         r, g, b = choose_color(r, g, b)
         if r is g is b is None:
@@ -669,6 +672,7 @@ class Pynguin(object):
         self.ritem.color = (r, g, b)
         self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b))
+        return r, g, b
 
     def _width(self, w):
         self.gitem.pen.setWidth(w)
@@ -699,11 +703,19 @@ class Pynguin(object):
         self._gitem_new_line()
 
     def fillcolor(self, r=None, g=None, b=None):
+        '''fillcolor(r, g, b)
+
+        Set the color to be used for filling drawn shapes.
+
+        return the color being used for filling -- makes getting
+            randomly selected colors easier.
+        '''
         r, g, b = choose_color(r, g, b)
         if r is g is b is None:
             return self.ritem.fillcolor
         self.ritem.fillcolor = (r, g, b)
         self.qmove(self._fillcolor, (r, g, b))
+        return r, g, b
 
     def _gitem_fillmode(self, start):
         if start:
@@ -721,6 +733,9 @@ class Pynguin(object):
 
         Set the fill color by passing in an (r, g, b) tuple.
 
+        If a fill color is specified (color is not None)
+            return the color that is being used as fill color.
+
         Change the fill rule by passing in either
             'winding' (default) or 'oddeven'
         '''
@@ -733,6 +748,9 @@ class Pynguin(object):
 
         self.ritem._fillmode = True
         self.qmove(self._gitem_fillmode, (True,))
+
+        if color is not None:
+            return self.fillcolor()
 
     def nofill(self):
         '''nofill()

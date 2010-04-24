@@ -749,3 +749,7 @@ class Scene(QtGui.QGraphicsScene):
         color = QtGui.QColor(130, 130, 160)
         brush = QtGui.QBrush(color)
         self.setBackgroundBrush(brush)
+
+    #def drawBackground(self, painter, rect):
+        #QtGui.QGraphicsScene.drawBackground(self, painter, rect)
+        #painter.drawEllipse(rect)
