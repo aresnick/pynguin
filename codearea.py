@@ -124,6 +124,8 @@ class CodeArea(HighlightedTextEdit):
         Up = QtCore.Qt.Key_Up
         Down = QtCore.Qt.Key_Down
         Return = QtCore.Qt.Key_Return
+
+
         lead = 0
         if k == Return:
             curs = self.textCursor()
