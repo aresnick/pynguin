@@ -903,6 +903,42 @@ class Pynguin(object):
             # animated circles
             self._slowcircle(crect, r, center)
 
+    def square(self, side, center=False):
+        '''square(side, center=False) # length of side in pixels
+
+        Draw a square with sides of length side.
+
+        If center is True, the current position will be the center
+            of the square. The sides will still be parallel or
+            perpendicular to the current direction.
+        '''
+
+        pen = self.pen
+        if center:
+            self.penup()
+            half_side = float(side)/2
+            self.forward(half_side)
+            self.left(90)
+            self.forward(half_side)
+            self.left(90)
+            if pen:
+                self.pendown()
+
+        for side_n in range(4):
+            self.forward(side)
+            self.left(90)
+
+        if center:
+            self.penup()
+            self.left(90)
+            self.forward(half_side)
+            self.right(90)
+            self.forward(half_side)
+            self.right(180)
+
+        if pen:
+            self.pendown()
+
     def _viewrect(self):
         view = self.scene.view
         viewportrect = view.viewport().geometry()
