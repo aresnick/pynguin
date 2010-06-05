@@ -21,6 +21,7 @@ Add ability to "lock" documents in to place
 Periodic autosave
 Use arcs instead of lines when slow drawing circles
 Replace squares with QGraphicsRectItem when finished (like circles)
+Pygments color in interactive console area
 
 
 Intermittent crash/freeze
@@ -60,5 +61,65 @@ Intermittent crash/freeze
     Resource id:  0x20799
     X Error: BadLength (poly request too large or internal Xlib length error) 16
     Major opcode: 21 (X_ListProperties)
+    Resource id:  0x20799
+    main.py: Fatal IO error: client killed
+  - X Error: BadGC (invalid GC parameter) 13
+    Major opcode: 56 (X_ChangeGC)
+    Resource id:  0x2602e78
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 17 (X_GetAtomName)
+    Resource id:  0x2602e78
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 93 (X_CreateCursor)
+    Resource id:  0x2602e78
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 3 (X_GetWindowAttributes)
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    247 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    150 (Uknown extension)
+    Minor opcode: 3 (Unknown request)
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x2602e78
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Extension:    166 (Uknown extension)
+    Minor opcode: 0 (Unknown request)
+    Resource id:  0x2602e78
+    main.py: Fatal IO error: client killed
+  - X Error: BadValue (integer parameter out of range for operation) 2
+    Extension:    153 (RENDER)
+    Minor opcode: 5 (RenderChangePicture)
+    Resource id:  0x20799
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 27 (X_UngrabPointer)
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x20799
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
     Resource id:  0x20799
     main.py: Fatal IO error: client killed
