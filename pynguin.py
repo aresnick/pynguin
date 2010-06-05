@@ -75,7 +75,7 @@ class Pynguin(object):
         # enforce maximum of 150 pynguins
         npyn = len(self.mw.pynguins)
         if npyn > 150:
-            self.pynguins.remove(p)
+            self.mw.pynguins.remove(self)
             raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
 
         self.mw.setSpeed()
