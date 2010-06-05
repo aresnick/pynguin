@@ -9,10 +9,9 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release changes the method of starting and stopping
-    the separate code-running threads. It should be much
-    less susceptible to lock-ups and crashes, though I
-    am still experiencing occasional problems.
+This release continues to refine the interaction between
+    the code-running threads and the main thread. Please
+    report any strange behaviors, crashes, or freezes!
 
 
 Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
@@ -30,3 +29,4 @@ Changes in pynguin-0.8:
     - added square() method to Pynguin
     - added more program challenge worksheets
     - code editor improvements
+    - unify z-value across pynguins to eliminate flicker
