@@ -58,6 +58,8 @@ class Pynguin(object):
     _drawn = drawspeed
     _turned = turnspeed
 
+    _zvalue = 0
+
     mw = None # set by MainWindow before any Pynguin get instantiated
     rend = None # set by MainWindow before any Pynguin get instantiated
 
@@ -65,7 +67,6 @@ class Pynguin(object):
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
         self.gitem = None # Gets set up later in the main thread
-        self._zvalue = 0
         self.drawn_items = []
         self._setup()
 
@@ -94,7 +95,8 @@ class Pynguin(object):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
         self.imageid = 'pynguin'
         self.scene.addItem(self.gitem)
-        self.gitem.setZValue(9999999)
+        Pynguin._zvalue += 1
+        self.gitem.setZValue(9999999 - self._zvalue)
         self.pendown()
         self.fillrule('winding')
         self.gitem._current_line = None
@@ -263,7 +265,7 @@ class Pynguin(object):
                     line.setBrush(self.gitem.brush)
 
                 line.setZValue(self._zvalue)
-                self._zvalue += 1
+                Pynguin._zvalue += 1
                 self.drawn_items.append(line)
                 self.gitem._current_line = line
             else:
@@ -554,7 +556,7 @@ class Pynguin(object):
         font = QtGui.QFont('Arial', 22)
         item = self.gitem.scene().addSimpleText(text, font)
         item.setZValue(self._zvalue)
-        self._zvalue += 1
+        Pynguin._zvalue += 1
         item.setPen(self.gitem.pen)
         item.setBrush(self.gitem.pen.color())
         x, y = self.gitem.x(), self.gitem.y()
@@ -819,7 +821,7 @@ class Pynguin(object):
         if gitem._fillmode:
             circle.setBrush(gitem.brush)
         circle.setZValue(self._zvalue)
-        self._zvalue += 1
+        Pynguin._zvalue += 1
         self.drawn_items.append(circle)
 
     def _extend_circle(self, crect, distance):
@@ -839,7 +841,7 @@ class Pynguin(object):
             if gitem._fillmode:
                 circle.setBrush(gitem.brush)
             circle.setZValue(self._zvalue)
-            self._zvalue += 1
+            Pynguin._zvalue += 1
             self.drawn_items.append(circle)
         elif cl is None:
             # first segment
@@ -996,7 +998,7 @@ class Pynguin(object):
         item.ang = gitem.ang
         item.setPos(gitem.pos())
         item.setZValue(self._zvalue)
-        self._zvalue += 1
+        Pynguin._zvalue += 1
         gitem.scene().addItem(item)
         self.drawn_items.append(item)
     def stamp(self, imageid=None):
