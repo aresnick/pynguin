@@ -173,7 +173,11 @@ class Pynguin(object):
         drawspeed = cls.drawspeed
         delay = cls.delay
         etime = cls._checktime.elapsed()
-        if not drawspeed or etime > delay:
+        if cls.ControlC:
+            pass
+            #logging.debug('CCnomove')
+
+        elif not drawspeed or etime > delay:
             ied = cls.mw.interpretereditor
             while True:
                 #logging.debug('_____rpm')

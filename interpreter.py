@@ -115,6 +115,7 @@ class Interpreter(HighlightedTextEdit):
         if self.interpreter.error:
             self.write('>>> ')
 
+        pynguin.Pynguin.ControlC = False
         self.interpreter.error = False
         self.cmdthread = None
 
@@ -126,6 +127,7 @@ class Interpreter(HighlightedTextEdit):
         else:
             self.write('... ')
 
+        pynguin.Pynguin.ControlC = False
         self.interpreter.error = False
         self.cmdthread = None
 
@@ -270,7 +272,6 @@ class Interpreter(HighlightedTextEdit):
                 #logging.debug('synced')
                 self.needmore = False
                 self.interpreter.resetbuffer()
-                pynguin.Pynguin.ControlC = False
 
             else:
                 self.write('\nKeyboardInterrupt\n')
