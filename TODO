@@ -19,6 +19,8 @@ Need to check types being passed to methods that will later
 2nd tab in editor is going to wrong tab stop
 Add ability to "lock" documents in to place
 Periodic autosave
+Use arcs instead of lines when slow drawing circles
+Replace squares with QGraphicsRectItem when finished (like circles)
 
 
 Intermittent crash/freeze

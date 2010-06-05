@@ -21,3 +21,12 @@ Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
 
 Changes in pynguin-0.8:
     - add support for pygments syntax highlighting
+    - expose Pynguin class directly
+    - added object oriented (Pynguin subclass) examples
+    - added color nudging function
+    - color('random') returns the selected color
+    - polar and cartesian plot improvements
+    - added padding around exported image
+    - added square() method to Pynguin
+    - added more program challenge worksheets
+    - code editor improvements
