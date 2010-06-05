@@ -87,7 +87,8 @@ class Pynguin(object):
         else:
             self.qmove(self._gitem_setup)
             while self.gitem is None or not self.gitem.ready:
-                pass
+                if self.ControlC:
+                    raise KeyboardInterrupt
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
@@ -162,8 +163,14 @@ class Pynguin(object):
 
         '''
 
-        self.ritem.setPos(self.gitem.pos())
-        self.ritem.ang = self.gitem.ang
+        if self.gitem is not None:
+            pos = self.gitem.pos()
+            ang = self.gitem.ang
+        else:
+            pos = (0, 0)
+            ang = 0
+        self.ritem.setPos(pos)
+        self.ritem.ang = ang
 
     @classmethod
     def _r_process_moves(cls):
@@ -174,7 +181,7 @@ class Pynguin(object):
         delay = cls.delay
         etime = cls._checktime.elapsed()
         if cls.ControlC:
-            pass
+            cls._empty_move_queue()
             #logging.debug('CCnomove')
 
         elif not drawspeed or etime > delay:
@@ -617,7 +624,8 @@ class Pynguin(object):
         if self is self.mw.pynguin:
             for pyn in self.mw.pynguins:
                 if pyn is not self:
-                    pyn.reset()
+                    if pyn.gitem is not None:
+                        pyn.reset()
 
         self.qmove(self._reset)
         self._item_home(self.ritem)
