@@ -594,6 +594,7 @@ class Pynguin(object):
         for item in self.drawn_items:
             self.scene.removeItem(item)
         self.drawn_items = []
+        self._gitem_new_line()
 
     def clear(self):
         self.qmove(self._clear)
