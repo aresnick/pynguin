@@ -370,9 +370,6 @@ class Pynguin(object):
     bk = backward
 
     def _item_left(self, item, degrees):
-        item.rotate(-degrees)
-
-    def _item_left(self, item, degrees):
         Pynguin._turned -= (abs(degrees))
         item.rotate(-degrees)
     def _gitem_turn(self, degrees):
@@ -477,12 +474,8 @@ class Pynguin(object):
             to the initial angle. For relative angles, use left or right.
         '''
         if ang != 'random':
-            ang0 = self.ritem.ang
-            turn = abs(ang - ang0)
-            if ang0 < ang:
-                self.right(turn)
-            else:
-                self.left(turn)
+            self._item_setangle(self.ritem, ang)
+            self.qmove(self._item_setangle, (self.gitem, ang))
 
         else:
             ang = random.randrange(360)
