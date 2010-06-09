@@ -14,7 +14,7 @@ This release continues to refine the interaction between
     report any strange behaviors, crashes, or freezes!
 
 
-Pynguin is tested with Python 2.6.4 and uses PyQt (4.6)
+Pynguin is tested with Python 2.6.5 and uses PyQt (4.7.2)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
