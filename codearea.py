@@ -70,7 +70,7 @@ try:
                     qtf.setFontItalic(True)
                 if style['underline']:
                     qtf.setFontUnderline(True)
-                self.styles[str(token)]=qtf
+                self.styles[unicode(token)]=qtf
 
         def show_all_styles(self):
             z = self.style._styles.keys()
@@ -135,7 +135,7 @@ class CodeArea(HighlightedTextEdit):
             if atstart:
                 lead = 0
             else:
-                cblktxt = str(cblk.text())
+                cblktxt = unicode(cblk.text())
                 ts = cblktxt.split()
                 if ts:
                     lead = cblktxt.find(ts[0])
@@ -159,7 +159,7 @@ class CodeArea(HighlightedTextEdit):
             self.insertPlainText(' '*lead)
 
         fblk = self._doc.firstBlock()
-        txt = str(fblk.text())
+        txt = unicode(fblk.text())
         self.settitle(txt)
         if self._doc.isModified():
             self.mw._modified = True
@@ -197,7 +197,7 @@ class CodeArea(HighlightedTextEdit):
             documents dictionary, keyed by title
         '''
         if self.docid is not None:
-            self.documents[self.docid] = str(self._doc.toPlainText())
+            self.documents[self.docid] = unicode(self._doc.toPlainText())
 
     def new(self):
         '''save the current document and start a new blank document'''
@@ -220,7 +220,7 @@ class CodeArea(HighlightedTextEdit):
         doctxt = self.documents[docid]
         self.docid = docid
         self._doc.setPlainText(doctxt)
-        firstline = str(doctxt.split('\n')[0])
+        firstline = unicode(doctxt.split('\n')[0])
         self.settitle(firstline)
 
     def add(self, txt):

@@ -39,7 +39,7 @@ class NumberBar(QWidget):
         Also, adjusts the width of the number bar if necessary.
         '''
         # The + 4 is used to compensate for the current line being bold.
-        width = self.fontMetrics().width(str(self.highest_line)) + 4
+        width = self.fontMetrics().width(unicode(self.highest_line)) + 4
         if self.width() != width:
             self.setFixedWidth(width)
         QWidget.update(self, *args)
@@ -76,7 +76,7 @@ class NumberBar(QWidget):
 
             # Draw the line number right justified at the y position of the
             # line. 3 is a magic padding number. drawText(x, y, text).
-            painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+            painter.drawText(self.width() - font_metrics.width(unicode(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), unicode(line_count))
 
             # Remove the bold style if it was set previously.
             if bold:

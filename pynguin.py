@@ -199,7 +199,7 @@ class Pynguin(object):
                     try:
                         move(*args)
                     except Exception, e:
-                        ied.write(str(e))
+                        ied.write(unicode(e))
                         ied.write('\n')
                         if ied.cmdthread is not None:
                             ied.cmdthread.terminate()
@@ -562,7 +562,7 @@ class Pynguin(object):
 
         Draw a text message at the current location.
         '''
-        strtxt = str(text)
+        strtxt = unicode(text)
         self.qmove(self._write, (strtxt,))
 
     def _item_home(self, item):

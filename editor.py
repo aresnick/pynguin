@@ -62,7 +62,7 @@ class TextEditor(QtGui.QMainWindow):
         if filepath is None or filepath==conf.template:
             title = 'Untitled'
         else:
-            fdir, title = os.path.split(str(filepath))
+            fdir, title = os.path.split(unicode(filepath))
             self._fdir = fdir
         self.setWindowTitle(title)
 
@@ -98,7 +98,7 @@ class TextEditor(QtGui.QMainWindow):
 
     def savecheck(self):
         filepath = self._filepath
-        fdir, fname = os.path.split(str(filepath))
+        fdir, fname = os.path.split(unicode(filepath))
         if fname.endswith('.py'):
             fmodname = fname[:-3]
         else:
@@ -121,7 +121,7 @@ class TextEditor(QtGui.QMainWindow):
 
         except SyntaxError, e:
             title = QtCore.QString('Syntax Error')
-            msg = QtCore.QString(str(e))
+            msg = QtCore.QString(unicode(e))
             msgbox = QtGui.QMessageBox.information(self, title, msg)
             self.selectline(e.lineno)
 
@@ -152,7 +152,7 @@ class TextEditor(QtGui.QMainWindow):
             return False
         else:
             self.editor.edit._doc.setModified(False)
-            _, title = os.path.split(str(self._filepath))
+            _, title = os.path.split(unicode(self._filepath))
             self.setWindowTitle(title)
             return True
 
@@ -367,7 +367,7 @@ class NumberBar(numberedtextedit.NumberBar):
         self.setFont(QtGui.QFont('Serif', 14))
 
     def update(self, *args):
-        width = self.fontMetrics().width(str(self.highest_line)) + 25
+        width = self.fontMetrics().width(unicode(self.highest_line)) + 25
         if self.width() != width:
             self.setFixedWidth(width)
         QWidget.update(self, *args)
@@ -407,7 +407,7 @@ class NumberBar(numberedtextedit.NumberBar):
 
             # Draw the line number right justified at the y position of the
             # line. 3 is a magic padding number. drawText(x, y, text).
-            painter.drawText(self.width() - font_metrics.width(str(line_count)) - 8, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+            painter.drawText(self.width() - font_metrics.width(unicode(line_count)) - 8, round(position.y()) - contents_y + font_metrics.ascent(), unicode(line_count))
 
             block = block.next()
 

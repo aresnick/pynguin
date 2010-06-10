@@ -216,7 +216,7 @@ class MainWindow(QtGui.QMainWindow):
         for n in range(settings.beginReadArray('recent')):
             settings.setArrayIndex(n)
             fname = settings.value('fname').toString()
-            recent.append(str(fname))
+            recent.append(unicode(fname))
         settings.endArray()
 
         filemenu = self.ui.filemenu
@@ -319,16 +319,16 @@ class MainWindow(QtGui.QMainWindow):
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
-            docid = str(mselect.itemData(n).toString())
-            code = str(self.editor.documents[docid])
+            docid = unicode(mselect.itemData(n).toString())
+            code = unicode(self.editor.documents[docid])
             arcname = '##%5s##__%s' % (n, docid)
             code = self.cleancode(code)
             self.editor.documents[docid] = code
-            z.writestr(arcname, code)
+            z.writestr(arcname, code.encode('utf-8'))
 
         historyname = '@@history@@'
         history = '\n'.join(self.interpretereditor.history)
-        z.writestr(historyname, history)
+        z.writestr(historyname, history.encode('utf-8'))
 
         z.close()
 
@@ -377,7 +377,7 @@ class MainWindow(QtGui.QMainWindow):
         else:
             fdir = self._fdir
 
-        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Save As', fdir))
+        fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Save As', fdir))
         if fp:
             self._filepath = fp
             self._fdir, _ = os.path.split(fp)
@@ -408,7 +408,7 @@ class MainWindow(QtGui.QMainWindow):
         else:
             fdir = self._fdir
 
-        fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
+        fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
         if fp:
             self._fdir, _ = os.path.split(fp)
             self._new()
@@ -420,6 +420,7 @@ class MainWindow(QtGui.QMainWindow):
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
             data = fo.read()
+            data = data.decode('utf-8')
             if ename.startswith('##'):
                 hdr = ename[0:9]
                 if hdr.startswith('##') and hdr.endswith('##'):
@@ -432,7 +433,7 @@ class MainWindow(QtGui.QMainWindow):
                             print 'problem', e
                             print 'in...'
                             line1 = data.split('\n')[0]
-                            print str(line1)
+                            print unicode(line1)
             elif ename.startswith('@@history@@'):
                 history = data.split('\n')
                 self.interpretereditor.history = history
@@ -455,6 +456,7 @@ class MainWindow(QtGui.QMainWindow):
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
             data = fo.read()
+            data = data.decode('utf-8')
             if ename.startswith('##'):
                 hdr = ename[0:9]
                 if hdr.startswith('##') and hdr.endswith('##'):
@@ -472,7 +474,7 @@ class MainWindow(QtGui.QMainWindow):
         else:
             fdir = self._fdir
 
-        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
+        fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
         if fp:
             self._fdir, _ = os.path.split(fp)
         else:
@@ -529,7 +531,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
-        docid = str(self.ui.mselect.itemData(idx).toString())
+        docid = unicode(self.ui.mselect.itemData(idx).toString())
         if docid in self.editor.documents:
             self.editor.switchto(docid)
             self.editor.setFocus()
@@ -538,7 +540,7 @@ class MainWindow(QtGui.QMainWindow):
         '''throw away the currently displayed editor document'''
         mselect = self.ui.mselect
         idx = mselect.currentIndex()
-        docname = str(mselect.itemText(idx))
+        docname = unicode(mselect.itemText(idx))
         mselect.removeItem(idx)
         if mselect.count():
             self.changedoc(0)
@@ -584,10 +586,10 @@ class MainWindow(QtGui.QMainWindow):
             function.
         '''
         self.editor.savecurrent()
-        docname = str(self.ui.mselect.currentText())
+        docname = unicode(self.ui.mselect.currentText())
         idx = self.ui.mselect.currentIndex()
-        docid = str(self.ui.mselect.itemData(idx).toString())
-        code = str(self.editor.documents[docid])
+        docid = unicode(self.ui.mselect.itemData(idx).toString())
+        code = unicode(self.editor.documents[docid])
 
         code = self.cleancode(code)
         self.editor.setPlainText(code)

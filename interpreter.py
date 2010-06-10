@@ -168,7 +168,7 @@ class Interpreter(HighlightedTextEdit):
             if not blk.text():
                 blk = self._doc.firstBlock()
 
-            txt = str(blk.text()[4:]).rstrip()
+            txt = unicode(blk.text()[4:]).rstrip()
             if txt:
                 if self.history and not self.history[-1]:
                     del self.history[-1]
@@ -207,7 +207,7 @@ class Interpreter(HighlightedTextEdit):
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
 
-            txt = str(cblk.text()[4:]).strip()
+            txt = unicode(cblk.text()[4:]).strip()
 
             if self.cmdthread is not None:
                 pass
@@ -314,7 +314,7 @@ class Interpreter(HighlightedTextEdit):
         cpos = curs.position()
         blk = curs.block()
         #blklen = blk.length()
-        blktext = str(blk.text())
+        blktext = unicode(blk.text())
         promptblk = blktext.startswith('>>>') or blktext.startswith('...')
         if promptblk and col < 4:
             curs.setPosition(cpos + 4-col)
