@@ -621,6 +621,7 @@ class Pynguin(object):
         self._gitem_fillmode(0)
         self._width(2)
         self._color(255, 255, 255)
+        self._pendown()
         self._fillcolor(100, 220, 110)
         self._gitem_fillrule(QtCore.Qt.WindingFill)
         self._setImageid('pynguin')
@@ -647,6 +648,7 @@ class Pynguin(object):
         self.nofill()
         self.width(2)
         self.color(255, 255, 255)
+        self.pendown()
         self.fillcolor(100, 220, 110)
         self.fillrule('winding')
 
