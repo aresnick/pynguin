@@ -106,6 +106,25 @@ class Pynguin(object):
     def _set_item_pos(self, item, pos):
         item.setPos(pos)
 
+    def _setx(self, x):
+        self.goto(x, self.y)
+    def _getx(self):
+        return self.pos.x()
+    x = property(_getx, _setx)
+
+    def _sety(self, y):
+        self.goto(self.x, y)
+    def _gety(self):
+        return self.pos.y()
+    y = property(_gety, _sety)
+
+    def _setang(self, ang):
+        self.turnto(ang)
+    def _getang(self):
+        return self.ritem.ang
+    ang = property(_getang, _setang)
+    heading = ang
+
     def _set_pos(self, args):
         '''Setter for the position property.
 
