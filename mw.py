@@ -283,7 +283,7 @@ class MainWindow(QtGui.QMainWindow):
         if newdoc:
             self.newdoc()
         self._modified = False
-        windowtitle = 'pynguin'
+        windowtitle = 'pynguin [*]'
         self.setWindowTitle(windowtitle)
         self.setWindowModified(False)
         self._filepath = None
