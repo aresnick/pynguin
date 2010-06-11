@@ -811,7 +811,7 @@ class Pynguin(object):
         pen = ogitem.pen
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(rend, imageid)
-        gitem.setZValue(9999999)
+        gitem.setZValue(ogitem.zValue())
         gitem.setPos(pos)
         gitem.ang = ang
         gitem.pen = pen
