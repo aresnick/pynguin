@@ -494,7 +494,7 @@ class Pynguin(object):
         '''
         if ang != 'random':
             self._item_setangle(self.ritem, ang)
-            self.qmove(self._item_setangle, (self.gitem, ang))
+            self.qmove(self._gitem_setangle, (ang,))
 
         else:
             ang = random.randrange(360)
