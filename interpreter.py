@@ -71,8 +71,6 @@ class Interpreter(HighlightedTextEdit):
         sys.stdout = self
         sys.stderr = self
 
-        self._check_control_key = False
-
         self.setWordWrapMode(QtGui.QTextOption.WrapAnywhere)
 
         self.needmore = False
@@ -143,7 +141,8 @@ class Interpreter(HighlightedTextEdit):
         Enter = QtCore.Qt.Key_Enter
         Up = QtCore.Qt.Key_Up
         Down = QtCore.Qt.Key_Down
-        Control = QtCore.Qt.Key_Control
+        Control = QtCore.Qt.ControlModifier
+        Shift = QtCore.Qt.ShiftModifier
         U = QtCore.Qt.Key_U
         C = QtCore.Qt.Key_C
         A = QtCore.Qt.Key_A
@@ -156,6 +155,7 @@ class Interpreter(HighlightedTextEdit):
         cblkpos = cblk.position()
 
         passthru = True
+        scrolldown = True
 
         if k in (Return, Enter):
             self.movetoend()
@@ -256,11 +256,16 @@ class Interpreter(HighlightedTextEdit):
 
             passthru = False
 
-        elif mdf & QtCore.Qt.ControlModifier and k==U:
+        elif mdf & Control and k==U:
             #erase from cursor to beginning of line
             self.erasetostart()
 
-        elif mdf & QtCore.Qt.ControlModifier and k==C:
+        elif mdf & Control and mdf & Shift and k==C:
+            # Copy
+            self.copy()
+            scrolldown = False
+
+        elif mdf & Control and k==C:
             #send keyboard interrupt
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 #logging.debug('CC')
@@ -278,15 +283,16 @@ class Interpreter(HighlightedTextEdit):
                 self.interpreter.resetbuffer()
                 self.write('>>> ')
 
-        elif (mdf & QtCore.Qt.ControlModifier and k==A) or k == Home:
+        elif (mdf & Control and k==A) or k == Home:
             self.movetostart()
             passthru = False
 
-        elif mdf & QtCore.Qt.ControlModifier and k==E:
+        elif mdf & Control and k==E:
             self.movetoend()
             passthru = False
 
-        self.scrolldown()
+        if scrolldown and ev.text():
+            self.scrolldown()
 
         if passthru:
             HighlightedTextEdit.keyPressEvent(self, ev)
