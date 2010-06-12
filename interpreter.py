@@ -329,7 +329,26 @@ class Interpreter(HighlightedTextEdit):
             curs.setPosition(cpos + 4-col)
             self.setTextCursor(curs)
         else:
-            HighlightedTextEdit.mousePressEvent(self, ev)
+            HighlightedTextEdit.mouseReleaseEvent(self, ev)
+
+    def contextMenuEvent(self, ev):
+        menu = self.createStandardContextMenu()
+        actions = menu.actions()
+        undo = actions[0]
+        redo = actions[1]
+        sep0 = actions[2]
+        cut = actions[3]
+        delete = actions[6]
+        menu.removeAction(undo)
+        menu.removeAction(redo)
+        menu.removeAction(sep0)
+        menu.removeAction(cut)
+        menu.removeAction(delete)
+        menu.exec_(ev.globalPos())
+
+    def insertFromMimeData(self, data):
+        self.scrolldown()
+        HighlightedTextEdit.insertFromMimeData(self, data)
 
     def movetostart(self):
         '''move the cursor to the start of the line (after the prompt)'''
