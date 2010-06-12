@@ -314,7 +314,10 @@ class Interpreter(HighlightedTextEdit):
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
 
-    def mousePressEvent(self, ev):
+    def mouseReleaseEvent(self, ev):
+        ccurs = self.textCursor()
+        hassel = ccurs.hasSelection()
+
         curs = self.cursorForPosition(ev.pos())
         col = curs.columnNumber()
         cpos = curs.position()
@@ -322,7 +325,7 @@ class Interpreter(HighlightedTextEdit):
         #blklen = blk.length()
         blktext = unicode(blk.text())
         promptblk = blktext.startswith('>>>') or blktext.startswith('...')
-        if promptblk and col < 4:
+        if not hassel and promptblk and col < 4:
             curs.setPosition(cpos + 4-col)
             self.setTextCursor(curs)
         else:
