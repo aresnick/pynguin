@@ -123,3 +123,15 @@ Intermittent crash/freeze
     Major opcode: 0 ()
     Resource id:  0x20799
     main.py: Fatal IO error: client killed
+  - X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 41 (X_WarpPointer)
+    Resource id:  0x3e01ea5
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x3e01ea5
+    X Error: BadRequest (invalid request code or no such operation) 1
+    Major opcode: 0 ()
+    Resource id:  0x3e01ea5
+    X Error: BadLength (poly request too large or internal Xlib length error) 16
+    Major opcode: 108 (X_GetScreenSaver)
+    Resource id:  0x3e01ea5
