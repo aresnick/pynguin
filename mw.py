@@ -156,7 +156,9 @@ class MainWindow(QtGui.QMainWindow):
     def leftclick(self, ev):
         evpos = ev.pos()
         scpos = self.scene.view.mapToScene(evpos)
-        self.pynguin.onclick(scpos.x(), scpos.y())
+        for pyn in self.pynguins:
+            if pyn.respond_to_mouse_click:
+                pyn.onclick(scpos.x(), scpos.y())
 
     def recenter(self):
         center = QtCore.QPointF(0, 0)
@@ -620,7 +622,7 @@ class MainWindow(QtGui.QMainWindow):
                         tocall = line0[4:lastparen+1]
                         funcname = line0[4:firstparen]
                         if funcname == 'onclick':
-                            self.pynguin.onclick = self.interpreter_locals['onclick']
+                            self.pynguin.__class__.onclick = self.interpreter_locals['onclick']
                             self.interpretereditor.write('# set onclick handler\n')
                             self.interpretereditor.write('>>> ')
                         else:
