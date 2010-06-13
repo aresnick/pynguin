@@ -80,6 +80,8 @@ class Interpreter(HighlightedTextEdit):
 
         self.write('>>> ')
 
+        self.col0 = 4
+
     def clear(self):
         self.history = []
         self._outputq = []

@@ -283,7 +283,6 @@ class CodeArea(HighlightedTextEdit):
                 line = line[4:]
             newtxt.append(line)
         txt = '\n'.join(newtxt)
-        print txt.__repr__()
 
         newdata = QtCore.QMimeData()
         newdata.setText(txt)

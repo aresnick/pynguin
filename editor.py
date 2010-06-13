@@ -214,6 +214,8 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         pal.setColor(QtGui.QPalette.Text, textc)
         self.setPalette(pal)
 
+        self.col0 = 0
+
     def keyPressEvent(self, ev):
         k = ev.key()
 
@@ -226,13 +228,13 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
             return
 
         curs = self.textCursor()
-        col = curs.columnNumber()
+        col = curs.columnNumber() - self.col0
         blkn = curs.blockNumber()
         blk = self._doc.findBlockByNumber(blkn)
         txt = blk.text()
         firstnonspace = 0
         hasselection = curs.hasSelection()
-        for c in txt:
+        for c in txt[self.col0:]:
             if c != ' ':
                 break
             firstnonspace += 1
@@ -302,10 +304,10 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         elif 0 < col < firstnonspace:
             blk0 = blk.position()
             if k == Tab:
-                curs.setPosition(blk0+firstnonspace, 0)
+                curs.setPosition(blk0+self.col0+firstnonspace, 0)
                 self.setTextCursor(curs)
             elif k == Backtab:
-                curs.setPosition(blk0, 0)
+                curs.setPosition(blk0+self.col0, 0)
                 self.setTextCursor(curs)
             else:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
