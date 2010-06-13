@@ -273,3 +273,19 @@ class CodeArea(HighlightedTextEdit):
             self.mselect.removeItem(idx)
             self.mselect.insertItem(idx+1, title, item_docid)
             self.mselect.setCurrentIndex(idx+1)
+            
+    def insertFromMimeData(self, data):
+        txt = data.data('text/plain')
+        newtxt = []
+        for line in txt.split('\n'):
+            line = unicode(line)
+            if line.startswith('>>> ') or line.startswith('... '):
+                line = line[4:]
+            newtxt.append(line)
+        txt = '\n'.join(newtxt)
+        print txt.__repr__()
+
+        newdata = QtCore.QMimeData()
+        newdata.setText(txt)
+        HighlightedTextEdit.insertFromMimeData(self, newdata)
+
