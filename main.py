@@ -23,10 +23,35 @@ from PyQt4 import QtGui
 
 # Need to use logging when debugging, since stdout and stderr
 #  are redirected to the internal console.
-#import logging
-#LOG_FILENAME = 'logfile.log'
-#logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
-#logging.debug('Logging started')
+
+def setup_logging(level='debug'):
+    import logging
+    import logging.handlers
+    from conf import LOG_FILENAME
+
+    levels = {'debug': logging.DEBUG,
+                'info': logging.INFO,
+                'critical': logging.CRITICAL,
+            }
+    if level not in levels:
+        loglevel_error = level
+        level = 'debug'
+    elif not level:
+        loglevel_error = '<empty>'
+        level = 'debug'
+    else:
+        loglevel_error = False
+    loglevel = levels[level]
+
+    logger = logging.getLogger('PynguinLogger')
+    logger.setLevel(loglevel)
+    handler = logging.handlers.RotatingFileHandler(
+              LOG_FILENAME, maxBytes=1000000, backupCount=3)
+    logger.addHandler(handler)
+
+    if loglevel_error:
+        logger.debug('Log level error: level %s not available.' % loglevel_error)
+    logger.critical('Logging started at level "%s".' % level)
 
 
 from mw import MainWindow
@@ -46,4 +71,12 @@ def run():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-D':
+            if len(sys.argv) > 2:
+                level = sys.argv[2]
+                setup_logging(level)
+            else:
+                setup_logging()
+
     run()

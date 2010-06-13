@@ -19,6 +19,7 @@
 import sys
 import code
 import logging
+logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui
 
@@ -133,6 +134,7 @@ class Interpreter(HighlightedTextEdit):
 
     def keyPressEvent(self, ev):
         k = ev.key()
+        logger.debug('Key: %s' % k)
         mdf = ev.modifiers()
 
         Tab = QtCore.Qt.Key_Tab
@@ -269,8 +271,9 @@ class Interpreter(HighlightedTextEdit):
 
         elif mdf & Control and k==C:
             #send keyboard interrupt
+            logger.info('Ctrl-C pressed')
             if self.cmdthread is not None and self.cmdthread.isRunning():
-                #logging.debug('CC')
+                logger.info('Thread running')
                 pynguin.Pynguin.ControlC = True
                 #logging.debug('CCT')
                 self.mw.pynguin._empty_move_queue()
@@ -281,6 +284,7 @@ class Interpreter(HighlightedTextEdit):
                 self.interpreter.resetbuffer()
 
             else:
+                logger.info('No thread running')
                 self.write('\nKeyboardInterrupt\n')
                 self.interpreter.resetbuffer()
                 self.write('>>> ')
