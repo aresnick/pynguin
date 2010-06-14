@@ -478,6 +478,10 @@ class MainWindow(QtGui.QMainWindow):
 
         fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
         if fp:
+            root, ext = os.path.splitext(fp)
+            if not ext:
+                ext = '.png'
+                fp += ext
             self._fdir, _ = os.path.split(fp)
         else:
             return False
@@ -516,9 +520,13 @@ class MainWindow(QtGui.QMainWindow):
 
         scene.render(p, irf, src)
         if not i.save(fp):
+            if ext not in ('.png', '.jpg', '.jpeg', '.tga'):
+                msg = 'Unsupported format.\n\nTry using filename.png'
+            else:
+                msg = 'Cannot export image.'
             QtGui.QMessageBox.warning(self,
                                 'Unable to save',
-                                'Cannot export image.')
+                                msg)
 
         for pynguin in self.pynguins:
             pynguin.gitem.show()
