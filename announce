@@ -18,17 +18,15 @@ Pynguin is tested with Python 2.6.5 and uses PyQt (4.7.2)
     for its GUI elements. Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.8:
-    - fixed strange behavior after KeyboardInterrupt
-    - fixed clear() to put pen back in to correct drawing state
-    - added support for pygments syntax highlighting
-    - exposed Pynguin class directly
-    - added object oriented (Pynguin subclass) examples
-    - added color nudging function
-    - color('random') returns the selected color
-    - polar and cartesian plot improvements
-    - added padding around exported image
-    - added square() method to Pynguin
-    - added more program challenge worksheets
-    - code editor improvements
-    - unified z-value across pynguins to eliminate flicker
+Changes in pynguin-0.9:
+    - added pythonic accessors for .x .y and .heading
+    - made turnto() instant, like goto()
+    - reset() now restores pen to down state
+    - fixed copying from console area (shortcut and context menu)
+    - automatically strips prompts when pasting to code editor
+    - fixed tab/backtab in console area
+    - now pass mouse clicks to all pynguins
+    - changed onclick() API slightly
+    - updated onclick examples and added new examples
+    - now allow unicode in code area and console
+    - added command line switch to enable debugging
