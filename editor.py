@@ -327,9 +327,6 @@ class PythonHighlighter(highlightedtextedit.PythonHighlighter):
         self.callableFormat.setForeground(QtGui.QBrush(QtGui.QColor(116,255,87)))
         self.magicFormat = QtGui.QTextCharFormat(self.base_format)
         self.magicFormat.setForeground(QtGui.QColor(224,128,0))
-        self.qtFormat = QtGui.QTextCharFormat(self.base_format)
-        self.qtFormat.setForeground(QtCore.Qt.blue)
-        self.qtFormat.setFontWeight(QtGui.QFont.Bold)
         self.selfFormat = QtGui.QTextCharFormat(self.base_format)
         self.selfFormat.setForeground(QtGui.QBrush(QtGui.QColor(255,127,127)))
         #self.selfFormat.setFontItalic(True)
@@ -352,7 +349,6 @@ class PythonHighlighter(highlightedtextedit.PythonHighlighter):
         self.rules.append((QtCore.QRegExp(r"\b[A-Za-z_]+\(.*\)"), self.callableFormat))
         self.rules.append((QtCore.QRegExp(r"\b__[a-z]+__\b"), self.magicFormat))
         self.rules.append((QtCore.QRegExp(r"\bself\b"), self.selfFormat))
-        self.rules.append((QtCore.QRegExp(r"\bQ([A-Z][a-z]*)+\b"), self.qtFormat))
 
         self.multiLineStringBegin = QtCore.QRegExp(r'\"\"\"')
         self.multiLineStringEnd = QtCore.QRegExp(r'\"\"\"')
