@@ -147,20 +147,9 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="filemenu">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionSave_As"/>
-    <addaction name="actionExport"/>
-    <addaction name="actionQuit"/>
-   </widget>
    <widget class="QMenu" name="penmenu">
     <property name="title">
      <string>Pen</string>
@@ -200,6 +189,17 @@
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
     <addaction name="actionReportBug"/>
+   </widget>
+   <widget class="QMenu" name="filemenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="actionExport"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -336,6 +336,9 @@
   <action name="actionSave_As">
    <property name="text">
     <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionAbout">
