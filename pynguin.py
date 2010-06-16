@@ -33,7 +33,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'lt', 'right', 'rt', 'reset', 'home',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
-                        'goto', 'xy', 'turnto', 'clear',
+                        'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp']
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
@@ -144,9 +144,13 @@ class Pynguin(object):
     pos = property(_get_pos, _set_pos)
 
     def xy(self):
-        pos = self.ritem.pos()
-        x, y = pos.x(), pos.y()
-        return x, y
+        return self.x, self.y
+
+    def xyh(self):
+        return self.x, self.y, self.heading
+
+    def h(self):
+        return self.heading
 
     @classmethod
     def _process_moves(cls):
