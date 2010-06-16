@@ -1059,10 +1059,6 @@ class RItem(object):
     def set_transform(self):
         pass
 
-    def set_rotation(self, ang):
-        'directly set rotation (in radians)'
-        self.ang = -(180/PI)*ang
-
     def rotate(self, deg):
         'turn clockwise from current angle by deg degrees'
         self.ang += deg
@@ -1076,10 +1072,6 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
     def set_transform(self):
         pass
-
-    def set_rotation(self, ang):
-        'directly set rotation (in radians)'
-        self.ang = -(180/PI)*ang
 
     def rotate(self, deg):
         'turn clockwise from current angle by deg degrees'
@@ -1133,11 +1125,6 @@ class PynguinGraphicsItem(GraphicsItem):
         trans.translate(cx, cy).rotate(ang).translate(-cx, -cy)
         trans.scale(self.scale, self.scale)
         self.setTransform(trans)
-
-    def set_rotation(self, ang):
-        'directly set rotation (in radians)'
-        self.ang = -(180/PI)*ang
-        self.set_transform()
 
     def rotate(self, deg):
         'turn clockwise from current angle by deg degrees'
