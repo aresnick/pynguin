@@ -1,6 +1,7 @@
 # Copyright 2010 Lee Harr
 #
 # This file is part of pynguin.
+# http://pynguin.googlecode.com/
 #
 # Pynguin is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

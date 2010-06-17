@@ -1,6 +1,7 @@
 # Copyright 2010 Lee Harr
 #
 # This file is part of pynguin.
+# http://pynguin.googlecode.com/
 #
 # Pynguin is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -273,7 +274,7 @@ class CodeArea(HighlightedTextEdit):
             self.mselect.removeItem(idx)
             self.mselect.insertItem(idx+1, title, item_docid)
             self.mselect.setCurrentIndex(idx+1)
-            
+
     def insertFromMimeData(self, data):
         txt = data.data('text/plain')
         newtxt = []
