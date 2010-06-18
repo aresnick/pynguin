@@ -22,7 +22,8 @@ import sys
 from math import pi
 import glob
 import zipfile
-#import logging
+import logging
+logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
@@ -66,6 +67,10 @@ class MainWindow(QtGui.QMainWindow):
         view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         view.mousePressEvent = self.onclick
+        view.wheelEvent = self.mousewheelscroll
+        view.mouseMoveEvent = self.mousewheelmove
+        self._cx = 0
+        self._cy = 0
 
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
@@ -102,9 +107,10 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguins = []
         self.pynguin = None
         self.pynguin = self.new_pynguin()
+
+        self._scale = 1
         trans = QtGui.QTransform()
-        #trans.scale(0.15, 0.15)
-        trans.scale(1, 1)
+        trans.scale(self._scale, self._scale)
         self.scene.view.setTransform(trans)
         view.centerOn(self.pynguin.gitem)
 
@@ -146,13 +152,40 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setup_examples()
 
+    def mousewheelscroll(self, ev):
+        delta = ev.delta()
+        scaleperc = 1 + ((delta / 120.0) * 0.05)
+        self._scale *= scaleperc
+
+        trans = QtGui.QTransform()
+        trans.scale(self._scale, self._scale)
+        self.scene.view.setTransform(trans)
+
+    def mousewheelmove(self, ev):
+        buttons = ev.buttons()
+        if buttons & QtCore.Qt.MidButton:
+            pos = ev.pos()
+            dpos = self._middledragstart - pos
+            dposx, dposy = dpos.x(), dpos.y()
+            self._cx +=  dposx / self._scale
+            self._cy +=  dposy / self._scale
+            self.recenter()
+            self._middledragstart = pos
+
     def onclick(self, ev):
         button = ev.button()
-        calls = {QtCore.Qt.LeftButton: self.leftclick,}
+
+        calls = {QtCore.Qt.LeftButton: self.leftclick,
+                    QtCore.Qt.MidButton: self.middleclick,}
+
         call = calls.get(button, None)
         if call is not None:
             call(ev)
+
         self.interpretereditor.setFocus()
+
+    def middleclick(self, ev):
+        self._middledragstart = ev.pos()
 
     def leftclick(self, ev):
         evpos = ev.pos()
@@ -162,7 +195,7 @@ class MainWindow(QtGui.QMainWindow):
                 pyn.onclick(scpos.x(), scpos.y())
 
     def recenter(self):
-        center = QtCore.QPointF(0, 0)
+        center = QtCore.QPointF(self._cx, self._cy)
         self.ui.view.centerOn(center)
 
     def setup_examples(self):
