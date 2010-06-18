@@ -277,6 +277,16 @@ class Pynguin(object):
         p2 = QtCore.QPointF(x, y)
         item.setPos(p2)
 
+        if draw:
+            scene = self.mw.scene
+            if (x > scene._width / 2 or
+                    x < -scene._width / 2 or
+                    y > scene._width / 2 or
+                    y > scene._width / 2):
+                initialrect = QtCore.QRectF(-300,-300,600,600)
+                itemrect = scene.itemsBoundingRect()
+                scene.setSceneRect(itemrect.united(initialrect))
+
         if draw and item._pen:
             cl = self.gitem._current_line
             if cl is None:
