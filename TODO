@@ -1,4 +1,3 @@
-Mouse wheel zooms on canvas
 Reload drawing when loading session?
 Focus follows mouse?
 Icons for menu items
@@ -16,7 +15,6 @@ Paren matching
 Need to check types being passed to methods that will later
     be passed through to delayed graphic draw methods so that
     error messages will be seen at the right place.
-2nd tab in editor is going to wrong tab stop
 Add ability to "lock" documents in to place
 Periodic autosave
 Use arcs instead of lines when slow drawing circles

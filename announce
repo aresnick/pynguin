@@ -20,8 +20,11 @@ Pynguin is tested with Python 2.6.5 and uses PyQt (4.7.2)
 
 Changes in pynguin-0.9:
     - added pythonic accessors for .x .y and .heading
+    - added functions for getting heading: xyh() and h()
+    - added ability to zoom and pan the canvas
     - made turnto() instant, like goto()
     - reset() now restores pen to down state
+    - made .png default export and improved error message on failure
     - fixed copying from console area (shortcut and context menu)
     - automatically strips prompts when pasting to code editor
     - fixed tab/backtab in console area
@@ -30,3 +33,4 @@ Changes in pynguin-0.9:
     - updated onclick examples and added new examples
     - now allow unicode in code area and console
     - added command line switch to enable debugging
+    - added Save As shortcut
