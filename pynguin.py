@@ -22,7 +22,8 @@ from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 import random
-#import logging
+import logging
+logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
@@ -95,7 +96,7 @@ class Pynguin(object):
                     raise KeyboardInterrupt
 
     def _gitem_setup(self):
-        self.gitem = PynguinGraphicsItem(self.rend, 'pynguin') #display only
+        self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
         self.imageid = 'pynguin'
         self.scene.addItem(self.gitem)
         Pynguin._zvalue += 1
@@ -827,7 +828,7 @@ class Pynguin(object):
         rend = ogitem.rend
         pen = ogitem.pen
         scene = ogitem.scene()
-        gitem = PynguinGraphicsItem(rend, imageid)
+        gitem = PynguinGraphicsItem(rend, imageid, self)
         gitem.setZValue(ogitem.zValue())
         gitem.setPos(pos)
         gitem.ang = ang
@@ -1026,7 +1027,7 @@ class Pynguin(object):
         gitem = self.gitem
         if imageid is None:
             imageid = gitem.imageid
-        item = PynguinGraphicsItem(gitem.rend, imageid)
+        item = PynguinGraphicsItem(gitem.rend, imageid, None)
         item.ang = gitem.ang
         item.setPos(gitem.pos())
         item.setZValue(self._zvalue)
@@ -1093,7 +1094,7 @@ class GraphicsItem(QtGui.QGraphicsItem):
 
 
 class PynguinGraphicsItem(GraphicsItem):
-    def __init__(self, rend, imageid):
+    def __init__(self, rend, imageid, pynguin):
         cx, cy = 125, 125
         scale = 0.20
         cxs, cys = cx*scale, cy*scale
@@ -1101,6 +1102,7 @@ class PynguinGraphicsItem(GraphicsItem):
         self.cpt = cpt
         self.scale = scale
         self.rend = rend
+        self.pynguin = pynguin
 
         GraphicsItem.__init__(self)
 
@@ -1150,3 +1152,16 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def boundingRect(self):
         return self.item.boundingRect()
+
+    def mousePressEvent(self, ev):
+        button = ev.button()
+        if button == QtCore.Qt.LeftButton:
+            ev.accept()
+
+    def mouseMoveEvent(self, ev):
+        buttons = ev.buttons()
+        if buttons & QtCore.Qt.LeftButton:
+            pynguin = self.pynguin
+            if pynguin is not None:
+                pos = ev.lastScenePos()
+                pynguin.pos = pos

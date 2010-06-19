@@ -162,6 +162,8 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.view.setTransform(trans)
 
     def mousewheelmove(self, ev):
+        QtGui.QGraphicsView.mouseMoveEvent(self.scene.view, ev)
+
         buttons = ev.buttons()
         if buttons & QtCore.Qt.MidButton:
             pos = ev.pos()
@@ -173,14 +175,14 @@ class MainWindow(QtGui.QMainWindow):
             self._middledragstart = pos
 
     def onclick(self, ev):
+        QtGui.QGraphicsView.mousePressEvent(self.scene.view, ev)
+
         button = ev.button()
+        if not ev.isAccepted() and button==QtCore.Qt.LeftButton:
+            self.leftclick(ev)
 
-        calls = {QtCore.Qt.LeftButton: self.leftclick,
-                    QtCore.Qt.MidButton: self.middleclick,}
-
-        call = calls.get(button, None)
-        if call is not None:
-            call(ev)
+        elif button==QtCore.Qt.MidButton:
+            self.middleclick(ev)
 
         self.interpretereditor.setFocus()
 
@@ -193,6 +195,7 @@ class MainWindow(QtGui.QMainWindow):
         for pyn in self.pynguins:
             if pyn.respond_to_mouse_click:
                 pyn.onclick(scpos.x(), scpos.y())
+        ev.ignore()
 
     def recenter(self):
         center = QtCore.QPointF(self._cx, self._cy)
