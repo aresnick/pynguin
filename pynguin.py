@@ -489,8 +489,8 @@ class Pynguin(object):
             raise ValueError, "'random' must be passed alone."
         else:
             xmin, ymin, xmax, ymax = self.viewcoords()
-            x = random.randrange(xmin, xmax)
-            y = random.randrange(ymin, ymax)
+            x = random.randrange(int(xmin), int(xmax))
+            y = random.randrange(int(ymin), int(ymax))
             self.goto(x, y)
 
     def _gitem_setangle(self, ang):
@@ -577,8 +577,8 @@ class Pynguin(object):
             raise ValueError, "'random' must be passed alone."
         else:
             xmin, ymin, xmax, ymax = self.viewcoords()
-            x = random.randrange(xmin, xmax)
-            y = random.randrange(ymin, ymax)
+            x = random.randrange(int(xmin), int(xmax))
+            y = random.randrange(int(ymin), int(ymax))
             self.lineto(x, y)
 
     def _write(self, text):
