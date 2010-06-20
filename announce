@@ -23,6 +23,7 @@ Changes in pynguin-0.9:
     - added functions for getting heading: xyh() and h()
     - added ability to zoom and pan the canvas
     - added periodic automatic saving
+    - pynguins can now be dragged in to position
     - made turnto() instant, like goto()
     - reset() now restores pen to down state
     - made .png default export and improved error message on failure
