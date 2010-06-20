@@ -1165,3 +1165,4 @@ class PynguinGraphicsItem(GraphicsItem):
             if pynguin is not None:
                 pos = ev.lastScenePos()
                 pynguin.pos = pos
+                pynguin._gitem_new_line()
