@@ -34,6 +34,7 @@ from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
 from conf import uidir, bug_url
+from conf import backupfolder, backupfile, backuprate, keepbackups
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -151,6 +152,8 @@ class MainWindow(QtGui.QMainWindow):
         self.setup_recent()
 
         self.setup_examples()
+
+        QtCore.QTimer.singleShot(60000, self.autosave)
 
     def mousewheelscroll(self, ev):
         delta = ev.delta()
@@ -341,20 +344,30 @@ class MainWindow(QtGui.QMainWindow):
                 return False
         return True
 
-    def _savestate(self):
-        '''write out the files in the editor window, and keep the list
-            of history entries. All of this is packed up in to a zip
-            file and given a .pyn filename ending.
-
+    def autosave(self):
+        '''automatically save a copy of the current project.
+        Also moves older backups up a number and deletes the
+            oldest backup.
         '''
+        if not keepbackups:
+            return
 
-        self.editor.savecurrent()
+        folder = backupfolder or self._fdir
+        fp = os.path.join(backupfolder, backupfile % '')
+        self._writefile(fp)
 
-        r, ext = os.path.splitext(self._filepath)
-        if ext != '.pyn':
-            ext = '.pyn'
-        self._filepath = r + ext
-        z = zipfile.ZipFile(self._filepath, 'w')
+        for fn in range(keepbackups, 1, -1):
+            fpsrc = os.path.join(backupfolder, backupfile % (fn-1))
+            fpdst = os.path.join(backupfolder, backupfile % fn)
+            if os.path.exists(fpsrc):
+                os.rename(fpsrc, fpdst)
+
+        os.rename(fp, fpsrc)
+
+        QtCore.QTimer.singleShot(backuprate*60000, self.autosave)
+
+    def _writefile(self, fp):
+        z = zipfile.ZipFile(fp, 'w')
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
@@ -370,6 +383,22 @@ class MainWindow(QtGui.QMainWindow):
         z.writestr(historyname, history.encode('utf-8'))
 
         z.close()
+
+    def _savestate(self):
+        '''write out the files in the editor window, and keep the list
+            of history entries. All of this is packed up in to a zip
+            file and given a .pyn filename ending.
+
+        '''
+
+        self.editor.savecurrent()
+
+        r, ext = os.path.splitext(self._filepath)
+        if ext != '.pyn':
+            ext = '.pyn'
+        self._filepath = r + ext
+
+        self._writefile(self._filepath)
 
         self._modified = False
         self.setWindowModified(False)
