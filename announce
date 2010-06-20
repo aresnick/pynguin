@@ -22,6 +22,7 @@ Changes in pynguin-0.9:
     - added pythonic accessors for .x .y and .heading
     - added functions for getting heading: xyh() and h()
     - added ability to zoom and pan the canvas
+    - added periodic automatic saving
     - made turnto() instant, like goto()
     - reset() now restores pen to down state
     - made .png default export and improved error message on failure

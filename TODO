@@ -16,7 +16,6 @@ Need to check types being passed to methods that will later
     be passed through to delayed graphic draw methods so that
     error messages will be seen at the right place.
 Add ability to "lock" documents in to place
-Periodic autosave
 Use arcs instead of lines when slow drawing circles
 Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
