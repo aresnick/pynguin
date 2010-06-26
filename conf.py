@@ -8,6 +8,6 @@ LOG_FILENAME = 'logfile.log'
 backupfolder = '' # blank means save in current directory
 backupfile = 'backup~%s.pyn' # must have %s that will be replaced with number
 backuprate = 3 # minutes between backups
-keepbackups = 5
+keepbackups = 5 # set to 0 to disable automatic backups
 
 KeyboardInterrupt_quiet = True
