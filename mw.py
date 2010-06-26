@@ -157,12 +157,23 @@ class MainWindow(QtGui.QMainWindow):
 
     def mousewheelscroll(self, ev):
         delta = ev.delta()
+        self.zoom(delta)
+
+    def zoom(self, delta):
         scaleperc = 1 + ((delta / 120.0) * 0.05)
         self._scale *= scaleperc
 
         trans = QtGui.QTransform()
         trans.scale(self._scale, self._scale)
         self.scene.view.setTransform(trans)
+
+    def zoomin(self):
+        self.zoom(120)
+    def zoomout(self):
+        self.zoom(-120)
+    def zoom100(self):
+        self._scale = 1
+        self.zoom(0)
 
     def mousewheelmove(self, ev):
         QtGui.QGraphicsView.mouseMoveEvent(self.scene.view, ev)

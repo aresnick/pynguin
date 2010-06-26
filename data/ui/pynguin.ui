@@ -163,16 +163,6 @@
     <addaction name="actionNofill"/>
     <addaction name="actionFillColor"/>
    </widget>
-   <widget class="QMenu" name="viewmenu">
-    <property name="title">
-     <string>View</string>
-    </property>
-    <addaction name="actionPynguin"/>
-    <addaction name="actionArrow"/>
-    <addaction name="actionRobot"/>
-    <addaction name="actionTurtle"/>
-    <addaction name="actionHidden"/>
-   </widget>
    <widget class="QMenu" name="speedmenu">
     <property name="title">
      <string>Speed</string>
@@ -200,6 +190,20 @@
     <addaction name="actionSave_As"/>
     <addaction name="actionExport"/>
     <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="viewmenu">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionPynguin"/>
+    <addaction name="actionArrow"/>
+    <addaction name="actionRobot"/>
+    <addaction name="actionTurtle"/>
+    <addaction name="actionHidden"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoom_in"/>
+    <addaction name="actionZoom_out"/>
+    <addaction name="actionZoom_to_100"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -394,6 +398,36 @@
   <action name="actionReportBug">
    <property name="text">
     <string>Report Bug...</string>
+   </property>
+  </action>
+  <action name="actionZoom_in">
+   <property name="text">
+    <string>Zoom in</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionZoom_out">
+   <property name="text">
+    <string>Zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionZoom_to_100">
+   <property name="text">
+    <string>Zoom to 100%</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
    </property>
   </action>
  </widget>
@@ -639,6 +673,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionZoom_in</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>zoomin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZoom_out</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>zoomout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZoom_to_100</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>zoom100()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -655,5 +737,8 @@
   <slot>export()</slot>
   <slot>setFillColor()</slot>
   <slot>reportbug()</slot>
+  <slot>zoomin()</slot>
+  <slot>zoomout()</slot>
+  <slot>zoom100()</slot>
  </slots>
 </ui>
