@@ -26,6 +26,7 @@ from PyQt4 import QtCore, QtGui
 
 from editor import HighlightedTextEdit
 import pynguin
+import conf
 
 
 class Console(code.InteractiveConsole):
@@ -34,7 +35,11 @@ class Console(code.InteractiveConsole):
         self.editor = editor
 
     def showtraceback(self):
-        code.InteractiveConsole.showtraceback(self)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        if exc_type is KeyboardInterrupt and conf.KeyboardInterrupt_quiet:
+            pass
+        else:
+            code.InteractiveConsole.showtraceback(self)
         self.error = True
         #logging.debug('foo')
 
@@ -286,7 +291,10 @@ class Interpreter(HighlightedTextEdit):
 
             else:
                 logger.info('No thread running')
-                self.write('\nKeyboardInterrupt\n')
+                if not conf.KeyboardInterrupt_quiet:
+                    self.write('\nKeyboardInterrupt\n')
+                else:
+                    self.write('\n')
                 self.interpreter.resetbuffer()
                 self.write('>>> ')
 
