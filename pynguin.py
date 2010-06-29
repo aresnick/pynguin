@@ -145,14 +145,39 @@ class Pynguin(object):
         return self.ritem.pos()
     pos = property(_get_pos, _set_pos)
 
-    def xy(self):
-        return self.x, self.y
+    def xy(self, x=None, y=None):
+        '''Get or set the position. Call with no args to get: xy()
+            Or provide both x and y to set: xy(150, 200)
+        '''
+        if x is None and y is None:
+            return self.x, self.y
+        elif x is not None and y is not None:
+            self.x = x
+            self.y = y
+        else:
+            raise ValueError
 
-    def xyh(self):
-        return self.x, self.y, self.heading
+    def xyh(self, x=None, y=None, h=None):
+        '''Get or set the position and heading. Call with no args to
+            get: xyh()
+            Or provide x, y, and h to set: xyh(150, 200, 180)
+        '''
+        if x is None and y is None and h is None:
+            return self.x, self.y, self.heading
+        elif x is not None and y is not None and h is not None:
+            self.xy(x, y)
+            self.h(h)
+        else:
+            raise ValueError
 
-    def h(self):
-        return self.heading
+    def h(self, h=None):
+        '''Get or set the heading. Call with no args to get: h()
+            Or provide heading to set: h(180)
+        '''
+        if h is None:
+            return self.heading
+        else:
+            self.heading = h
 
     @classmethod
     def _process_moves(cls):
