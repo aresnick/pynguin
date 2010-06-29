@@ -29,6 +29,8 @@ Changes in pynguin-0.9:
     - made .png default export and improved error message on failure
     - fixed copying from console area (shortcut and context menu)
     - automatically strips prompts when pasting to code editor
+    - KeyboardInterrupt is now quiet by default
+    - square() is now built in
     - fixed tab/backtab in console area
     - now pass mouse clicks to all pynguins
     - changed onclick() API slightly
