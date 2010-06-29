@@ -2,3 +2,4 @@ syntax:glob
 *.pyc
 doc/examples/test/
 logfile.log
+backup~*
