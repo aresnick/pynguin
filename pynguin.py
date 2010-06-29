@@ -37,7 +37,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
-                        'onscreen', 'viewcoords', 'stamp']
+                        'onscreen', 'viewcoords', 'stamp', 'square']
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
 
 class TooManyPynguins(RuntimeError):
