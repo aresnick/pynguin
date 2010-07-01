@@ -654,46 +654,43 @@ class Pynguin(object):
     def clear(self):
         self.qmove(self._clear)
 
-    def _reset(self):
-        if self is self.mw.pynguin and self._moves:
+    def _full_reset(self):
+        if self._moves:
             self._empty_move_queue()
-        self._clear()
-        self._gitem_home()
-        self._gitem_new_line()
-        self._gitem_setangle(0)
-        self._gitem_fillmode(0)
-        self._width(2)
-        self._color(255, 255, 255)
-        self._pendown()
-        self._fillcolor(100, 220, 110)
-        self._gitem_fillrule(QtCore.Qt.WindingFill)
-        self._setImageid('pynguin')
 
-        if self is self.mw.pynguin:
-            self._remove_other_pynguins()
+        self.reset()
+        self._remove_other_pynguins()
 
-    def reset(self):
+    def reset(self, full=False):
         '''reset()
 
         Move to home location and angle and restore state
             to the initial values (pen, fill, etc).
 
-        Also removes any added pynguins.
+        if full is True, also removes any added pynguins and clears out
+            any pending pynguin movements.
         '''
-        if self is self.mw.pynguin:
-            for pyn in self.mw.pynguins:
-                if pyn is not self:
-                    if pyn.gitem is not None:
-                        pyn.reset()
 
-        self.qmove(self._reset)
-        self._item_home(self.ritem)
-        self.nofill()
-        self.width(2)
-        self.color(255, 255, 255)
-        self.pendown()
-        self.fillcolor(100, 220, 110)
-        self.fillrule('winding')
+        if full:
+            if self is not self.mw.pynguin:
+                self.mw.pynguin.reset(full=True)
+            else:
+                for pyn in self.mw.pynguins:
+                    if pyn is not self:
+                        if pyn.gitem is not None:
+                            pyn.reset()
+                self.qmove(self._full_reset)
+
+        else:
+            self.clear()
+            self.goto(0, 0)
+            self.turnto(0)
+            self.pendown()
+            self.width(2)
+            self.color(255, 255, 255)
+            self.nofill()
+            self.fillcolor(100, 220, 110)
+            self.fillrule('winding')
 
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
