@@ -26,13 +26,13 @@ class Splash(QtGui.QSplashScreen):
     def __init__(self, app):
         rend = getrend(app)
         img = QtGui.QPixmap(500, 320)
-        #img.fill(QtCore.Qt.transparent)
+        img.fill(QtCore.Qt.transparent)
         self.img = img
         painter = QtGui.QPainter(img)
         rend.render(painter, 'splash')
         painter.end()
         QtGui.QSplashScreen.__init__(self, img)
-        #self.setMask(img.mask())
+        self.setMask(img.mask())
         QtCore.QTimer.singleShot(1500, self.away)
 
     def away(self):

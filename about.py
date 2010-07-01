@@ -19,7 +19,7 @@
 
 import os
 
-from PyQt4 import QtGui, uic
+from PyQt4 import QtGui, QtCore, uic
 
 from util import getrend
 from conf import uidir, version
@@ -34,6 +34,7 @@ class AboutDialog(QtGui.QDialog):
 
         rend = getrend(app)
         img = QtGui.QPixmap(225, 144)
+        img.fill(QtCore.Qt.transparent)
         self.img = img
         painter = QtGui.QPainter(img)
         rend.render(painter, 'splash')
