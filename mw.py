@@ -824,6 +824,18 @@ class MainWindow(QtGui.QMainWindow):
         speed = choice[ev]
         self._setSpeed(speed)
 
+    def wordwrap(self):
+        if not self.ui.actionWordwrap.isChecked():
+            self.editor.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        else:
+            self.editor.setWordWrapMode(QtGui.QTextOption.WrapAtWordBoundaryOrAnywhere)
+
+    def zoomineditor(self):
+        self.editor.zoomin()
+
+    def zoomouteditor(self):
+        self.editor.zoomout()
+
     def about(self):
         AboutDialog(self.app).exec_()
 

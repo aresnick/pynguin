@@ -73,6 +73,10 @@ try:
                     qtf.setFontUnderline(True)
                 self.styles[unicode(token)]=qtf
 
+        def setfontsize(self, pt):
+            for nm, qtf in self.styles.items():
+                qtf.setFontPointSize(pt)
+
         def show_all_styles(self):
             z = self.style._styles.keys()
             z.sort()
@@ -96,6 +100,7 @@ try:
             self.formatter=CodeFormatter()
             self.lexer=get_lexer_by_name(mode)
 
+
 except ImportError:
     # probably caused by missing pygments library
     CodeHighlighter = None
@@ -111,7 +116,42 @@ class CodeArea(HighlightedTextEdit):
         self.documents = {}
         self.title = None
         self.docid = None
+        self.setfontsize(16)
         self.new()
+
+    def setfontsize(self, pt):
+        self.fontsize = pt
+        try:
+            self.highlighter.formatter.setfontsize(self.fontsize)
+            self.rehi()
+        except AttributeError:
+            # requires pygments highlighting for now
+            pass
+
+    def zoomin(self):
+        self.setfontsize(self.fontsize + 1)
+
+    def zoomout(self):
+        self.setfontsize(self.fontsize - 1)
+
+    def rehi(self):
+        doc = self.document()
+        b = doc.begin()
+        last = doc.lastBlock()
+
+        c = self.textCursor()
+        p0 = c.position()
+
+        while b != last:
+            p = b.position()
+            c.setPosition(p)
+            self.setTextCursor(c)
+            c.insertText(' ')
+            c.deletePreviousChar()
+            b = b.next()
+
+        c.setPosition(p0)
+        self.setTextCursor(c)
 
     def clear(self):
         self._doc.clear()
