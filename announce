@@ -25,7 +25,9 @@ Changes in pynguin-0.9:
     - added periodic automatic saving
     - pynguins can now be dragged in to position
     - made turnto() instant, like goto()
-    - reset() now restores pen to down state
+    - plain reset() now only affects single pynguin
+        - restores as much as possible to initial state
+        - use reset(True) or reset(full=True) for complete reset as previous
     - made .png default export and improved error message on failure
     - fixed copying from console area (shortcut and context menu)
     - automatically strips prompts when pasting to code editor
