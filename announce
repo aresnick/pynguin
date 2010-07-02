@@ -40,4 +40,4 @@ Changes in pynguin-0.9:
     - updated onclick examples and added new examples
     - now allow unicode in code area and console
     - added command line switch to enable debugging
-    - added Save As shortcut
+    - added Save As, New, and Open shortcuts
