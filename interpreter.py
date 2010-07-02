@@ -120,6 +120,11 @@ class Interpreter(HighlightedTextEdit):
     def testthreaddone(self):
         #logging.debug('self.testthreaddone')
         if self.interpreter.error:
+            cpos = self.textCursor().position()
+            cblk = self._doc.findBlock(cpos)
+            pos = cblk.position()
+            if pos:
+                self.write('\n')
             self.write('>>> ')
 
         pynguin.Pynguin.ControlC = False

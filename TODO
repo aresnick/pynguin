@@ -20,7 +20,6 @@ Use arcs instead of lines when slow drawing circles
 Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
 Pressing just alt, ctrl, or shift causes "document modified" warning
-ctrl-c during non-function code "Test" button prints prompt at wrong location
 
 
 Intermittent crash/freeze
