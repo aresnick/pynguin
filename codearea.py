@@ -41,7 +41,7 @@ try:
             Name.Builtin.Pseudo: 'F0F060',
             Name.Function: '8080FF',}
 
-        def __init__(self):
+        def __init__(self, fontsize):
             Formatter.__init__(self, style='default')
             self.data=[]
 
@@ -58,9 +58,9 @@ try:
                 font.setFixedPitch(True)
                 font.setWeight(QtGui.QFont.DemiBold)
                 qtf=QtGui.QTextCharFormat()
-                qtf.setFontPointSize(16)
+                qtf.setFontPointSize(fontsize)
                 qtf.setFont(font)
-                qtf.setFontPointSize(16)
+                qtf.setFontPointSize(fontsize)
 
                 if style['color']:
                     qtf.setForeground(hex2QColor(style['color']))
@@ -92,41 +92,43 @@ try:
                 self.custom_color(style, color)
 
     class CodeHighlighter(Highlighter):
-        def __init__(self, parent, mode):
+        def __init__(self, parent, mode, fontsize):
             Highlighter.__init__(self, parent, mode)
             self.tstamp=time.time()
 
             # Keep the formatter and lexer, initializing them
             # may be costly.
-            self.formatter=CodeFormatter()
+            self.fontsize = fontsize
+            self.formatter=CodeFormatter(fontsize)
             self.lexer=get_lexer_by_name(mode)
 
         def setfontsize(self, pt):
-            self.formatter.setfontsize(pt)
+            if pt != self.fontsize:
+                self.fontsize = pt
+                self.formatter.setfontsize(pt)
 
 
 except ImportError:
     # probably caused by missing pygments library
     from editor import PythonHighlighter
     class CodeHighlighter(PythonHighlighter):
-        def __init__(self, document, mode):
+        def __init__(self, document, mode, fontsize):
             char_format = QtGui.QTextCharFormat()
-            font = QtGui.QFont('Courier')
-            font.setFixedPitch(True)
-            font.setWeight(QtGui.QFont.DemiBold)
-            char_format.setFont(font)
-            char_format.setFontPointSize(16)
             PythonHighlighter.__init__(self, document, char_format)
+            self.fontsize = -1
+            self.setfontsize(fontsize)
 
         def setfontsize(self, pt):
-            char_format = QtGui.QTextCharFormat()
-            font = QtGui.QFont('Courier')
-            font.setFixedPitch(True)
-            font.setWeight(QtGui.QFont.DemiBold)
-            char_format.setFont(font)
-            char_format.setFontPointSize(pt)
-            self.base_format = char_format
-            self.updateHighlighter(char_format.font())
+            if pt != self.fontsize:
+                self.fontsize = pt
+                char_format = QtGui.QTextCharFormat()
+                font = QtGui.QFont('Courier')
+                font.setFixedPitch(True)
+                font.setWeight(QtGui.QFont.DemiBold)
+                char_format.setFont(font)
+                char_format.setFontPointSize(pt)
+                self.base_format = char_format
+                self.updateHighlighter(char_format.font())
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mw):
@@ -135,24 +137,26 @@ class CodeArea(HighlightedTextEdit):
         self.mselect = mw.ui.mselect
         self.textdocuments = {}
         self.documents = {}
+        self.highlighters = {}
         self.title = None
         self.docid = None
-        self.setfontsize(16)
+        self.fontsize = 16
         self.new()
 
     def setdoc(self, doc):
         self.setDocument(doc)
         self._doc = doc
-        self.highlighter = CodeHighlighter(doc, 'python')
+        highlighter = self.highlighters[doc]
+        self.highlighter = highlighter
+        if highlighter.fontsize != self.fontsize:
+            self.setfontsize(self.fontsize)
+            self.rehi()
 
     def setfontsize(self, pt):
-        self.fontsize = pt
-        try:
+        if pt != self.highlighter.fontsize:
+            self.fontsize = pt
             self.highlighter.setfontsize(self.fontsize)
             self.rehi()
-        except AttributeError:
-            # requires pygments highlighting for now
-            pass
 
     def zoomin(self):
         self.setfontsize(self.fontsize + 1)
@@ -169,15 +173,19 @@ class CodeArea(HighlightedTextEdit):
         p0 = c.position()
 
         while b != last:
-            p = b.position()
-            c.setPosition(p)
-            self.setTextCursor(c)
-            c.insertText(' ')
-            self.undo()
+            self._rehibump(b, c)
             b = b.next()
+        self._rehibump(last, c)
 
         c.setPosition(p0)
         self.setTextCursor(c)
+
+    def _rehibump(self, b, c):
+        p = b.position()
+        c.setPosition(p)
+        self.setTextCursor(c)
+        c.insertText(' ')
+        self.undo()
 
     def clear(self):
         self._doc.clear()
@@ -273,8 +281,9 @@ class CodeArea(HighlightedTextEdit):
         '''save the current document and start a new blank document'''
         self.savecurrent()
 
-        document = QtGui.QTextDocument(self)
-        self.setdoc(document)
+        doc = QtGui.QTextDocument(self)
+        self.highlighters[doc] = CodeHighlighter(doc, 'python', self.fontsize)
+        self.setdoc(doc)
 
         import uuid
         docid = uuid.uuid4().hex
