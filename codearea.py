@@ -17,7 +17,8 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#import logging
+import logging
+logger = logging.getLogger('PynguinLogger')
 import time
 
 from PyQt4 import QtCore, QtGui
@@ -228,9 +229,10 @@ class CodeArea(HighlightedTextEdit):
         fblk = self._doc.firstBlock()
         txt = unicode(fblk.text())
         self.settitle(txt)
-        if self._doc.isModified():
-            self.mw._modified = True
+        if self.mw._modified or self._doc.isModified():
             self.mw.setWindowModified(True)
+        elif not self.mw._modified and not self.mw.check_modified():
+            self.mw.setWindowModified(False)
 
     def settitle(self, txt):
         '''set the title for the current document to txt
@@ -301,6 +303,7 @@ class CodeArea(HighlightedTextEdit):
         title = txt.split('\n')[0]
         self.settitle(title)
         self.savecurrent()
+        self._doc.setModified(False)
 
     def selectline(self, n):
         '''highlight line number n'''

@@ -341,8 +341,18 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowModified(False)
         self._filepath = None
 
-    def maybe_save(self):
+    def check_modified(self):
         if self._modified:
+            return True
+        else:
+            for tdoc in self.editor.textdocuments.values():
+                if tdoc.isModified():
+                    return True
+
+        return False
+
+    def maybe_save(self):
+        if self.check_modified():
             ret = QtGui.QMessageBox.warning(self, self.tr("Application"),
                         self.tr("The document has been modified.\n"
                                 "Do you want to save your changes?"),
@@ -412,6 +422,8 @@ class MainWindow(QtGui.QMainWindow):
         self._writefile(self._filepath)
 
         self._modified = False
+        for tdoc in self.editor.textdocuments.values():
+            tdoc.setModified(False)
         self.setWindowModified(False)
 
         self.addrecentfile(self._filepath)
