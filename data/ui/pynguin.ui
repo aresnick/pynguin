@@ -204,15 +204,20 @@
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
     <addaction name="actionZoom_to_100"/>
-    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="editormenu">
+    <property name="title">
+     <string>Editor</string>
+    </property>
     <addaction name="actionWordwrap"/>
-    <addaction name="actionZoom_in_editor"/>
-    <addaction name="actionZoom_out_editor"/>
+    <addaction name="actionIncrease_font_size"/>
+    <addaction name="actionDecrease_font_size"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
    <addaction name="penmenu"/>
    <addaction name="speedmenu"/>
+   <addaction name="editormenu"/>
    <addaction name="helpmenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -440,17 +445,6 @@
     <string>Ctrl+1</string>
    </property>
   </action>
-  <action name="actionWordwrap">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Word wrap editor</string>
-   </property>
-  </action>
   <action name="actionZoom_in_editor">
    <property name="text">
     <string>Increase font size</string>
@@ -460,6 +454,30 @@
    </property>
   </action>
   <action name="actionZoom_out_editor">
+   <property name="text">
+    <string>Decrease font size</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="actionWordwrap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Word wrap</string>
+   </property>
+  </action>
+  <action name="actionIncrease_font_size">
+   <property name="text">
+    <string>Increase font size</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+=</string>
+   </property>
+  </action>
+  <action name="actionDecrease_font_size">
    <property name="text">
     <string>Decrease font size</string>
    </property>
@@ -775,7 +793,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionZoom_in_editor</sender>
+   <sender>actionIncrease_font_size</sender>
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomineditor()</slot>
@@ -791,7 +809,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionZoom_out_editor</sender>
+   <sender>actionDecrease_font_size</sender>
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomouteditor()</slot>
