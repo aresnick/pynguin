@@ -100,29 +100,54 @@ try:
             self.formatter=CodeFormatter()
             self.lexer=get_lexer_by_name(mode)
 
+        def setfontsize(self, pt):
+            self.formatter.setfontsize(pt)
+
 
 except ImportError:
     # probably caused by missing pygments library
-    CodeHighlighter = None
+    from editor import PythonHighlighter
+    class CodeHighlighter(PythonHighlighter):
+        def __init__(self, document, mode):
+            char_format = QtGui.QTextCharFormat()
+            font = QtGui.QFont('Courier')
+            font.setFixedPitch(True)
+            font.setWeight(QtGui.QFont.DemiBold)
+            char_format.setFont(font)
+            char_format.setFontPointSize(16)
+            PythonHighlighter.__init__(self, document, char_format)
 
+        def setfontsize(self, pt):
+            char_format = QtGui.QTextCharFormat()
+            font = QtGui.QFont('Courier')
+            font.setFixedPitch(True)
+            font.setWeight(QtGui.QFont.DemiBold)
+            char_format.setFont(font)
+            char_format.setFontPointSize(pt)
+            self.base_format = char_format
+            self.updateHighlighter(char_format.font())
 
 class CodeArea(HighlightedTextEdit):
     def __init__(self, mw):
         HighlightedTextEdit.__init__(self)
-        if CodeHighlighter is not None:
-            self.highlighter = CodeHighlighter(self._doc, 'python')
         self.mw = mw
         self.mselect = mw.ui.mselect
+        self.textdocuments = {}
         self.documents = {}
         self.title = None
         self.docid = None
         self.setfontsize(16)
         self.new()
 
+    def setdoc(self, doc):
+        self.setDocument(doc)
+        self._doc = doc
+        self.highlighter = CodeHighlighter(doc, 'python')
+
     def setfontsize(self, pt):
         self.fontsize = pt
         try:
-            self.highlighter.formatter.setfontsize(self.fontsize)
+            self.highlighter.setfontsize(self.fontsize)
             self.rehi()
         except AttributeError:
             # requires pygments highlighting for now
@@ -147,7 +172,7 @@ class CodeArea(HighlightedTextEdit):
             c.setPosition(p)
             self.setTextCursor(c)
             c.insertText(' ')
-            c.deletePreviousChar()
+            self.undo()
             b = b.next()
 
         c.setPosition(p0)
@@ -155,6 +180,7 @@ class CodeArea(HighlightedTextEdit):
 
     def clear(self):
         self._doc.clear()
+        self.textdocuments = {}
         self.documents = {}
         self.mselect.clear()
 
@@ -238,12 +264,15 @@ class CodeArea(HighlightedTextEdit):
             documents dictionary, keyed by title
         '''
         if self.docid is not None:
+            self.textdocuments[self.docid] = self.document()
             self.documents[self.docid] = unicode(self._doc.toPlainText())
 
     def new(self):
         '''save the current document and start a new blank document'''
         self.savecurrent()
-        self._doc.setPlainText('')
+
+        document = QtGui.QTextDocument(self)
+        self.setdoc(document)
 
         import uuid
         docid = uuid.uuid4().hex
@@ -260,7 +289,8 @@ class CodeArea(HighlightedTextEdit):
         self.savecurrent()
         doctxt = self.documents[docid]
         self.docid = docid
-        self._doc.setPlainText(doctxt)
+        doc = self.textdocuments[docid]
+        self.setdoc(doc)
         firstline = unicode(doctxt.split('\n')[0])
         self.settitle(firstline)
 
