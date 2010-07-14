@@ -22,7 +22,7 @@ Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
 Remember font size between sessions
 reset should restore pynguin avatar (if avatar is hidden?)
-classes should be loaded when file loads
+highlighting multiple lines and pressing tab/backtab should work
 
 
 Intermittent crash/freeze

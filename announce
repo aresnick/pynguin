@@ -28,6 +28,12 @@ Changes in pynguin-0.9:
     - plain reset() now only affects single pynguin
         - restores as much as possible to initial state
         - use reset(True) or reset(full=True) for complete reset as previous
+    - better control-c handling
+        - code that never uses pynguin methods can now be stopped
+        - limits print rate to keep console responsive
+        - fixed prompt alignment after ctrl-c on non-function code
+    - fixed problem with editor undo entries being lost
+    - better recognition of when document has actually been modified
     - made .png default export and improved error message on failure
     - fixed copying from console area (shortcut and context menu)
     - automatically strips prompts when pasting to code editor
