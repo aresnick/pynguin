@@ -324,7 +324,7 @@ class MainWindow(QtGui.QMainWindow):
             pass
 
     def _new(self, newdoc=False):
-        self.pynguin.reset()
+        self.pynguin.reset(True)
         del_later = []
         for name in self.interpreter_locals:
             if name not in pynguin_functions and name not in interpreter_protect:

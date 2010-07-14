@@ -22,7 +22,6 @@ Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
 Remember font size between sessions
 reset should restore pynguin avatar (if avatar is hidden?)
-opening new file should do a full reset
 classes should be loaded when file loads
 
 
