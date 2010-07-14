@@ -235,6 +235,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         txt = blk.text()
         firstnonspace = 0
         hasselection = curs.hasSelection()
+        spaces4 = QtCore.QString('    ')
         for c in txt[self.col0:]:
             if c != ' ':
                 break
@@ -242,49 +243,46 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
 
         #print k, col, firstnonspace
 
-        if col == 0:
-            if k in (Tab, Backtab):
-                if hasselection:
-                    selstart = curs.selectionStart()
-                    selend = curs.selectionEnd()
-                    curs.setPosition(selstart, 0)
-                    startblk = curs.block()
-                    curs.setPosition(selend, 0)
-                    endblk = curs.block()
-                    if selend == endblk.position():
-                        endblk = endblk.previous()
-                    curs.clearSelection()
-                    spaces = QtCore.QString('    ')
+        if hasselection and k in (Tab, Backtab):
+            selstart = curs.selectionStart()
+            selend = curs.selectionEnd()
+            curs.setPosition(selstart, 0)
+            startblk = curs.block()
+            curs.setPosition(selend, 0)
+            endblk = curs.block()
+            if selend == endblk.position():
+                endblk = endblk.previous()
+            curs.clearSelection()
 
-                    blk = startblk
-                    startpos = blk.position()
-                    while True:
-                        pos = blk.position()
-                        curs.setPosition(pos, 0)
-                        self.setTextCursor(curs)
-                        if k == Tab:
-                            self.insertPlainText(spaces)
-                        else:
-                            txt = blk.text()
-                            if txt[:4] == '    ':
-                                for char in range(4):
-                                    curs.deleteChar()
-                        if blk == endblk:
-                            break
-                        blk = blk.next()
-                    endpos = blk.position() + blk.length()
-                    curs.setPosition(startpos, 0)
-                    curs.setPosition(endpos, 1)
-                    self.setTextCursor(curs)
-
-                elif k == Tab:
-                    spaces = QtCore.QString('    ')
-                    self.insertPlainText(spaces)
-
-                elif k == Backtab:
+            blk = startblk
+            startpos = blk.position()
+            while True:
+                pos = blk.position()
+                curs.setPosition(pos, 0)
+                self.setTextCursor(curs)
+                if k == Tab:
+                    self.insertPlainText(spaces4)
+                else:
+                    txt = blk.text()
                     if txt[:4] == '    ':
                         for char in range(4):
                             curs.deleteChar()
+                if blk == endblk:
+                    break
+                blk = blk.next()
+            endpos = blk.position() + blk.length() - 1
+            curs.setPosition(startpos, 0)
+            curs.setPosition(endpos, 1)
+            self.setTextCursor(curs)
+
+        elif col == 0:
+            if k == Tab:
+                self.insertPlainText(spaces4)
+
+            elif k == Backtab:
+                if txt[:4] == '    ':
+                    for char in range(4):
+                        curs.deleteChar()
 
             elif k == Backspace:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
@@ -307,11 +305,15 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
             if k == Tab:
                 curs.setPosition(blk0+self.col0+firstnonspace, 0)
                 self.setTextCursor(curs)
+                self.insertPlainText(spaces4)
             elif k == Backtab:
-                curs.setPosition(blk0+self.col0, 0)
+                curs.setPosition(blk0+self.col0+firstnonspace-4, 0)
                 self.setTextCursor(curs)
+                for char in range(4):
+                    curs.deleteChar()
             else:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
+
         else:
             QtGui.QTextEdit.keyPressEvent(self, ev)
 
