@@ -235,6 +235,7 @@ class Pynguin(object):
         delay = cls.delay
         etime = cls._checktime.elapsed()
         if cls.ControlC:
+            cls.ControlC += 1
             cls._empty_move_queue()
             #logging.debug('CCnomove')
 
@@ -381,6 +382,7 @@ class Pynguin(object):
         '''queue up a command for later application'''
 
         if self.ControlC:
+            Pynguin.ControlC += 1
             raise KeyboardInterrupt
 
         if args is None:

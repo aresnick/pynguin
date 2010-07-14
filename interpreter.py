@@ -19,6 +19,7 @@
 
 import sys
 import code
+import time
 import logging
 logger = logging.getLogger('PynguinLogger')
 
@@ -35,12 +36,12 @@ class Console(code.InteractiveConsole):
         self.editor = editor
 
     def showtraceback(self):
+        logger.info('showtraceback')
         exc_type, exc_value, exc_traceback = sys.exc_info()
         if exc_type is KeyboardInterrupt and conf.KeyboardInterrupt_quiet:
             pass
         else:
             code.InteractiveConsole.showtraceback(self)
-        self.error = True
         #logging.debug('foo')
 
 
@@ -54,7 +55,6 @@ class CmdThread(QtCore.QThread):
         self.txt = txt
     def run(self):
         ed = self.ed
-        ed.interpreter.error = False
         lines = self.txt.split('\n')
         if len(lines) > 1:
             ed.interpreter.runcode(self.txt)
@@ -107,6 +107,12 @@ class Interpreter(HighlightedTextEdit):
         '''
         if text:
             self._outputq.append(text)
+            if len(self._outputq) > 10:
+                time.sleep(.1)
+
+        if pynguin.Pynguin.ControlC == 1:
+            pynguin.Pynguin.ControlC += 1
+            raise KeyboardInterrupt
 
     def writeoutputq(self):
         '''process the text output queue. Must be done from the main thread.
@@ -115,6 +121,7 @@ class Interpreter(HighlightedTextEdit):
             text = self._outputq.pop(0)
             self.insertPlainText(text)
             QtCore.QTimer.singleShot(100, self.scrolldown)
+
         QtCore.QTimer.singleShot(10, self.writeoutputq)
 
     def checkprompt(self):
@@ -128,25 +135,28 @@ class Interpreter(HighlightedTextEdit):
             self.write('\n')
             self.write('>>> ')
 
+    def cleanup_ControlC(self):
+        pynguin.Pynguin.ControlC = False
+        self.cmdthread = None
+        for pyn in self.mw.pynguins:
+            if not hasattr(pyn, 'gitem') or pyn.gitem is None:
+                self.mw.pynguins.remove(pyn)
+
     def testthreaddone(self):
-        #logger.info('self.testthreaddone')
+        self.cleanup_ControlC()
+        logger.info('self.testthreaddone')
         QtCore.QTimer.singleShot(100, self.checkprompt)
 
-        pynguin.Pynguin.ControlC = False
-        self.interpreter.error = False
-        self.cmdthread = None
 
     def threaddone(self):
-        #logger.info('self.threaddone')
+        self.cleanup_ControlC()
+        logger.info('self.threaddone')
 
         if not self.needmore:
             self.write('>>> ')
         else:
             self.write('... ')
 
-        pynguin.Pynguin.ControlC = False
-        self.interpreter.error = False
-        self.cmdthread = None
 
     def keyPressEvent(self, ev):
         k = ev.key()
@@ -300,6 +310,8 @@ class Interpreter(HighlightedTextEdit):
                 self.interpreter.resetbuffer()
 
             else:
+                pynguin.Pynguin.ControlC = False
+                self.cmdthread = None
                 logger.info('No thread running')
                 if not conf.KeyboardInterrupt_quiet:
                     self.write('\nKeyboardInterrupt\n')
