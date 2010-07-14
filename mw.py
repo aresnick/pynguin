@@ -517,7 +517,7 @@ class MainWindow(QtGui.QMainWindow):
                 if hdr.startswith('##') and hdr.endswith('##'):
                     title = ename[11:]
                     self.editor.add(data)
-                    if data.startswith('def '):
+                    if data.startswith('def ') or data.startswith('class '):
                         try:
                             exec data in self.interpreter_locals
                         except Exception, e:
