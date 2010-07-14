@@ -289,6 +289,7 @@ class CodeArea(HighlightedTextEdit):
         docid = uuid.uuid4().hex
         self.mselect.addItem('', docid)
         self.documents[docid] = ''
+        self.textdocuments[docid] = doc
         idx = self.mselect.count() - 1
         self.mselect.setCurrentIndex(idx)
         self.docid = docid
