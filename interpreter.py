@@ -117,22 +117,27 @@ class Interpreter(HighlightedTextEdit):
             QtCore.QTimer.singleShot(100, self.scrolldown)
         QtCore.QTimer.singleShot(10, self.writeoutputq)
 
-    def testthreaddone(self):
-        #logging.debug('self.testthreaddone')
-        if self.interpreter.error:
-            cpos = self.textCursor().position()
-            cblk = self._doc.findBlock(cpos)
-            pos = cblk.position()
-            if pos:
-                self.write('\n')
+    def checkprompt(self):
+        cpos = self.textCursor().position()
+        cblk = self._doc.findBlock(cpos)
+        blktxt4 = cblk.text()[:4]
+        blen = cblk.length()
+        if blen == 0:
             self.write('>>> ')
+        elif blktxt4 != '>>> ':
+            self.write('\n')
+            self.write('>>> ')
+
+    def testthreaddone(self):
+        #logger.info('self.testthreaddone')
+        QtCore.QTimer.singleShot(100, self.checkprompt)
 
         pynguin.Pynguin.ControlC = False
         self.interpreter.error = False
         self.cmdthread = None
 
     def threaddone(self):
-        #logging.debug('self.threaddone')
+        #logger.info('self.threaddone')
 
         if not self.needmore:
             self.write('>>> ')

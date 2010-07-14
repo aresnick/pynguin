@@ -22,6 +22,8 @@ Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
 Remember font size between sessions
 Code outside of functions that prints leaves prompt in wrong state
+Should be able to stop loops that never use pynguin methods?
+Rate limit printing to keep console from locking up on fast looping print
 
 
 Intermittent crash/freeze
