@@ -21,6 +21,7 @@ Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
 Remember font size between sessions
+Code outside of functions that prints leaves prompt in wrong state
 
 
 Intermittent crash/freeze

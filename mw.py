@@ -691,7 +691,6 @@ class MainWindow(QtGui.QMainWindow):
         code = unicode(self.editor.documents[docid])
 
         code = self.cleancode(code)
-        self.editor.setPlainText(code)
 
         try:
             compile(code, 'current file', 'exec')
