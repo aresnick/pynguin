@@ -37,8 +37,10 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
-                        'onscreen', 'viewcoords', 'stamp', 'square']
+                        'onscreen', 'viewcoords', 'stamp', 'square',
+                        'avatar',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
+pynguin_avatars = ['pynguin', 'turtle', 'arrow', 'robot', 'hidden']
 
 class TooManyPynguins(RuntimeError):
     pass
@@ -97,7 +99,7 @@ class Pynguin(object):
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
-        self.imageid = 'pynguin'
+        self._imageid = 'pynguin'
         self.scene.addItem(self.gitem)
         Pynguin._zvalue += 1
         self.gitem.setZValue(9999999 - self._zvalue)
@@ -684,6 +686,8 @@ class Pynguin(object):
                 self.qmove(self._full_reset)
 
         else:
+            if self.avatar() == 'hidden':
+                self.avatar('pynguin')
             self.clear()
             self.goto(0, 0)
             self.turnto(0)
@@ -868,6 +872,15 @@ class Pynguin(object):
         '''change the visible (avatar) image'''
         self._imageid = imageid
         self.qmove(self._setImageid, (imageid,))
+    def avatar(self, imageid=None):
+        if imageid is not None:
+            if imageid in pynguin_avatars:
+                self.setImageid(imageid)
+            else:
+                msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(pynguin_avatars))
+                raise ValueError, msg
+        else:
+            return self._imageid
 
     def _circle(self, crect):
         '''instant circle'''
