@@ -13,8 +13,8 @@
    height="990"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="pynguin_howto2.svg">
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="pynguin_howto.svg">
   <defs
      id="defs4">
     <marker
@@ -417,7 +417,14 @@
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
     <inkscape:perspective
-       id="perspective4129-5"
+       id="perspective3332"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3388"
        inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
        inkscape:vp_z="1 : 0.5 : 1"
        inkscape:vp_y="0 : 1000 : 0"
@@ -432,16 +439,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="501.45676"
-     inkscape:cy="506.9273"
+     inkscape:cx="434.56739"
+     inkscape:cy="321.21229"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="1000"
-     inkscape:window-x="-4"
-     inkscape:window-y="-3"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="1024"
+     inkscape:window-height="744"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -450,7 +459,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -576,7 +585,7 @@
    id="tspan2849-9-4-4">99</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:66.07100676999999678px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Trebuchet MS;-inkscape-font-specification:Trebuchet MS;text-indent:0;text-decoration:none;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;color:#000000;fill-rule:nonzero;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="font-size:66.07100677px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Trebuchet MS;-inkscape-font-specification:Trebuchet MS"
        x="151.94519"
        y="132.71323"
        id="text4475"
@@ -587,70 +596,73 @@
          y="132.71323">Basic Movement</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:66.07100676999999678px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Trebuchet MS;-inkscape-font-specification:Trebuchet MS;text-indent:0;text-decoration:none;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;color:#000000;fill-rule:nonzero;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="font-size:66.07100677px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Trebuchet MS;-inkscape-font-specification:Trebuchet MS"
        x="183.11394"
-       y="647.49969"
+       y="635.49969"
        id="text4475-8"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4477-8"
          x="183.11394"
-         y="647.49969">New Functions</tspan></text>
+         y="635.49969">New Functions</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:33.18893051px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="53.630798"
-       y="781.5191"
-       id="text2816-4"><tspan
+       style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Courier New;-inkscape-font-specification:Courier New"
+       x="35.059368"
+       y="765.91681"
+       id="text2816-4"
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2818-31"
-         x="53.630798"
-         y="781.5191"><tspan
-   style="fill:#008000"
+         x="35.059368"
+         y="765.91681"><tspan
+   style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#008000;font-family:Courier New;-inkscape-font-specification:Courier New"
    id="tspan4538">def</tspan><tspan
-   style="fill:#0000ff"
-   id="tspan4534"> square</tspan>(<tspan
-   style="fill:#ff0000"
+   style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#0000ff;font-family:Courier New;-inkscape-font-specification:Courier New"
+   id="tspan4534"> draw_a_square2</tspan>(<tspan
+   style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;font-family:Courier New;-inkscape-font-specification:Courier New"
    id="tspan4532">size</tspan>):</tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="823.00525"
-         id="tspan4553">    side = 0</tspan><tspan
+         x="35.059368"
+         y="805.14307"
+         id="tspan3599">    side = 0</tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="864.49146"
+         x="35.059368"
+         y="844.36932"
          id="tspan4542">    while side &lt; 4:</tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="905.9776"
+         x="35.059368"
+         y="883.59558"
          id="tspan4544">        forward(<tspan
-   style="fill:#ff0000"
-   id="tspan4546">size<tspan
-   style="fill:#000000"
-   id="tspan4548">)</tspan></tspan></tspan><tspan
+   style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;font-family:Courier New;-inkscape-font-specification:Courier New"
+   id="tspan4546"><tspan
+     style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Courier New;-inkscape-font-specification:Courier New"
+     id="tspan3279">size)</tspan></tspan></tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="947.46375"
-         id="tspan4552">        right(90)</tspan><tspan
+         x="35.059368"
+         y="922.82184"
+         id="tspan4552">        right(<tspan
+   style="font-size:31.38100052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Courier New;-inkscape-font-specification:Courier New"
+   id="tspan12073">90</tspan>)</tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="988.94989"
-         id="tspan4555">        side += 1</tspan><tspan
+         x="35.059368"
+         y="962.04803"
+         id="tspan3601">        side += 1</tspan><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="1030.436"
+         x="35.059368"
+         y="1001.2743"
          id="tspan4550" /><tspan
          sodipodi:role="line"
-         x="53.630798"
-         y="1071.9222"
+         x="35.059368"
+         y="1040.5006"
          id="tspan4540" /></text>
     <g
-       transform="matrix(0.82972328,0,0,0.82972328,-56.115092,636.22371)"
+       transform="matrix(0.82972328,0,0,0.82972328,-56.115092,624.22371)"
        id="g4433-0-9">
       <path
          sodipodi:nodetypes="cc"
          id="path2855-7-2"
-         d="M 480.72389,72.974496 C 386.5119,71.277386 338.21332,69.518109 279.21085,131.293"
+         d="M 480.72389,72.974496 C 386.5119,71.277386 360.12755,50.038795 318.16948,131.293"
          style="fill:none;stroke:#000000;stroke-width:2.80250382px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
       <text
          id="text4261-8-6"
@@ -664,71 +676,71 @@
            sodipodi:role="line">you choose this name</tspan></text>
     </g>
     <g
-       id="g4674"
-       transform="translate(1.4285714,47.714286)">
+       id="g3285"
+       transform="translate(0,-12)">
       <text
          xml:space="preserve"
          style="font-size:22.16582298px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-         x="412.61182"
-         y="687.04871"
+         x="458.32611"
+         y="741.90582"
          id="text4261-8-6-4"><tspan
            sodipodi:role="line"
            id="tspan4263-6-6-9"
-           x="412.61182"
-           y="687.04871">this variable gets set</tspan><tspan
+           x="458.32611"
+           y="741.90582">this variable gets set</tspan><tspan
            sodipodi:role="line"
-           x="412.61182"
-           y="714.75598"
+           x="458.32611"
+           y="769.6131"
            id="tspan4679">                   when calling</tspan></text>
       <path
          style="fill:none;stroke:#000000;stroke-width:2.3253026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
-         d="m 401.2132,678.62374 c -55.31274,1.44901 -66.81577,-15.72498 -111.48578,24.10251"
+         d="m 446.92749,733.48088 c -15.31274,-22.8367 -32.53005,-28.58212 -31.48578,15.53108"
          id="path2855-7-2-4"
          sodipodi:nodetypes="cc" />
     </g>
     <g
        id="g4674-1"
-       transform="translate(110.24769,201.4835)">
+       transform="translate(187.40796,144.85116)">
       <text
          xml:space="preserve"
          style="font-size:22.16582298px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-         x="404.53058"
-         y="658.7644"
+         x="380.28693"
+         y="678.96753"
          id="text4261-8-6-4-7"><tspan
            sodipodi:role="line"
-           x="404.53058"
-           y="658.7644"
+           x="380.28693"
+           y="678.96753"
            id="tspan4679-7">loop as long as</tspan><tspan
            sodipodi:role="line"
-           x="404.53058"
-           y="686.47168"
-           id="tspan4723">       this is true</tspan></text>
+           x="380.28693"
+           y="706.6748"
+           id="tspan4723">     this is True</tspan></text>
       <path
          style="fill:none;stroke:#000000;stroke-width:2.3253026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
-         d="m 389.09136,664.48161 c -41.1706,3.46931 -68.83607,-7.64377 -123.6076,-10.24268"
+         d="M 376.82596,688.23506 C 289.88387,677.53099 264.58312,641.51816 232.71967,638.87715 c -31.86344,-2.641 -51.71816,6.66123 -72.05389,22.30159"
          id="path2855-7-2-4-2"
-         sodipodi:nodetypes="cc" />
+         sodipodi:nodetypes="csc" />
     </g>
     <g
-       id="g4674-1-1"
-       transform="translate(69.382876,262.03543)">
+       id="g3295"
+       transform="translate(65.139971,-39.142857)">
       <text
          xml:space="preserve"
          style="font-size:22.16582298px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-         x="408.5712"
-         y="701.19086"
+         x="407.24341"
+         y="965.24658"
          id="text4261-8-6-4-7-0"><tspan
            sodipodi:role="line"
-           x="408.5712"
-           y="701.19086"
+           x="407.24341"
+           y="965.24658"
            id="tspan4723-1">use the passed-in value</tspan><tspan
            sodipodi:role="line"
-           x="408.5712"
-           y="728.89813"
+           x="407.24341"
+           y="992.95386"
            id="tspan4788">     by using the variable</tspan></text>
       <path
          style="fill:none;stroke:#000000;stroke-width:2.3253026px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
-         d="m 391.11167,696.80649 c -55.31274,1.44901 -91.05943,-9.66407 -125.62791,-42.56756"
+         d="m 406.92673,978.00509 c -42.4556,18.59186 -82.48801,3.43817 -91.3422,-43.75103"
          id="path2855-7-2-4-2-5"
          sodipodi:nodetypes="cc" />
     </g>
@@ -760,7 +772,7 @@
    id="tspan5504">,</tspan> True</tspan>)</tspan></text>
     <g
        id="g2974"
-       transform="translate(47.857143,16.428571)">
+       transform="translate(46.714286,10.142857)">
       <text
          id="text4261-8"
          y="169.57838"
@@ -855,7 +867,7 @@
    id="tspan3129">99</tspan>)</tspan></text>
     <g
        id="g4433-8"
-       transform="matrix(0.82972328,0,0,0.82972328,-258.97682,92.364823)">
+       transform="matrix(0.82972328,0,0,0.82972328,-261.83396,88.650537)">
       <path
          sodipodi:nodetypes="csc"
          id="path2855-6"
@@ -891,5 +903,39 @@
            id="tspan4263-64"
            sodipodi:role="line">distance (y)</tspan></text>
     </g>
+    <g
+       id="g3353"
+       transform="translate(72.893424,-2)">
+      <text
+         xml:space="preserve"
+         style="font-size:22.16582298px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         x="-14.857877"
+         y="1025.1592"
+         id="text4261-8-6-3"><tspan
+           sodipodi:role="line"
+           id="tspan4263-6-6-7"
+           x="-14.857877"
+           y="1025.1592">then use it like this:</tspan></text>
+      <text
+         id="text3349"
+         y="1024.4506"
+         x="236.93552"
+         style="font-size:29.85388756px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="1024.4506"
+           x="236.93552"
+           id="tspan3351"
+           sodipodi:role="line">&gt;&gt;&gt; draw_a_square2(100)</tspan></text>
+    </g>
+    <text
+       id="text4261-8-6-45"
+       y="653.26447"
+       x="217.5094"
+       style="font-size:17.99066162px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         y="653.26447"
+         x="217.5094"
+         id="tspan4263-6-6-2"
+         sodipodi:role="line">type this in to the editor and press &quot;Test&quot;</tspan></text>
   </g>
 </svg>
