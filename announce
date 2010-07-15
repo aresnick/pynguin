@@ -9,41 +9,63 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release continues to refine the interaction between
-    the code-running threads and the main thread. Please
-    report any strange behaviors, crashes, or freezes!
+This release has focused on improvements to usabilty and
+    user-friendliness, with much input and many reports
+    from actual users. Thanks Alec! There is a huge list
+    of bug fixes and new features.
 
 
-Pynguin is tested with Python 2.6.5 and uses PyQt (4.7.2)
-    for its GUI elements. Pynguin is released under GPLv3.
+Pynguin is tested with Python 2.6.5 and PyQt 4.7.2 and
+    will use Pygments syntax highlighting if available.
+
+Pynguin is released under GPLv3.
 
 
 Changes in pynguin-0.9:
-    - added pythonic accessors for .x .y and .heading
-    - added functions for getting heading: xyh() and h()
-    - added ability to zoom and pan the canvas
-    - added periodic automatic saving
-    - pynguins can now be dragged in to position
-    - made turnto() instant, like goto()
-    - plain reset() now only affects single pynguin
-        - restores as much as possible to initial state
-        - use reset(True) or reset(full=True) for complete reset as previous
-    - better control-c handling
-        - code that never uses pynguin methods can now be stopped
-        - limits print rate to keep console responsive
-        - fixed prompt alignment after ctrl-c on non-function code
-    - fixed problem with editor undo entries being lost
-    - better recognition of when document has actually been modified
-    - made .png default export and improved error message on failure
-    - fixed copying from console area (shortcut and context menu)
-    - automatically strips prompts when pasting to code editor
-    - allow changing font size and word wrapping in editor
-    - KeyboardInterrupt is now quiet by default
-    - square() is now built in
-    - fixed tab/backtab in console area
-    - now pass mouse clicks to all pynguins
-    - changed onclick() API slightly
-    - updated onclick examples and added new examples
-    - now allow unicode in code area and console
-    - added command line switch to enable debugging
-    - added Save As, New, and Open shortcuts
+    Pynguin API
+        - added pythonic accessors for .x .y and .heading
+        - added methods for getting heading: xyh() and h()
+        - added promote() method to change which pynguin is primary
+        - added remove() to get rid of unneeded pynguins
+            - also enables removing pynguin, but keeping its drawing
+            - added reap() method to remove all other pynguins and
+                take charge of all their drawings at once
+        - made turnto() instant, like goto()
+        - plain reset() now only affects single pynguin
+            - restores as much as possible to initial state
+            - use reset(True) or reset(full=True) for complete reset
+        - square() is now built in
+        - added avatar() to access setImageid() more reliably
+        - changed onclick() API slightly
+            - updated onclick examples and added new examples
+
+    Canvas
+        - added ability to zoom and pan the canvas
+        - added ability to track pynguin if it draws off the screen
+        - pynguins can now be dragged in to position
+        - now passes mouse clicks to all pynguins
+
+    Integrated Editor
+        - fixed problem with editor undo entries being lost
+        - better recognition of when document has actually been modified
+        - automatically strips prompts when pasting to code editor
+        - allow changing font size and word wrapping in editor
+        - fixed tabifying/untabifying selection in editor
+
+    Integrated Console
+        - fixed copying from console area (shortcut and context menu)
+        - KeyboardInterrupt is now quiet by default
+        - fixed tab/backtab in console area
+        - added keyboard shortcuts for scrolling in console
+        - added ctrl-d shortcut for exiting when typing in console
+
+    General
+        - added periodic automatic saving
+        - better control-c handling
+            - code that never uses Pynguin methods can now be stopped
+            - limits print rate to keep console responsive
+            - fixed prompt alignment after ctrl-c on non-function code
+        - made .png default export and improved error message on failure
+        - now allows unicode in code area and console
+        - added command line switch to enable debugging
+        - added Save As, New, and Open shortcuts
