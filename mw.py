@@ -94,10 +94,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setMargin(0)
         #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
-        ilocals = {'p': None, # will be set to pynguin later
-                    'PI': pi,
-                    'Pynguin': Pynguin,
-                    'history': self.history}
+        ilocals = {}
         self.interpreter_locals = ilocals
         self.interpreter = Console(self.interpreter_locals, self.interpretereditor)
         self.interpretereditor.interpreter = self.interpreter
@@ -116,12 +113,7 @@ class MainWindow(QtGui.QMainWindow):
         view.centerOn(self.pynguin.gitem)
 
         self.interpretereditor.pynguin = self.pynguin
-        ilocals['pynguin'] = self.pynguin
-        ilocals['p'] = self.pynguin
-        ilocals['pynguins'] = self.pynguins
-        for fname in pynguin_functions:
-            function = getattr(self.pynguin, fname)
-            ilocals[fname] = function
+        self.setup_interpreter_locals()
 
         self.ui.rsplitter.setSizes([390, 110])
         self.ui.wsplitter.setSizes([550, 350])
@@ -154,6 +146,18 @@ class MainWindow(QtGui.QMainWindow):
         self.setup_examples()
 
         QtCore.QTimer.singleShot(60000, self.autosave)
+
+    def setup_interpreter_locals(self):
+        ilocals = self.interpreter_locals
+        ilocals.update(PI=pi,
+                        Pynguin=Pynguin,
+                        pynguin=self.pynguin,
+                        p=self.pynguin,
+                        pynguins=self.pynguins,
+                        history=self.history,)
+        for fname in pynguin_functions:
+            function = getattr(self.pynguin, fname)
+            ilocals[fname] = function
 
     def mousewheelscroll(self, ev):
         delta = ev.delta()

@@ -38,7 +38,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp', 'square',
-                        'avatar',]
+                        'avatar', 'remove',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
 pynguin_avatars = ['pynguin', 'turtle', 'arrow', 'robot', 'hidden']
 
@@ -96,6 +96,45 @@ class Pynguin(object):
             while self.gitem is None or not self.gitem.ready:
                 if self.ControlC:
                     raise KeyboardInterrupt
+
+    def _remove(self, pyn):
+        if pyn is self:
+            self._clear()
+        else:
+            self.drawn_items.extend(pyn.drawn_items)
+            pyn.drawn_items = []
+
+        pyn._setImageid('hidden')
+        pyn.gitem = None
+        self.mw.pynguins.remove(pyn)
+        if pyn == self.mw.pynguin:
+            if self.mw.pynguins:
+                # need to promote another pynguin to be the main one
+                mainpyn = self.mw.pynguins[0]
+            else:
+                #nobody left ... create a new one
+                mainpyn = Pynguin()
+            self.mw.pynguin = mainpyn
+            self.mw.setup_interpreter_locals()
+
+    def remove(self, pyn=None):
+        '''take the given pynguin (or this one if none specified)
+            out of the scene.
+
+        If removing a different pynguin from this one, this one will
+            adopt all of the drawn items from the other pynguin. In
+            other words, items drawn by the pynguin that is being
+            removed will not be cleared immediately, but can later
+            be cleared by this pynguin.
+
+        If this pynguin is removing itself, it will first clear all
+            of its own drawings, otherwise there will be no way to
+            clear them out later.
+        '''
+
+        if pyn is None:
+            pyn = self
+        self.qmove(self._remove, (pyn,))
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
