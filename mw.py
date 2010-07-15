@@ -274,16 +274,16 @@ class MainWindow(QtGui.QMainWindow):
 
         filemenu = self.ui.filemenu
         actionsave = self.ui.actionSave
-        recmenu = QtGui.QMenu('Recent', filemenu)
-        exa = filemenu.insertMenu(actionsave, recmenu)
-        examplemenu = exa.menu()
+        rmenu = QtGui.QMenu('Recent', filemenu)
+        rec = filemenu.insertMenu(actionsave, rmenu)
+        recmenu = rec.menu()
         for fp in recent:
             pth, fn = os.path.split(fp)
             if not fn:
                 continue
             def excb(fp=fp):
                 self.open_recent(fp)
-            examplemenu.addAction(fn, excb)
+            recmenu.addAction(fn, excb)
 
     def open_recent(self, fp):
         if not self.maybe_save():
