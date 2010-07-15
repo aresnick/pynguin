@@ -15,20 +15,26 @@ INSTALLATION:
 DEPENDENCIES:
     python:
         http://python.org/
-            (tested with python-2.6.4)
+            (tested with python-2.6.5)
 
     pyqt4:
         http://www.riverbankcomputing.co.uk/software/pyqt/
-            (tested with pyqt-4.6)
+            (tested with pyqt-4.7.2)
 
+    pygments (optional):
+        http://pygments.org/
+            (tested with 1.3.1)
 
 RUNNING:
-    Run the pynguin.py program with Python:
+    Run the program from the command prompt like this:
 
         python main.py
 
     For a quick introduction, choose welcome.pyn
         from the File->Examples menu
+
+    More information is available on the wiki here:
+        http://code.google.com/p/pynguin/wiki/GettingStarted
 
 
 DEVELOPMENT:
