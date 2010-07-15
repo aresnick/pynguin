@@ -12,4 +12,4 @@ keepbackups = 5 # set to 0 to disable automatic backups
 
 KeyboardInterrupt_quiet = True
 
-track_main_pynguin = True
+track_main_pynguin = False
