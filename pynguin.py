@@ -38,7 +38,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp', 'square',
-                        'avatar', 'remove', 'promote',]
+                        'avatar', 'remove', 'promote', 'reap',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
 pynguin_avatars = ['pynguin', 'turtle', 'arrow', 'robot', 'hidden']
 
