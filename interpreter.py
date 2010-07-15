@@ -170,7 +170,9 @@ class Interpreter(HighlightedTextEdit):
         Return = QtCore.Qt.Key_Return
         Enter = QtCore.Qt.Key_Enter
         Up = QtCore.Qt.Key_Up
+        PageUp = QtCore.Qt.Key_PageUp
         Down = QtCore.Qt.Key_Down
+        PageDown = QtCore.Qt.Key_PageDown
         Control = QtCore.Qt.ControlModifier
         Shift = QtCore.Qt.ShiftModifier
         U = QtCore.Qt.Key_U
@@ -229,6 +231,26 @@ class Interpreter(HighlightedTextEdit):
                 passthru = False
             else:
                 passthru = True
+
+        elif mdf & Shift and k==Up:
+            vbar = self.verticalScrollBar()
+            vbar.setValue(vbar.value()-vbar.singleStep())
+            passthru = False
+
+        elif mdf & Shift and k==Down:
+            vbar = self.verticalScrollBar()
+            vbar.setValue(vbar.value()+vbar.singleStep())
+            passthru = False
+
+        elif mdf & Shift and k==PageUp:
+            vbar = self.verticalScrollBar()
+            vbar.setValue(vbar.value()-vbar.pageStep())
+            passthru = False
+
+        elif mdf & Shift and k==PageDown:
+            vbar = self.verticalScrollBar()
+            vbar.setValue(vbar.value()+vbar.pageStep())
+            passthru = False
 
         elif k in (Up, Down):
             self.scrolldown()
