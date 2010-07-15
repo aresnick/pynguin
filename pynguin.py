@@ -38,7 +38,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto',
                         'onscreen', 'viewcoords', 'stamp', 'square',
-                        'avatar', 'remove',]
+                        'avatar', 'remove', 'promote',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
 pynguin_avatars = ['pynguin', 'turtle', 'arrow', 'robot', 'hidden']
 
@@ -135,6 +135,16 @@ class Pynguin(object):
         if pyn is None:
             pyn = self
         self.qmove(self._remove, (pyn,))
+
+    def _promote(self, pyn):
+        self.mw.pynguin = pyn
+        self.mw.setup_interpreter_locals()
+    def promote(self, pyn):
+        '''make the given pynguin the main pynguin, and update the
+            console locals to make the new main pynguins method the
+            built-in commands.
+        '''
+        self.qmove(self._promote, (pyn,))
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
