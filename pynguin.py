@@ -28,7 +28,7 @@ logger = logging.getLogger('PynguinLogger')
 from PyQt4 import QtCore, QtGui, QtSvg
 
 from util import sign, choose_color
-from conf import uidir
+from conf import uidir, track_main_pynguin
 
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
@@ -354,14 +354,6 @@ class Pynguin(object):
         y = p1.y()+dy
         p2 = QtCore.QPointF(x, y)
         item.setPos(p2)
-
-        if draw:
-            scene = self.mw.scene
-            scenerect = scene.sceneRect()
-            if not scenerect.contains(p2):
-                itemrect = scene.itemsBoundingRect()
-                newrect = itemrect.united(scenerect)
-                scene.setSceneRect(newrect)
 
         if draw and item._pen:
             cl = self.gitem._current_line
@@ -695,6 +687,7 @@ class Pynguin(object):
         self.qmove(self._item_home, (self.gitem,))
         self.qmove(self._gitem_new_line)
         self.qmove(self._gitem_setangle, (0,))
+        self.mw.scene.view.centerOn(0, 0)
 
     def _clear(self):
         for item in self.drawn_items:
@@ -744,6 +737,8 @@ class Pynguin(object):
             self.nofill()
             self.fillcolor(100, 220, 110)
             self.fillrule('winding')
+            self.mw.zoom100()
+            self.mw.scene.view.centerOn(0, 0)
 
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
@@ -1202,11 +1197,30 @@ class PynguinGraphicsItem(GraphicsItem):
         self._fillmode = False
         self._fillrule = QtCore.Qt.WindingFill
 
+        self._notrack = False # set when dragging to prevent crash
+
         self.ready = False
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)
         self.set_transform()
+        self.expand(pos)
+        self.track()
+
+    def expand(self, pos):
+        scene = self.scene()
+        scenerect = scene.sceneRect()
+        if not scenerect.contains(pos):
+            itemrect = scene.itemsBoundingRect()
+            newrect = itemrect.united(scenerect)
+            scene.setSceneRect(newrect)
+
+    def track(self):
+        if track_main_pynguin and not self._notrack:
+            pynguin = self.pynguin
+            mainpyn = pynguin.mw.pynguin
+            if pynguin is mainpyn:
+                self.scene().view.ensureVisible(self)
 
     def set_transform(self):
         cpt = self.cpt
@@ -1247,6 +1261,11 @@ class PynguinGraphicsItem(GraphicsItem):
         if buttons & QtCore.Qt.LeftButton:
             pynguin = self.pynguin
             if pynguin is not None:
+                self._notrack = True
                 pos = ev.lastScenePos()
                 x, y = pos.x(), pos.y()
                 pynguin.goto(x, y)
+                self._notrack = False
+
+    def mouseReleaseEvent(self, ev):
+        self.track()
