@@ -136,6 +136,15 @@ class Pynguin(object):
             pyn = self
         self.qmove(self._remove, (pyn,))
 
+    def reap(self):
+        '''promote self to be main pynguin and remove all other pynguins,
+            taking charge of their drawings.
+        '''
+        self.promote(self)
+        for pyn in self.mw.pynguins:
+            if pyn is not self:
+                self.remove(pyn)
+
     def _promote(self, pyn):
         self.mw.pynguin = pyn
         self.mw.setup_interpreter_locals()
