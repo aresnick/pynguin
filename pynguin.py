@@ -347,13 +347,11 @@ class Pynguin(object):
 
         if draw:
             scene = self.mw.scene
-            if (x > scene._width / 2 or
-                    x < -scene._width / 2 or
-                    y > scene._width / 2 or
-                    y > scene._width / 2):
-                initialrect = QtCore.QRectF(-300,-300,600,600)
+            scenerect = scene.sceneRect()
+            if not scenerect.contains(p2):
                 itemrect = scene.itemsBoundingRect()
-                scene.setSceneRect(itemrect.united(initialrect))
+                newrect = itemrect.united(scenerect)
+                scene.setSceneRect(newrect)
 
         if draw and item._pen:
             cl = self.gitem._current_line

@@ -871,12 +871,13 @@ class MainWindow(QtGui.QMainWindow):
 
 class Scene(QtGui.QGraphicsScene):
     def __init__(self):
-        self._width = 600
-        self._height = 600
+        left = -300
+        top = -300
+        width = 600
+        height = 600
 
         QtGui.QGraphicsScene.__init__(self)
-        self.setSceneRect(-self._width/2, -self._height/2,
-                            self._width, self._height)
+        self.setSceneRect(left, top, width, height)
         color = QtGui.QColor(130, 130, 160)
         brush = QtGui.QBrush(color)
         self.setBackgroundBrush(brush)
