@@ -180,6 +180,7 @@ class Interpreter(HighlightedTextEdit):
         A = QtCore.Qt.Key_A
         Home = QtCore.Qt.Key_Home
         E = QtCore.Qt.Key_E
+        D = QtCore.Qt.Key_D
 
         lblk = self._doc.lastBlock()
         cpos = self.textCursor().position()
@@ -348,6 +349,10 @@ class Interpreter(HighlightedTextEdit):
 
         elif mdf & Control and k==E:
             self.movetoend()
+            passthru = False
+
+        elif mdf & Control and k==D:
+            self.mw.close()
             passthru = False
 
         if scrolldown and ev.text():
