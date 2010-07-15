@@ -157,6 +157,8 @@ class CodeArea(HighlightedTextEdit):
             self.fontsize = pt
             self.highlighter.setfontsize(self.fontsize)
             self.rehi()
+            settings = QtCore.QSettings()
+            settings.setValue('editor/fontsize', pt)
 
     def zoomin(self):
         self.setfontsize(self.fontsize + 1)

@@ -256,11 +256,19 @@ class MainWindow(QtGui.QMainWindow):
         self._openfile(fp, False)
 
     def setup_settings(self):
-        settings = QtCore.QSettings()
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
         QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')
         QtCore.QCoreApplication.setApplicationName('pynguin')
+        settings = QtCore.QSettings()
         self.settings = settings
+
+        fontsize, ok = settings.value('editor/fontsize', 16).toInt()
+        if ok:
+            self.editor.setfontsize(fontsize)
+        wrap = settings.value('editor/wordwrap', False).toBool()
+        if wrap:
+            self.ui.actionWordwrap.setChecked(True)
+            self.wordwrap()
 
     def setup_recent(self):
         settings = self.settings
@@ -836,10 +844,13 @@ class MainWindow(QtGui.QMainWindow):
         self._setSpeed(speed)
 
     def wordwrap(self):
-        if not self.ui.actionWordwrap.isChecked():
+        checked = self.ui.actionWordwrap.isChecked()
+        if not checked:
             self.editor.setWordWrapMode(QtGui.QTextOption.NoWrap)
         else:
             self.editor.setWordWrapMode(QtGui.QTextOption.WrapAtWordBoundaryOrAnywhere)
+        settings = QtCore.QSettings()
+        settings.setValue('editor/wordwrap', checked)
 
     def zoomineditor(self):
         self.editor.zoomin()

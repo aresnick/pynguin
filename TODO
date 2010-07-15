@@ -20,8 +20,8 @@ Use arcs instead of lines when slow drawing circles
 Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
-Remember font size between sessions
 reset should restore pynguin avatar (if avatar is hidden?)
+Keep more settings in QSettings
 
 
 Intermittent crash/freeze
