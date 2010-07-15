@@ -30,8 +30,8 @@
      id="namedview2984"
      showgrid="false"
      inkscape:zoom="2"
-     inkscape:cx="142.07715"
-     inkscape:cy="240.07307"
+     inkscape:cx="145.84158"
+     inkscape:cy="245.89862"
      inkscape:window-x="389"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -46,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -856,14 +856,17 @@
      style="font-size:47.5px;fill:#000000;fill-opacity:1;font-family:Penguin Attack">0.9</text>
   <g
      id="splash"
-     inkscape:label="#g3880">
+     inkscape:label="#g3880"
+     inkscape:export-xdpi="180"
+     inkscape:export-ydpi="180"
+     inkscape:export-filename="/home/lee/lang/python/pynguin/doc/screenshots/splash-0.9.png">
     <rect
        y="714.36908"
        x="45.493469"
        height="160"
        width="250"
        id="rect3017"
-       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.52985978px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;fill:#dadada;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.52985978000000000px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <g
        transform="translate(-2.5065289,-2.9789429)"
        id="g3019">
