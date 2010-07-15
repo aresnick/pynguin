@@ -1209,11 +1209,12 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def expand(self, pos):
         scene = self.scene()
-        scenerect = scene.sceneRect()
-        if not scenerect.contains(pos):
-            itemrect = scene.itemsBoundingRect()
-            newrect = itemrect.united(scenerect)
-            scene.setSceneRect(newrect)
+        if scene is not None:
+            scenerect = scene.sceneRect()
+            if not scenerect.contains(pos):
+                itemrect = scene.itemsBoundingRect()
+                newrect = itemrect.united(scenerect)
+                scene.setSceneRect(newrect)
 
     def track(self):
         if track_main_pynguin and not self._notrack:
