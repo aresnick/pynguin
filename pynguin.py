@@ -944,6 +944,7 @@ class Pynguin(object):
         circle.setZValue(self._zvalue)
         Pynguin._zvalue += 1
         self.drawn_items.append(circle)
+        gitem.expand()
 
     def _extend_circle(self, crect, distance):
         '''individual steps for animated circle drawing
@@ -1216,11 +1217,20 @@ class PynguinGraphicsItem(GraphicsItem):
         self.expand(pos)
         self.track()
 
-    def expand(self, pos):
+    def expand(self, pos=None):
+        '''Check if the scene needs to expand for the drawn items.
+
+        pass in pos=None to check all drawn items even if it is
+            likely that the current position would not cause a
+            need to expand the scene. (Used currently for the
+            quick-draw circle which never actually moves the
+            pynguin, but which may add a circle that needs to
+            expand the scene rect).
+        '''
         scene = self.scene()
         if scene is not None:
             scenerect = scene.sceneRect()
-            if not scenerect.contains(pos):
+            if pos is None or not scenerect.contains(pos):
                 itemrect = scene.itemsBoundingRect()
                 newrect = itemrect.united(scenerect)
                 scene.setSceneRect(newrect)
