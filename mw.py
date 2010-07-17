@@ -70,7 +70,6 @@ class MainWindow(QtGui.QMainWindow):
         view.mousePressEvent = self.onclick
         view.wheelEvent = self.mousewheelscroll
         view.mouseMoveEvent = self.mousemove
-        self._centerview()
 
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
@@ -145,6 +144,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setup_examples()
 
         QtCore.QTimer.singleShot(60000, self.autosave)
+        self._centerview()
 
     def setup_interpreter_locals(self):
         ilocals = self.interpreter_locals
