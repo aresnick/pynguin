@@ -193,7 +193,7 @@ class MainWindow(QtGui.QMainWindow):
             pos = ev.posF()
             dpos = self._middledragstart - pos
             ctr0 = self._dragstartcenter
-            ctr = ctr0 + dpos
+            ctr = ctr0 + (dpos / self._scale)
 
             self._cx = ctr.x()
             self._cy = ctr.y()
