@@ -22,6 +22,7 @@ Pygments color in interactive console area
 Remove button should show a warning or be more difficult to access
 Keep more settings in QSettings
 property access for color and fill?
+Pynguin subclass (Turtle?) that uses turtle.py API
 
 
 Intermittent crash/freeze
