@@ -1245,6 +1245,10 @@ class PynguinGraphicsItem(GraphicsItem):
             mainpyn = pynguin.mw.pynguin
             if pynguin is mainpyn:
                 self.scene().view.ensureVisible(self)
+                pos = self.pos()
+                x, y = pos.x(), pos.y()
+                pynguin.mw._cx = x
+                pynguin.mw._cy = y
 
     def set_transform(self):
         cpt = self.cpt
