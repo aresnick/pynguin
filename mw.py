@@ -190,7 +190,7 @@ class MainWindow(QtGui.QMainWindow):
 
         buttons = ev.buttons()
         if buttons & QtCore.Qt.MidButton:
-            pos = ev.pos()
+            pos = ev.posF()
             dpos = self._middledragstart - pos
             ctr0 = self._dragstartcenter
             ctr = ctr0 + dpos
@@ -200,10 +200,19 @@ class MainWindow(QtGui.QMainWindow):
             self.recenter()
 
     def pan(self, dx=0, dy=0):
+        cx0 = self._cx
+        cy0 = self._cy
         self._cx +=  dx / self._scale
         self._cy -=  dy / self._scale
         self.recenter()
-        self._centerview()
+        ctr1 = self._viewcenter()
+        cx1 = ctr1.x()
+        cy1 = ctr1.y()
+        if dx:
+            ctr = QtCore.QPointF(cx1, cy0)
+        elif dy:
+            ctr = QtCore.QPointF(cx0, cy1)
+        self._centerview(ctr)
 
     def panleft(self):
         self.pan(dx=-25)
@@ -224,7 +233,7 @@ class MainWindow(QtGui.QMainWindow):
         return QtCore.QRectF(tlt, brt)
 
     def _viewcenter(self):
-        ctr = self._viewrect().center().toPoint()
+        ctr = self._viewrect().center()
         return ctr
 
     def _centerview(self, ctr=None):
@@ -246,7 +255,7 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.setFocus()
 
     def middleclick(self, ev):
-        self._middledragstart = ev.pos()
+        self._middledragstart = ev.posF()
         self._dragstartcenter = self._viewcenter()
 
     def leftclick(self, ev):
