@@ -29,7 +29,7 @@ from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
-from util import getrend
+from util import getrend, sign
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
@@ -69,7 +69,7 @@ class MainWindow(QtGui.QMainWindow):
         view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         view.mousePressEvent = self.onclick
         view.wheelEvent = self.mousewheelscroll
-        view.mouseMoveEvent = self.mousewheelmove
+        view.mouseMoveEvent = self.mousemove
         self._cx = 0
         self._cy = 0
 
@@ -164,12 +164,17 @@ class MainWindow(QtGui.QMainWindow):
         self.zoom(delta)
 
     def zoom(self, delta):
+        view = self.scene.view
+        #view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+
         scaleperc = 1 + ((delta / 120.0) * 0.05)
         self._scale *= scaleperc
 
         trans = QtGui.QTransform()
         trans.scale(self._scale, self._scale)
-        self.scene.view.setTransform(trans)
+        view.setTransform(trans)
+
+        #view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
     def zoomin(self):
         self.zoom(120)
@@ -179,7 +184,7 @@ class MainWindow(QtGui.QMainWindow):
         self._scale = 1
         self.zoom(0)
 
-    def mousewheelmove(self, ev):
+    def mousemove(self, ev):
         QtGui.QGraphicsView.mouseMoveEvent(self.scene.view, ev)
 
         buttons = ev.buttons()
@@ -206,9 +211,9 @@ class MainWindow(QtGui.QMainWindow):
         vtdy1 = vt.dy()
 
         if vtdx0 == vtdx1:
-            self._cx = cx0
+            self._cx = cx0 - sign(cx0)*2
         if vtdy0 == vtdy1:
-            self._cy = cy0
+            self._cy = cy0 - sign(cy0)*2
 
     def panleft(self):
         self.pan(dx=-25)

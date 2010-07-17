@@ -697,6 +697,8 @@ class Pynguin(object):
         self.qmove(self._gitem_new_line)
         self.qmove(self._gitem_setangle, (0,))
         self.mw.scene.view.centerOn(0, 0)
+        self.mw._cx = 0
+        self.mw._cy = 0
 
     def _clear(self):
         for item in self.drawn_items:
@@ -748,6 +750,8 @@ class Pynguin(object):
             self.fillrule('winding')
             self.mw.zoom100()
             self.mw.scene.view.centerOn(0, 0)
+            self.mw._cx = 0
+            self.mw._cy = 0
 
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
