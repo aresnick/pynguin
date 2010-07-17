@@ -165,7 +165,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def zoom(self, delta):
         view = self.scene.view
-        #view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        vt = self.scene.view.viewportTransform()
+        vtdx0 = vt.dx()
+        vtdy0 = vt.dy()
 
         scaleperc = 1 + ((delta / 120.0) * 0.05)
         self._scale *= scaleperc
@@ -174,7 +177,15 @@ class MainWindow(QtGui.QMainWindow):
         trans.scale(self._scale, self._scale)
         view.setTransform(trans)
 
-        #view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
+        vt = self.scene.view.viewportTransform()
+        vtdx1 = vt.dx()
+        vtdy1 = vt.dy()
+
+        dvtx = vtdx0-vtdx1
+        dvty = vtdy0-vtdy1
+        self._cx += dvtx
+        self._cy += dvty
 
     def zoomin(self):
         self.zoom(120)
