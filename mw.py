@@ -70,8 +70,7 @@ class MainWindow(QtGui.QMainWindow):
         view.mousePressEvent = self.onclick
         view.wheelEvent = self.mousewheelscroll
         view.mouseMoveEvent = self.mousemove
-        self._cx = 0
-        self._cy = 0
+        self._centerview()
 
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
@@ -166,9 +165,6 @@ class MainWindow(QtGui.QMainWindow):
     def zoom(self, delta):
         view = self.scene.view
         view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
-        vt = self.scene.view.viewportTransform()
-        vtdx0 = vt.dx()
-        vtdy0 = vt.dy()
 
         scaleperc = 1 + ((delta / 120.0) * 0.05)
         self._scale *= scaleperc
@@ -178,14 +174,8 @@ class MainWindow(QtGui.QMainWindow):
         view.setTransform(trans)
 
         view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
-        vt = self.scene.view.viewportTransform()
-        vtdx1 = vt.dx()
-        vtdy1 = vt.dy()
 
-        dvtx = vtdx0-vtdx1
-        dvty = vtdy0-vtdy1
-        self._cx += dvtx
-        self._cy += dvty
+        self._centerview()
 
     def zoomin(self):
         self.zoom(120)
@@ -202,29 +192,18 @@ class MainWindow(QtGui.QMainWindow):
         if buttons & QtCore.Qt.MidButton:
             pos = ev.pos()
             dpos = self._middledragstart - pos
-            dposx, dposy = dpos.x(), dpos.y()
-            self.pan(+dposx, -dposy)
-            self._middledragstart = pos
+            ctr0 = self._dragstartcenter
+            ctr = ctr0 + dpos
+
+            self._cx = ctr.x()
+            self._cy = ctr.y()
+            self.recenter()
 
     def pan(self, dx=0, dy=0):
-        cx0 = self._cx
-        cy0 = self._cy
-        vt = self.scene.view.viewportTransform()
-        vtdx0 = vt.dx()
-        vtdy0 = vt.dy()
-
         self._cx +=  dx / self._scale
         self._cy -=  dy / self._scale
         self.recenter()
-
-        vt = self.scene.view.viewportTransform()
-        vtdx1 = vt.dx()
-        vtdy1 = vt.dy()
-
-        if vtdx0 == vtdx1:
-            self._cx = cx0 - sign(cx0)*2
-        if vtdy0 == vtdy1:
-            self._cy = cy0 - sign(cy0)*2
+        self._centerview()
 
     def panleft(self):
         self.pan(dx=-25)
@@ -234,6 +213,25 @@ class MainWindow(QtGui.QMainWindow):
         self.pan(dy=+25)
     def pandown(self):
         self.pan(dy=-25)
+
+    def _viewrect(self):
+        view = self.scene.view
+        viewportrect = view.viewport().geometry()
+        tl = viewportrect.topLeft()
+        br = viewportrect.bottomRight()
+        tlt = view.mapToScene(tl)
+        brt = view.mapToScene(br)
+        return QtCore.QRectF(tlt, brt)
+
+    def _viewcenter(self):
+        ctr = self._viewrect().center().toPoint()
+        return ctr
+
+    def _centerview(self, ctr=None):
+        if ctr is None:
+            ctr = self._viewcenter()
+        self._cx = ctr.x()
+        self._cy = ctr.y()
 
     def onclick(self, ev):
         QtGui.QGraphicsView.mousePressEvent(self.scene.view, ev)
@@ -249,6 +247,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def middleclick(self, ev):
         self._middledragstart = ev.pos()
+        self._dragstartcenter = self._viewcenter()
 
     def leftclick(self, ev):
         evpos = ev.pos()
