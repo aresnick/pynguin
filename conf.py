@@ -1,4 +1,4 @@
-version = 'pynguin-0.9'
+version = 'pynguin-0.10'
 
 uidir = 'data/ui'
 bug_url = 'http://code.google.com/p/pynguin/issues/list'
