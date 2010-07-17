@@ -191,6 +191,14 @@
     <addaction name="actionExport"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="editormenu">
+    <property name="title">
+     <string>Editor</string>
+    </property>
+    <addaction name="actionWordwrap"/>
+    <addaction name="actionIncrease_font_size"/>
+    <addaction name="actionDecrease_font_size"/>
+   </widget>
    <widget class="QMenu" name="viewmenu">
     <property name="title">
      <string>View</string>
@@ -204,14 +212,11 @@
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
     <addaction name="actionZoom_to_100"/>
-   </widget>
-   <widget class="QMenu" name="editormenu">
-    <property name="title">
-     <string>Editor</string>
-    </property>
-    <addaction name="actionWordwrap"/>
-    <addaction name="actionIncrease_font_size"/>
-    <addaction name="actionDecrease_font_size"/>
+    <addaction name="separator"/>
+    <addaction name="actionPan_left"/>
+    <addaction name="actionPan_right"/>
+    <addaction name="actionPan_up"/>
+    <addaction name="actionPan_down"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -483,6 +488,38 @@
    </property>
    <property name="shortcut">
     <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="actionPan_left">
+   <property name="text">
+    <string>Pan left</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionPan_right">
+   <property name="text">
+    <string>Pan right</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionPan_up">
+   <property name="text">
+    <string>Pan up</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Up</string>
+   </property>
+  </action>
+  <action name="actionPan_down">
+   <property name="text">
+    <string>Pan down</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Down</string>
    </property>
   </action>
  </widget>
@@ -824,6 +861,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPan_left</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>panleft()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPan_right</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>panright()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPan_up</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>panup()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPan_down</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>pandown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -846,5 +947,9 @@
   <slot>wordwrap()</slot>
   <slot>zoomineditor()</slot>
   <slot>zoomouteditor()</slot>
+  <slot>panleft()</slot>
+  <slot>panright()</slot>
+  <slot>panup()</slot>
+  <slot>pandown()</slot>
  </slots>
 </ui>

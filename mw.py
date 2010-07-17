@@ -187,10 +187,37 @@ class MainWindow(QtGui.QMainWindow):
             pos = ev.pos()
             dpos = self._middledragstart - pos
             dposx, dposy = dpos.x(), dpos.y()
-            self._cx +=  dposx / self._scale
-            self._cy +=  dposy / self._scale
-            self.recenter()
+            self.pan(+dposx, -dposy)
             self._middledragstart = pos
+
+    def pan(self, dx=0, dy=0):
+        cx0 = self._cx
+        cy0 = self._cy
+        vt = self.scene.view.viewportTransform()
+        vtdx0 = vt.dx()
+        vtdy0 = vt.dy()
+
+        self._cx +=  dx / self._scale
+        self._cy -=  dy / self._scale
+        self.recenter()
+
+        vt = self.scene.view.viewportTransform()
+        vtdx1 = vt.dx()
+        vtdy1 = vt.dy()
+
+        if vtdx0 == vtdx1:
+            self._cx = cx0
+        if vtdy0 == vtdy1:
+            self._cy = cy0
+
+    def panleft(self):
+        self.pan(dx=-25)
+    def panright(self):
+        self.pan(dx=+25)
+    def panup(self):
+        self.pan(dy=+25)
+    def pandown(self):
+        self.pan(dy=-25)
 
     def onclick(self, ev):
         QtGui.QGraphicsView.mousePressEvent(self.scene.view, ev)
