@@ -160,11 +160,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def mousewheelscroll(self, ev):
         delta = ev.delta()
+        view = self.scene.view
+        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.zoom(delta)
+        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
     def zoom(self, delta):
         view = self.scene.view
-        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
 
         scaleperc = 1 + ((delta / 120.0) * 0.05)
         self._scale *= scaleperc
@@ -172,8 +174,6 @@ class MainWindow(QtGui.QMainWindow):
         trans = QtGui.QTransform()
         trans.scale(self._scale, self._scale)
         view.setTransform(trans)
-
-        view.setTransformationAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
         self._centerview()
 
