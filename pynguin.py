@@ -85,8 +85,6 @@ class Pynguin(object):
             self.mw.pynguins.remove(self)
             raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
 
-        self.mw.setSpeed()
-
         if self.mw.pynguin is None:
             self._gitem_setup()
             self.mw.startTimer(self.delay)

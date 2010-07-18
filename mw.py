@@ -71,13 +71,14 @@ class MainWindow(QtGui.QMainWindow):
         view.wheelEvent = self.mousewheelscroll
         view.mouseMoveEvent = self.mousemove
 
+        self.setup_speed_choices()
         self.speedgroup = QtGui.QActionGroup(self)
         self.speedgroup.addAction(self.ui.actionSlow)
         self.speedgroup.addAction(self.ui.actionMedium)
         self.speedgroup.addAction(self.ui.actionFast)
         self.speedgroup.addAction(self.ui.actionInstant)
         self.speedgroup.setExclusive(True)
-        self.speedgroup.triggered.connect(self.setSpeed)
+        self.speedgroup.triggered.connect(self.speedMenuEvent)
 
         self.editor = CodeArea(self)
         hbox = QHBoxLayout(self.ui.edframe)
@@ -324,6 +325,11 @@ class MainWindow(QtGui.QMainWindow):
         if wrap:
             self.ui.actionWordwrap.setChecked(True)
             self.wordwrap()
+
+        speed, ok = settings.value('pynguin/speed', 10).toInt()
+        if ok:
+            self.set_speed(speed)
+            self.sync_speed_menu(speed)
 
     def setup_recent(self):
         settings = self.settings
@@ -882,21 +888,35 @@ class MainWindow(QtGui.QMainWindow):
                     self.ui.actionHidden: 'hidden',}
         self.pynguin.setImageid(choices[ev])
 
-    def _setSpeed(self, speed):
+    def setup_speed_choices(self):
+        from bidict import bidict
+        choices = ((self.ui.actionSlow, 5),
+                    (self.ui.actionMedium, 10),
+                    (self.ui.actionFast, 20),
+                    (self.ui.actionInstant, 0))
+        self.speeds = bidict(choices)
+
+    def sync_speed_menu(self, speed):
+        action = self.speeds.inv.get(speed)
+        if action is not None:
+            action.setChecked(True)
+
+    def set_speed(self, speed):
+        '''speed setting. Sets the speed for _all_ pynguins!'''
         Pynguin._drawspeed_pending = 2 * speed
         Pynguin._turnspeed_pending = 4 * speed
-    def setSpeed(self, ev=None):
-        '''select drawing speed setting. Sets the speed for _all_ pynguins!'''
+
+        self.sync_speed_menu(speed)
+
+        settings = QtCore.QSettings()
+        settings.setValue('pynguin/speed', speed)
+
+    def speedMenuEvent(self, ev=None):
         if ev is None:
             ev = self.speedgroup.checkedAction()
 
-        choice = {self.ui.actionSlow: 5,
-                    self.ui.actionMedium: 10,
-                    self.ui.actionFast: 20,
-                    self.ui.actionInstant: 0,}
-
-        speed = choice[ev]
-        self._setSpeed(speed)
+        speed = self.speeds[ev]
+        self.set_speed(speed)
 
     def wordwrap(self):
         checked = self.ui.actionWordwrap.isChecked()
