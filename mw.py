@@ -118,6 +118,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.wsplitter.setSizes([550, 350])
         self.ui.wsplitter.splitterMoved.connect(self.recenter)
 
+        self.setup_avatar_choices()
         self.viewgroup = QtGui.QActionGroup(self)
         self.viewgroup.addAction(self.ui.actionPynguin)
         self.viewgroup.addAction(self.ui.actionArrow)
@@ -125,7 +126,7 @@ class MainWindow(QtGui.QMainWindow):
         self.viewgroup.addAction(self.ui.actionTurtle)
         self.viewgroup.addAction(self.ui.actionHidden)
         self.viewgroup.setExclusive(True)
-        self.viewgroup.triggered.connect(self.setImage)
+        self.viewgroup.triggered.connect(self.setImageEvent)
 
         self.pengroup = QtGui.QActionGroup(self)
         self.pengroup.addAction(self.ui.actionPenUp)
@@ -330,6 +331,10 @@ class MainWindow(QtGui.QMainWindow):
         if ok:
             self.set_speed(speed)
             self.sync_speed_menu(speed)
+
+        imageid = settings.value('pynguin/avatar', 'pynguin').toString()
+        self.set_pynguin_avatar(imageid)
+        self.sync_avatar_menu(imageid)
 
     def setup_recent(self):
         settings = self.settings
@@ -875,18 +880,37 @@ class MainWindow(QtGui.QMainWindow):
             cmd = 'fillcolor(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
-    def setImage(self, ev):
+    def setup_avatar_choices(self):
+        from bidict import bidict
+        choices = ((self.ui.actionPynguin, 'pynguin'),
+                    (self.ui.actionArrow, 'arrow'),
+                    (self.ui.actionRobot, 'robot'),
+                    (self.ui.actionTurtle, 'turtle'),
+                    (self.ui.actionHidden, 'hidden'))
+        self.avatars = bidict(choices)
+
+    def sync_avatar_menu(self, imageid):
+        logger.info('sam %s'% imageid)
+        action = self.avatars.inv.get(str(imageid))
+        if action is not None:
+            logger.info('sama %s'% action)
+            action.setChecked(True)
+
+            settings = QtCore.QSettings()
+            settings.setValue('pynguin/avatar', imageid)
+
+    def set_pynguin_avatar(self, imageid):
         '''select which image to show
 
         sets the image for the primary pynguin only. For other later
-            added pynguins, use p.setImageid() or p.setImageid()
+            added pynguins, use p.avatar()
         '''
-        choices = {self.ui.actionPynguin: 'pynguin',
-                    self.ui.actionArrow: 'arrow',
-                    self.ui.actionRobot: 'robot',
-                    self.ui.actionTurtle: 'turtle',
-                    self.ui.actionHidden: 'hidden',}
-        self.pynguin.setImageid(choices[ev])
+        self.pynguin.avatar(imageid)
+        self.sync_avatar_menu(imageid)
+
+    def setImageEvent(self, ev):
+        imageid = self.avatars[ev]
+        self.set_pynguin_avatar(imageid)
 
     def setup_speed_choices(self):
         from bidict import bidict
@@ -901,15 +925,15 @@ class MainWindow(QtGui.QMainWindow):
         if action is not None:
             action.setChecked(True)
 
+            settings = QtCore.QSettings()
+            settings.setValue('pynguin/speed', speed)
+
     def set_speed(self, speed):
         '''speed setting. Sets the speed for _all_ pynguins!'''
         Pynguin._drawspeed_pending = 2 * speed
         Pynguin._turnspeed_pending = 4 * speed
 
         self.sync_speed_menu(speed)
-
-        settings = QtCore.QSettings()
-        settings.setValue('pynguin/speed', speed)
 
     def speedMenuEvent(self, ev=None):
         if ev is None:

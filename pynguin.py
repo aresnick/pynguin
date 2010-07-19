@@ -40,7 +40,6 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'onscreen', 'viewcoords', 'stamp', 'square',
                         'avatar', 'remove', 'promote', 'reap',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI', 'history']
-pynguin_avatars = ['pynguin', 'turtle', 'arrow', 'robot', 'hidden']
 
 class TooManyPynguins(RuntimeError):
     pass
@@ -925,10 +924,13 @@ class Pynguin(object):
         self.qmove(self._setImageid, (imageid,))
     def avatar(self, imageid=None):
         if imageid is not None:
-            if imageid in pynguin_avatars:
+            avatars = self.mw.avatars.values()
+            if imageid in avatars:
                 self.setImageid(imageid)
+                if self is self.mw.pynguin:
+                    self.mw.sync_avatar_menu(imageid)
             else:
-                msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(pynguin_avatars))
+                msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(avatars))
                 raise ValueError, msg
         else:
             return self._imageid
