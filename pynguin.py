@@ -1241,8 +1241,9 @@ class PynguinGraphicsItem(GraphicsItem):
         if track_main_pynguin and not self._notrack:
             pynguin = self.pynguin
             mainpyn = pynguin.mw.pynguin
-            if pynguin is mainpyn:
-                self.scene().view.ensureVisible(self)
+            scene = self.scene()
+            if pynguin is mainpyn and scene is not None:
+                scene.view.ensureVisible(self)
                 pynguin.mw._centerview()
 
     def set_transform(self):
