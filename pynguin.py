@@ -236,6 +236,22 @@ class Pynguin(object):
         else:
             self.heading = h
 
+    def xyforward(self, distance):
+        '''return the x-y coordinate of the point the pynguin would be at
+            if it were to move forward the given distance.
+        '''
+        deg = self.heading
+        rad = deg * (PI / 180)
+        dx = distance * cos(rad)
+        dy = distance * sin(rad)
+
+        x0, y0 = self.xy()
+
+        x = x0 + dx
+        y = y0 + dy
+
+        return x, y
+
     @classmethod
     def _process_moves(cls):
         '''regular timer tick to make sure graphics are being updated'''
