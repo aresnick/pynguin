@@ -212,9 +212,15 @@
     <addaction name="separator"/>
     <addaction name="actionTest_run"/>
     <addaction name="separator"/>
+    <addaction name="actionNext_document"/>
+    <addaction name="actionPrevious_document"/>
+    <addaction name="actionMove_doc_up"/>
+    <addaction name="actionMove_doc_down"/>
+    <addaction name="separator"/>
     <addaction name="actionWordwrap"/>
     <addaction name="actionIncrease_font_size"/>
     <addaction name="actionDecrease_font_size"/>
+    <addaction name="actionToggle_Editor_Console"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -533,6 +539,49 @@
   <action name="actionTest_run">
    <property name="text">
     <string>Test / Run</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="actionNext_document">
+   <property name="text">
+    <string>Next document</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgDown</string>
+   </property>
+  </action>
+  <action name="actionPrevious_document">
+   <property name="text">
+    <string>Previous document</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgUp</string>
+   </property>
+  </action>
+  <action name="actionMove_doc_up">
+   <property name="text">
+    <string>Move doc up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+PgUp</string>
+   </property>
+  </action>
+  <action name="actionMove_doc_down">
+   <property name="text">
+    <string>Move doc down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+PgDown</string>
+   </property>
+  </action>
+  <action name="actionToggle_Editor_Console">
+   <property name="text">
+    <string>Toggle Editor / Console</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Space</string>
    </property>
   </action>
  </widget>
@@ -970,6 +1019,86 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionNext_document</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>nextdoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrevious_document</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prevdoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMove_doc_up</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>promotedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMove_doc_down</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>demotedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionToggle_Editor_Console</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggle_editor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -996,5 +1125,10 @@
   <slot>panright()</slot>
   <slot>panup()</slot>
   <slot>pandown()</slot>
+  <slot>nextdoc()</slot>
+  <slot>prevdoc()</slot>
+  <slot>promotedoc()</slot>
+  <slot>demotedoc()</slot>
+  <slot>toggle_editor()</slot>
  </slots>
 </ui>

@@ -766,6 +766,24 @@ Check configuration!''')
             self._modified = True
             self.setWindowModified(True)
 
+    def nextdoc(self):
+        self.editor.shownext()
+
+    def prevdoc(self):
+        self.editor.showprev()
+
+    def promotedoc(self):
+        self.editor.promote()
+
+    def demotedoc(self):
+        self.editor.demote()
+
+    def toggle_editor(self):
+        if self.interpretereditor.hasFocus():
+            self.editor.setFocus()
+        else:
+            self.interpretereditor.setFocus()
+
     def cleancode(self, code):
         '''fix up the code a bit first...
         make sure the last line ends with newline

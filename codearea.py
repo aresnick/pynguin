@@ -199,10 +199,7 @@ class CodeArea(HighlightedTextEdit):
         k = ev.key()
         mdf = ev.modifiers()
 
-        Up = QtCore.Qt.Key_Up
-        Down = QtCore.Qt.Key_Down
         Return = QtCore.Qt.Key_Return
-
 
         lead = 0
         if k == Return:
@@ -223,14 +220,6 @@ class CodeArea(HighlightedTextEdit):
                 if char == colon:
                     # auto indent
                     lead += 4
-
-        elif mdf & QtCore.Qt.ControlModifier and k==Up:
-            self.promote()
-            return
-
-        elif mdf & QtCore.Qt.ControlModifier and k==Down:
-            self.demote()
-            return
 
         HighlightedTextEdit.keyPressEvent(self, ev)
         if lead:
@@ -347,6 +336,20 @@ class CodeArea(HighlightedTextEdit):
             self.mselect.removeItem(idx)
             self.mselect.insertItem(idx-1, title, item_docid)
             self.mselect.setCurrentIndex(idx-1)
+            self.mw._modified = True
+            self.mw.setWindowModified(True)
+
+    def shownext(self):
+        '''show the next document in the stack.'''
+        mselect = self.mselect
+        count = mselect.count()
+        idx = mselect.currentIndex()
+        if idx < count-1:
+            mselect.setCurrentIndex(idx+1)
+            docid = unicode(mselect.itemData(idx+1).toString())
+            if docid in self.documents:
+                self.switchto(docid)
+                self.setFocus()
 
     def demote(self):
         '''move the current document down 1 place in the stack'''
@@ -359,6 +362,20 @@ class CodeArea(HighlightedTextEdit):
             self.mselect.removeItem(idx)
             self.mselect.insertItem(idx+1, title, item_docid)
             self.mselect.setCurrentIndex(idx+1)
+            self.mw._modified = True
+            self.mw.setWindowModified(True)
+
+    def showprev(self):
+        '''show the previous document in the stack.'''
+        mselect = self.mselect
+        count = mselect.count()
+        idx = mselect.currentIndex()
+        if idx > 0:
+            mselect.setCurrentIndex(idx-1)
+            docid = unicode(mselect.itemData(idx-1).toString())
+            if docid in self.documents:
+                self.switchto(docid)
+                self.setFocus()
 
     def insertFromMimeData(self, data):
         txt = data.data('text/plain')
