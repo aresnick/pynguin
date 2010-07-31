@@ -728,6 +728,8 @@ class Pynguin(object):
         self.reset()
         self._remove_other_pynguins()
 
+        self.mw.setup_interpreter_locals()
+
     def reset(self, full=False):
         '''reset()
 
@@ -735,7 +737,9 @@ class Pynguin(object):
             to the initial values (pen, fill, etc).
 
         if full is True, also removes any added pynguins and clears out
-            any pending pynguin movements.
+            any pending pynguin movements. Also resets the pynguin
+            functions that are pulled in to the interpreter namespace
+            automatically.
         '''
 
         if full:
