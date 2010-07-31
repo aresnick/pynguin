@@ -503,7 +503,14 @@ Check configuration!''')
             ext = '.pyn'
         self._filepath = r + ext
 
-        self._writefile(self._filepath)
+        if self.writeable(self._filepath):
+            self._writefile(self._filepath)
+        else:
+            QtGui.QMessageBox.warning(self,
+                    'Save failed',
+                    '''Cannot write to selected file.''')
+            self._filepath = None
+            return False
 
         self._modified = False
         for tdoc in self.editor.textdocuments.values():
@@ -561,18 +568,19 @@ Check configuration!''')
 
         retval = self._savestate()
 
-        fdir, fname = os.path.split(self._filepath)
-        windowtitle = '%s [*] - Pynguin' % fname
-        self.setWindowTitle(windowtitle)
-        self.setWindowModified(False)
+        if retval:
+            fdir, fname = os.path.split(self._filepath)
+            windowtitle = '%s [*] - Pynguin' % fname
+            self.setWindowTitle(windowtitle)
+            self.setWindowModified(False)
 
         return retval
 
     def writeable(self, fp):
         try:
-            open(fp, 'w')
-            fp.write('test')
-            fp.close()
+            fd = open(fp, 'w')
+            fd.write('test')
+            fd.close()
         except IOError:
             return False
         else:
