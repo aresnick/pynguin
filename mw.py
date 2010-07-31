@@ -34,7 +34,8 @@ from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
 from conf import uidir, bug_url
-from conf import backupfolder, backupfile, backuprate, keepbackups
+from conf import backupfolder, backupfile, backuprate
+import conf
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -444,14 +445,23 @@ class MainWindow(QtGui.QMainWindow):
         Also moves older backups up a number and deletes the
             oldest backup.
         '''
-        if not keepbackups:
+        if not conf.keepbackups:
             return
 
         folder = backupfolder or self._fdir
         fp = os.path.join(backupfolder, backupfile % '')
-        self._writefile(fp)
+        if self.writeable(fp):
+            self._writefile(fp)
+        else:
+            QtGui.QMessageBox.warning(self,
+                    'Autosave failed',
+                    '''Cannot complete autosave.
+Autosave disabled.
+Check configuration!''')
+            conf.keepbackups = False
+            return
 
-        for fn in range(keepbackups, 1, -1):
+        for fn in range(conf.keepbackups, 1, -1):
             fpsrc = os.path.join(backupfolder, backupfile % (fn-1))
             fpdst = os.path.join(backupfolder, backupfile % fn)
             if os.path.exists(fpsrc):
@@ -557,6 +567,16 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowModified(False)
 
         return retval
+
+    def writeable(self, fp):
+        try:
+            open(fp, 'w')
+            fp.write('test')
+            fp.close()
+        except IOError:
+            return False
+        else:
+            return True
 
     def open(self):
         '''read in a previously written .pyn file (written by _savestate)
