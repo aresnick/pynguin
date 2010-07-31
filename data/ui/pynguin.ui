@@ -209,6 +209,7 @@
     </property>
     <addaction name="actionNew_page"/>
     <addaction name="actionRemove_current_page"/>
+    <addaction name="actionToggle_Editor_Console"/>
     <addaction name="separator"/>
     <addaction name="actionTest_run"/>
     <addaction name="separator"/>
@@ -220,7 +221,6 @@
     <addaction name="actionWordwrap"/>
     <addaction name="actionIncrease_font_size"/>
     <addaction name="actionDecrease_font_size"/>
-    <addaction name="actionToggle_Editor_Console"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
