@@ -423,7 +423,7 @@
     <string>Zoom in</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+=</string>
+    <string>Alt+=</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::WindowShortcut</enum>
@@ -434,7 +434,7 @@
     <string>Zoom out</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+-</string>
+    <string>Alt+-</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::WindowShortcut</enum>
@@ -445,7 +445,7 @@
     <string>Zoom to 100%</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+1</string>
+    <string>Alt+1</string>
    </property>
   </action>
   <action name="actionZoom_in_editor">
@@ -477,7 +477,7 @@
     <string>Increase font size</string>
    </property>
    <property name="shortcut">
-    <string>Alt+=</string>
+    <string>Ctrl+=</string>
    </property>
   </action>
   <action name="actionDecrease_font_size">
@@ -485,7 +485,7 @@
     <string>Decrease font size</string>
    </property>
    <property name="shortcut">
-    <string>Alt+-</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
   <action name="actionPan_left">
