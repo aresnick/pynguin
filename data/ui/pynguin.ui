@@ -244,9 +244,6 @@
    <property name="text">
     <string>New</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
   </action>
   <action name="actionColor">
    <property name="text">
@@ -528,6 +525,9 @@
   <action name="actionNew_page">
    <property name="text">
     <string>New page</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionTest_run">
