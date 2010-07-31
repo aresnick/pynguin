@@ -79,21 +79,14 @@
               <item>
                <widget class="QPushButton" name="newbtn">
                 <property name="text">
-                 <string>New</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="removebtn">
-                <property name="text">
-                 <string>Remove</string>
+                 <string>New page</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="testbtn">
                 <property name="text">
-                 <string>Test</string>
+                 <string>Test / Run</string>
                 </property>
                </widget>
               </item>
@@ -191,14 +184,6 @@
     <addaction name="actionExport"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="editormenu">
-    <property name="title">
-     <string>Editor</string>
-    </property>
-    <addaction name="actionWordwrap"/>
-    <addaction name="actionIncrease_font_size"/>
-    <addaction name="actionDecrease_font_size"/>
-   </widget>
    <widget class="QMenu" name="viewmenu">
     <property name="title">
      <string>View</string>
@@ -217,6 +202,19 @@
     <addaction name="actionPan_right"/>
     <addaction name="actionPan_up"/>
     <addaction name="actionPan_down"/>
+   </widget>
+   <widget class="QMenu" name="editormenu">
+    <property name="title">
+     <string>Editor</string>
+    </property>
+    <addaction name="actionNew_page"/>
+    <addaction name="actionRemove_current_page"/>
+    <addaction name="separator"/>
+    <addaction name="actionTest_run"/>
+    <addaction name="separator"/>
+    <addaction name="actionWordwrap"/>
+    <addaction name="actionIncrease_font_size"/>
+    <addaction name="actionDecrease_font_size"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -522,6 +520,21 @@
     <string>Alt+Down</string>
    </property>
   </action>
+  <action name="actionRemove_current_page">
+   <property name="text">
+    <string>Remove current page</string>
+   </property>
+  </action>
+  <action name="actionNew_page">
+   <property name="text">
+    <string>New page</string>
+   </property>
+  </action>
+  <action name="actionTest_run">
+   <property name="text">
+    <string>Test / Run</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -694,22 +707,6 @@
     <hint type="sourcelabel">
      <x>794</x>
      <y>349</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>removebtn</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>removedoc()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>704</x>
-     <y>345</y>
     </hint>
     <hint type="destinationlabel">
      <x>450</x>
@@ -914,6 +911,54 @@
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
    <slot>pandown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNew_page</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newdoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove_current_page</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>removedoc()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTest_run</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>testcode()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
