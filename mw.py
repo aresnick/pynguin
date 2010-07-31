@@ -739,22 +739,32 @@ Check configuration!''')
 
     def removedoc(self):
         '''throw away the currently displayed editor document'''
-        mselect = self.ui.mselect
-        idx = mselect.currentIndex()
-        docname = unicode(mselect.itemText(idx))
-        mselect.removeItem(idx)
-        if mselect.count():
-            self.changedoc(0)
-            mselect.setCurrentIndex(0)
-        else:
-            self.editor._doc.setPlainText('')
-            self.newdoc()
 
-        if docname in self.editor.documents:
-            del self.editor.documents[docname]
+        ret = QtGui.QMessageBox.warning(self, 'Are you sure?',
+                    'This page will be removed permanently.\n'
+                    'Are you sure you want to remove this page?',
+                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                    QtGui.QMessageBox.No,
+                    QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+        if ret in (QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel):
+            return
+        elif ret == QtGui.QMessageBox.Yes:
+            mselect = self.ui.mselect
+            idx = mselect.currentIndex()
+            docname = unicode(mselect.itemText(idx))
+            mselect.removeItem(idx)
+            if mselect.count():
+                self.changedoc(0)
+                mselect.setCurrentIndex(0)
+            else:
+                self.editor._doc.setPlainText('')
+                self.newdoc()
 
-        self._modified = True
-        self.setWindowModified(True)
+            if docname in self.editor.documents:
+                del self.editor.documents[docname]
+
+            self._modified = True
+            self.setWindowModified(True)
 
     def cleancode(self, code):
         '''fix up the code a bit first...
