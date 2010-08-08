@@ -609,6 +609,12 @@ Check configuration!''')
             self._openfile(fp)
 
     def _openfile(self, fp, add_to_recent=True):
+        if not os.path.exists(fp):
+            QtGui.QMessageBox.information(self,
+                        'Does not exist',
+                        'File does not exist:\n\n%s' % fp)
+            return
+
         z = zipfile.ZipFile(fp, 'r')
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
