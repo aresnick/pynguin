@@ -71,12 +71,15 @@ class Interpreter(HighlightedTextEdit):
         self._outputq = []
         self.historyp = -1
 
+        self.reading = False
+
         self.save_stdout = sys.stdout
         self.save_stdin = sys.stdin
         self.save_stderr = sys.stderr
 
         sys.stdout = self
         sys.stderr = self
+        sys.stdin = self
 
         self.setWordWrapMode(QtGui.QTextOption.WrapAnywhere)
 
@@ -100,6 +103,13 @@ class Interpreter(HighlightedTextEdit):
         if cmd[-1] == '\n':
             self.write('>>> ')
             self.history.append(cmd.rstrip())
+
+    def readline(self):
+        self.reading_buffer = []
+        self.reading = True
+        while self.reading:
+            time.sleep(0.1)
+        return ''.join(self.reading_buffer)
 
     def write(self, text):
         '''cannot write directly to the console...
@@ -163,6 +173,13 @@ class Interpreter(HighlightedTextEdit):
         logger.debug('Key: %s' % k)
         mdf = ev.modifiers()
 
+        if self.reading:
+            try:
+                self.reading_buffer.append(chr(k))
+            except:
+                pass
+            logger.info(self.reading_buffer)
+
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
         Backspace = QtCore.Qt.Key_Backspace
@@ -191,6 +208,9 @@ class Interpreter(HighlightedTextEdit):
         scrolldown = True
 
         if k in (Return, Enter):
+            if self.reading:
+                self.reading = False
+
             self.movetoend()
 
             cpos = self.textCursor().position()
