@@ -72,6 +72,7 @@ class Interpreter(HighlightedTextEdit):
         self.historyp = -1
 
         self.reading = False
+        self.pt = None
 
         self.save_stdout = sys.stdout
         self.save_stdin = sys.stdin
@@ -105,11 +106,18 @@ class Interpreter(HighlightedTextEdit):
             self.history.append(cmd.rstrip())
 
     def readline(self):
-        self.reading_buffer = []
         self.reading = True
         while self.reading:
             time.sleep(0.1)
-        return ''.join(self.reading_buffer)
+
+        pt2 = self.pt
+        self.pt = None
+
+        lenbefore = len(pt2)
+        pt = str(self.toPlainText())
+        r = pt[lenbefore:]
+        r = r.rstrip()
+        return r
 
     def write(self, text):
         '''cannot write directly to the console...
@@ -173,12 +181,8 @@ class Interpreter(HighlightedTextEdit):
         logger.debug('Key: %s' % k)
         mdf = ev.modifiers()
 
-        if self.reading:
-            try:
-                self.reading_buffer.append(chr(k))
-            except:
-                pass
-            logger.info(self.reading_buffer)
+        if self.reading and self.pt is None:
+            self.pt = str(self.toPlainText())
 
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
