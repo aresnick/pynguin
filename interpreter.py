@@ -116,7 +116,9 @@ class Interpreter(HighlightedTextEdit):
         lenbefore = len(pt2)
         pt = str(self.toPlainText())
         r = pt[lenbefore:]
-        r = r.rstrip()
+        r = r.rstrip('\n')
+        if not r:
+            r = '\n'
         return r
 
     def write(self, text):
