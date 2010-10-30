@@ -306,24 +306,28 @@ class CodeArea(HighlightedTextEdit):
         self.savecurrent()
         self._doc.setModified(False)
 
-    def selectline(self, n):
+    def selectline(self, n, align=True):
         '''highlight line number n'''
+        if align:
+            self.selectline(n+10, False)
+
         docline = 1
-        doccharstart = 0
         blk = self._doc.begin()
+        end = self._doc.end()
         while docline < n:
-            txt = blk.text()
-            lentxt = len(txt)+1
-            doccharstart += lentxt
             blk = blk.next()
+            if blk == end:
+                blk = self._doc.lastBlock()
+                break
             docline += 1
-        txt = blk.text()
-        lentxt = len(txt)
-        doccharend = doccharstart + lentxt
+
+        linestart = blk.position()
+        linelen = blk.length()
+        lineend = linestart + linelen
 
         curs = QtGui.QTextCursor(self._doc)
-        curs.setPosition(doccharstart, 0)
-        curs.setPosition(doccharend, 1)
+        curs.setPosition(lineend, 0)
+        curs.setPosition(linestart, 1)
         self.setTextCursor(curs)
 
     def promote(self):
