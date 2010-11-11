@@ -562,6 +562,10 @@ class Pynguin(object):
             The (0, 0) location is in the center of the screen, with
             positive x values to the right, and positive y values down.
 
+        Or, if given the single argument 'random' jump to a random
+            location on the currently visible screen as determined
+            by the viewcoords() method.
+
         No line will be drawn, no matter what the state of the pen.
         '''
         if x != 'random':
@@ -808,6 +812,15 @@ class Pynguin(object):
             3 integers between 0 and 255, specifying the red, blue, and
             green components of the color.
 
+        Uses the choose_color() function from the util module which
+            also offers these options:
+
+            Can also pass in just the name of a color, or the
+                string 'random' for a randomly selected color or
+                'rlight' for a random light color
+                'rmedium' for a random medium color
+                'rdark' for a random dark color.
+
         return the color being used for drawing -- makes getting
             randomly selected colors easier.
         '''
@@ -876,7 +889,8 @@ class Pynguin(object):
         Go in to fill mode. Anything drawn will be filled until
             nofill() is called.
 
-        Set the fill color by passing in an (r, g, b) tuple.
+        Set the fill color by passing in an (r, g, b) tuple, or
+            pass color='random' for a random fill color.
 
         If a fill color is specified (color is not None)
             return the color that is being used as fill color.
