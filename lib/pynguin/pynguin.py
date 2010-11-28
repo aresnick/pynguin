@@ -28,7 +28,7 @@ logger = logging.getLogger('PynguinLogger')
 from PyQt4 import QtCore, QtGui, QtSvg
 
 from util import sign, choose_color
-from conf import uidir, track_main_pynguin
+from conf import track_main_pynguin
 
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',

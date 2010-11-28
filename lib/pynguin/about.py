@@ -21,9 +21,11 @@ import os
 
 from PyQt4 import QtGui, QtCore, uic
 
-from util import getrend
-from conf import uidir, version
+from util import getrend, get_datadir
+from conf import version
 
+datadir = get_datadir()
+uidir = os.path.join(datadir, 'ui')
 
 class AboutDialog(QtGui.QDialog):
     def __init__(self, app):

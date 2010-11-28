@@ -18,6 +18,7 @@
 
 
 import os
+import sys
 from random import randrange
 
 from PyQt4 import QtCore, QtSvg, QtGui
@@ -100,3 +101,28 @@ def nudge_color(color, red=None, blue=None, green=None):
     b = max(b, 0)
 
     return (r, g, b)
+
+
+def get_datadir():
+    if '-d' in sys.argv:
+        dd = 'data'
+        base = ''
+    else:
+        dd = 'share/pynguin'
+        base = sys.prefix
+
+    absbase = os.path.abspath(base)
+
+    return os.path.join(absbase, dd)
+
+def get_docdir():
+    if '-d' in sys.argv:
+        dd = 'doc'
+        base = ''
+    else:
+        dd = 'share/doc/pynguin'
+        base = sys.prefix
+
+    absbase = os.path.abspath(base)
+
+    return os.path.join(absbase, dd)

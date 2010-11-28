@@ -29,13 +29,17 @@ from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
-from util import getrend, sign
+from util import getrend, sign, get_datadir, get_docdir
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
-from conf import uidir, bug_url
+from conf import bug_url
 from conf import backupfolder, backupfile, backuprate
 import conf
+
+datadir = get_datadir()
+uidir = os.path.join(datadir, 'ui')
+docdir = get_docdir()
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -50,11 +54,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self._mainthread = QtCore.QThread.currentThread()
 
-        import pynguin
-        appdir, _ = os.path.split(os.path.abspath(pynguin.__file__))
-        self.appdir = appdir
         uifile = 'pynguin.ui'
-        uipath = os.path.join(appdir, uidir, uifile)
+        uipath = os.path.join(uidir, uifile)
         MWClass, _ = uic.loadUiType(uipath)
 
         QtGui.QMainWindow.__init__(self)
@@ -280,8 +281,8 @@ class MainWindow(QtGui.QMainWindow):
         exa = filemenu.insertMenu(actionsave, exmenu)
         examplemenu = exa.menu()
 
-        examplesrel = 'doc/examples'
-        examplespath = os.path.join(self.appdir, examplesrel)
+        examplesrel = 'examples'
+        examplespath = os.path.join(docdir, examplesrel)
         self.examplespath = examplespath
         examplesglob = '%s/*.pyn' % examplespath
         examples = glob.glob(examplesglob)
