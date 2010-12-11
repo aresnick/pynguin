@@ -31,7 +31,7 @@ def sign(x):
 def getrend(app):
     'return a handle to the app-wide shared SVG renderer'
     filename = 'pynguin.svg'
-    filepath = os.path.join('data/images', filename)
+    filepath = os.path.join(datadir, 'images', filename)
     fp = QtCore.QString(filepath)
     rend = QtSvg.QSvgRenderer(fp, app)
     return rend
@@ -126,3 +126,6 @@ def get_docdir():
     absbase = os.path.abspath(base)
 
     return os.path.join(absbase, dd)
+
+
+datadir = get_datadir()
