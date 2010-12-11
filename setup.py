@@ -34,9 +34,16 @@ os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
 DATA_FILES = [('share/doc/pynguin', ['README', 'COPYING', ])]
 
-# UI
+# ui
 DATA_FILES += [('share/pynguin/ui', glob('data/ui/*.ui'))]
 DATA_FILES += [('share/pynguin/images', glob('data/images/*'))]
+
+# examples
+DATA_FILES += [('share/doc/pynguin/examples', glob('doc/examples/*.pyn'))]
+
+# worksheets
+DATA_FILES += [('share/doc/pynguin', glob('doc/worksheets/*.pdf'))]
+
 
 
 # Data
