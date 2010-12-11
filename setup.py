@@ -5,6 +5,15 @@ from os.path import isdir, isfile
 import os
 import sys
 
+
+# python setup.py bdist_deb
+# cd deb_dist/pynguin-0.10/
+# add to debian/rules:
+#   override_dh_compress:
+#       dh_compress -X.pyn
+# dpkg-buildpackage -rfakeroot -uc -us
+
+
 NAME = 'pynguin'
 VERSION = '0.10'
 
