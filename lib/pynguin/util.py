@@ -127,5 +127,9 @@ def get_docdir():
 
     return os.path.join(absbase, dd)
 
+def check_data_doc_dir():
+    d1 = get_datadir()
+    d2 = get_docdir()
+    return os.path.exists(d1) and os.path.exists(d2)
 
 datadir = get_datadir()

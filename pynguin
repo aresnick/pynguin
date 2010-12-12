@@ -18,6 +18,38 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from pynguin import main
+import sys
 
-main.run()
+if '-d' in sys.argv:
+    # Use the pynguin lib here in the lib folder.
+    # For development, or running from the source
+    #   folder instead of a proper install.
+    sys.path.insert(0, 'lib')
+
+try:
+    from pynguin import main
+except ImportError:
+    # No install found. Try to locate pynguin lib locally
+    if '-d' not in sys.argv:
+        sys.argv.append('-d')
+
+    sys.path.insert(0, 'lib')
+    try:
+        from pynguin import main
+    except ImportError:
+        print 'Unable to locate the pynguin libraries.'
+        print 'Check your installation.'
+        main = False
+
+
+if main:
+    from pynguin import util
+    if not util.check_data_doc_dir():
+        print 'Unable to locate pynguin data.'
+        print 'Check your installation.'
+        main = False
+
+if main:
+    main.run()
+else:
+    raw_input()
