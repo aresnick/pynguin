@@ -19,6 +19,12 @@
 
 
 import sys
+import os
+
+filepath = os.path.realpath(__file__)
+filedir, _ = os.path.split(filepath)
+os.chdir(filedir)
+
 
 if '-d' in sys.argv:
     # Use the pynguin lib here in the lib folder.
