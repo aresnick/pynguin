@@ -49,6 +49,9 @@ except ImportError:
 
 
 if main:
+    if '-D' in sys.argv:
+        main.setup_logging()
+	
     from pynguin import util
     if not util.check_data_doc_dir():
         print 'Unable to locate pynguin data.'
