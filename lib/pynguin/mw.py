@@ -29,6 +29,7 @@ from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
+import util
 from util import getrend, sign, get_datadir, get_docdir
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
@@ -157,7 +158,8 @@ class MainWindow(QtGui.QMainWindow):
                         pynguin=self.pynguin,
                         p=self.pynguin,
                         pynguins=self.pynguins,
-                        history=self.history,)
+                        history=self.history,
+                        util=util,)
         for fname in pynguin_functions:
             function = getattr(self.pynguin, fname)
             ilocals[fname] = function
@@ -370,7 +372,20 @@ class MainWindow(QtGui.QMainWindow):
         self._fdir, _ = os.path.split(fp)
         self._new()
         self._filepath = fp
-        self._openfile(fp)
+        if fp.endswith('.pyn'):
+            self._openfile(fp)
+        elif fp.endswith('_pynd'):
+            self._opendir(fp)
+        else:
+            try:
+                self._openfile(fp)
+            except:
+                try:
+                    self._opendir(fp)
+                except:
+                    QtGui.QMessageBox.information(self,
+                            'Open failed',
+                            'Unable to open file:\n\n%s' % fp)
 
     def new_pynguin(self):
         p = Pynguin()
@@ -451,7 +466,7 @@ class MainWindow(QtGui.QMainWindow):
 
         folder = backupfolder or self._fdir
         fp = os.path.join(backupfolder, backupfile % '')
-        if self.writeable(fp):
+        if self.writeable(fp, use_pyn=True):
             self._writefile(fp)
         else:
             QtGui.QMessageBox.warning(self,
@@ -473,13 +488,14 @@ Check configuration!''')
         QtCore.QTimer.singleShot(backuprate*60000, self.autosave)
 
     def _writefile(self, fp):
+        'Write file list files and history as a zip file called .pyn'
         z = zipfile.ZipFile(fp, 'w')
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
             docid = unicode(mselect.itemData(n).toString())
             code = unicode(self.editor.documents[docid])
-            arcname = '##%5s##__%s' % (n, docid)
+            arcname = '##%05d##__%s' % (n, docid)
             code = self.cleancode(code)
             self.editor.documents[docid] = code
             z.writestr(arcname, code.encode('utf-8'))
@@ -490,22 +506,68 @@ Check configuration!''')
 
         z.close()
 
+    def _writedir(self, d):
+        'Write file list files and history file in to a directory'
+        mselect = self.ui.mselect
+        count = mselect.count()
+        for n in range(count):
+            docid = unicode(mselect.itemData(n).toString())
+            code = unicode(self.editor.documents[docid])
+            arcname = '%05d.py' % n
+            code = self.cleancode(code)
+            self.editor.documents[docid] = code
+            fp = os.path.join(d, arcname)
+            f = open(fp, 'w')
+            f.write(code.encode('utf-8'))
+            f.close()
+
+        # Remove extra files (like if files were deleted)
+        for f in os.listdir(d):
+            if f.endswith('.py') and f[:5].isdigit():
+                logger.info('checking %s' % f)
+                n = int(f[:5])
+                if n >= count:
+                    fp = os.path.join(d, f)
+                    logger.info('removing %s' % fp)
+                    os.remove(fp)
+
+        historyname = '@@history@@'
+        history = '\n'.join(self.interpretereditor.history)
+        fp = os.path.join(d, historyname)
+        f = open(fp, 'w')
+        f.write(history.encode('utf-8'))
+        f.close()
+
     def _savestate(self):
         '''write out the files in the editor window, and keep the list
-            of history entries. All of this is packed up in to a zip
+            of history entries.
+
+        if conf.use_pyn is True:
+            All of this is packed up in to a zip
             file and given a .pyn filename ending.
+
+        if conf.use_pyn is False:
+            The files will be saved in a separate directory.
+            The directory will end in _pynd
 
         '''
 
         self.editor.savecurrent()
 
-        r, ext = os.path.splitext(self._filepath)
-        if ext != '.pyn':
-            ext = '.pyn'
-        self._filepath = r + ext
+        if conf.use_pyn:
+            r, ext = os.path.splitext(self._filepath)
+            if ext != '.pyn':
+                ext = '.pyn'
+            self._filepath = r + ext
+        else:
+            if not self._filepath.endswith('_pynd'):
+                self._filepath = self._filepath + '_pynd'
 
         if self.writeable(self._filepath):
-            self._writefile(self._filepath)
+            if conf.use_pyn:
+                self._writefile(self._filepath)
+            else:
+                self._writedir(self._filepath)
         else:
             QtGui.QMessageBox.warning(self,
                     'Save failed',
@@ -520,7 +582,8 @@ Check configuration!''')
 
         self.addrecentfile(self._filepath)
 
-        self._verify_saved(self._filepath)
+        if conf.use_pyn:
+            self._verify_saved(self._filepath)
 
         return True
 
@@ -560,7 +623,17 @@ Check configuration!''')
         else:
             fdir = self._fdir
 
-        fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Save As', fdir))
+        if conf.use_pyn:
+            fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Save As', fdir))
+        else:
+            fp = unicode(QtGui.QFileDialog.getExistingDirectory(self, 'Choose or create and choose _pynd Directory', fdir))
+            if not fp.endswith('_pynd'):
+                fpo = fp
+                fp = fp + '_pynd'
+                if len(os.listdir(fpo))==0:
+                    os.rmdir(fpo)
+                    os.mkdir(fp)
+
         if fp:
             self._filepath = fp
             self._fdir, _ = os.path.split(fp)
@@ -577,22 +650,44 @@ Check configuration!''')
 
         return retval
 
-    def writeable(self, fp):
+    def writeable(self, fp, use_pyn=None):
+        if use_pyn is not None and use_pyn:
+            use_pyn = True
+        else:
+            use_pyn = conf.use_pyn
+
+        if not use_pyn:
+            if not os.path.exists(fp):
+                try:
+                    os.mkdir(fp)
+                except OSError:
+                    return False
+            fp = os.path.join(fp, 'test')
+
+        logger.info('writing %s' % fp)
+
         try:
             fd = open(fp, 'w')
             fd.write('test')
             fd.close()
+            os.remove(fp)
         except IOError:
             return False
         else:
             return True
 
     def open(self):
-        '''read in a previously written .pyn file (written by _savestate)
-            Any documents that look like function definitions will be
-                exec'd to load them in to the interpreter local namespace.
-            Any previous history will be lost and replaced with the
-                history loaded from the file.
+        '''read in a previously written set of files
+
+        If conf.use_pyn is True:
+            tries to read a .pyn file (written by _writefile)
+        If conf.use_pyn is False:
+            tries to read files from a _pynd directory
+
+        Any documents that look like function definitions will be
+            exec'd to load them in to the interpreter local namespace.
+        Any previous history will be lost and replaced with the
+            history loaded from the file.
         '''
         if not self.maybe_save():
             return
@@ -602,38 +697,46 @@ Check configuration!''')
         else:
             fdir = self._fdir
 
-        fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
+        logger.info('open at %s' % fdir)
+
+        if conf.use_pyn:
+            fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
+        else:
+            fp = unicode(QtGui.QFileDialog.getExistingDirectory(self, 'Choose _pynd Directory', fdir))
+
         if fp:
+            if not os.path.exists(fp):
+                QtGui.QMessageBox.information(self,
+                            'Does not exist',
+                            'File does not exist:\n\n%s' % fp)
+                return
+
             self._fdir, _ = os.path.split(fp)
             self._new()
             self._filepath = fp
-            self._openfile(fp)
+
+            if conf.use_pyn:
+                self._openfile(fp)
+            else:
+                self._opendir(fp)
 
     def _openfile(self, fp, add_to_recent=True):
-        if not os.path.exists(fp):
-            QtGui.QMessageBox.information(self,
-                        'Does not exist',
-                        'File does not exist:\n\n%s' % fp)
-            return
-
         z = zipfile.ZipFile(fp, 'r')
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
-            if ename.startswith('##'):
-                hdr = ename[0:9]
-                if hdr.startswith('##') and hdr.endswith('##'):
-                    title = ename[11:]
-                    self.editor.add(data)
-                    if data.startswith('def ') or data.startswith('class '):
-                        try:
-                            exec data in self.interpreter_locals
-                        except Exception, e:
-                            print 'problem', e
-                            print 'in...'
-                            line1 = data.split('\n')[0]
-                            print unicode(line1)
+            load = ename.startswith('##') or (len(ename)==8 and ename.endswith('.py') and ename[:5].isdigit())
+            if load:
+                self.editor.add(data)
+                if data.startswith('def ') or data.startswith('class '):
+                    try:
+                        exec data in self.interpreter_locals
+                    except Exception, e:
+                        print 'problem', e
+                        print 'in...'
+                        line1 = data.split('\n')[0]
+                        print unicode(line1)
             elif ename.startswith('@@history@@'):
                 history = data.split('\n')
                 self.interpretereditor.history = history
@@ -649,6 +752,42 @@ Check configuration!''')
 
         if add_to_recent:
             self.addrecentfile(self._filepath)
+
+    def _opendir(self, d):
+        files = os.listdir(d)
+        files.sort()
+        for ename in files:
+            logger.info('loading %s' % ename)
+            fp = os.path.join(d, ename)
+            logger.info('loading %s' % fp)
+            fo = open(fp, 'rU')
+            data = fo.read()
+            data = data.decode('utf-8')
+            logger.info('loaded %s' % data)
+            if len(ename)==8 and ename[:5].isdigit() and ename.endswith('.py'):
+                self.editor.add(data)
+                if data.startswith('def ') or data.startswith('class '):
+                    try:
+                        exec data in self.interpreter_locals
+                    except Exception, e:
+                        print 'problem', e
+                        print 'in...'
+                        line1 = data.split('\n')[0]
+                        print unicode(line1)
+            elif ename.startswith('@@history@@'):
+                history = data.split('\n')
+                self.interpretereditor.history = history
+
+        self.ui.mselect.setCurrentIndex(0)
+        self.changedoc(0)
+
+        self._modified = False
+        fdir, fn = os.path.split(d)
+        windowtitle = '%s [*] - Pynguin' % fn
+        self.setWindowTitle(windowtitle)
+        self.setWindowModified(False)
+
+        self.addrecentfile(self._filepath)
 
     def _verify_saved(self, fp):
         '''verify that the saved file contains the correct data.'''
