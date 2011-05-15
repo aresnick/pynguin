@@ -24,7 +24,7 @@ def make_pyn(ex):
 def make_all():
     dirs = get_ex_dirs()
     for ex in dirs:
-        make_pyn(d)
+        make_pyn(ex)
 
 def cleanup():
     dirs = get_ex_dirs()
@@ -47,7 +47,6 @@ def get_ex_dirs():
 if __name__ == '__main__':
     import sys
     if len(sys.argv)==1:
-        #make_all()
-        print sys.argv
+        make_all()
     elif '-C' in sys.argv:
         cleanup()
