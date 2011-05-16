@@ -15,7 +15,7 @@ This release has focused on improvements to usabilty and
     of bug fixes and new features.
 
 
-Pynguin is tested with Python 2.6.6 and PyQt 4.7.4 and
+Pynguin is tested with Python 2.7.1 and PyQt 4.8.3 and
     will use Pygments syntax highlighting if available.
 
 Pynguin is released under GPLv3.
