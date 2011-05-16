@@ -220,10 +220,7 @@ class Interpreter(HighlightedTextEdit):
             self.movetoend()
 
             cpos = self.textCursor().position()
-            cblk = self._doc.findBlock(cpos)
-            pos = cblk.position()
-            blk = self._doc.findBlockByNumber(pos)
-            blk = blk.previous()
+            blk = self._doc.findBlock(cpos)
             if not blk.text():
                 blk = self._doc.firstBlock()
 
