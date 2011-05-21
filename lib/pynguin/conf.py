@@ -17,4 +17,4 @@ track_main_pynguin = False
 #   a single file with all of the files zipped together.
 # To override this behavior, and instead save the files
 #   as a directory full of files, change use_pyn to False
-use_pyn = False
+use_pyn = True
