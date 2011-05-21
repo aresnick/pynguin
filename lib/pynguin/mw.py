@@ -19,6 +19,7 @@
 
 import os
 import sys
+import time
 from math import pi
 import glob
 import zipfile
@@ -467,7 +468,7 @@ class MainWindow(QtGui.QMainWindow):
         folder = backupfolder or self._fdir
         fp = os.path.join(backupfolder, backupfile % '')
         if self.writeable(fp, use_pyn=True):
-            self._writefile(fp)
+            self._writefile01(fp)
         else:
             QtGui.QMessageBox.warning(self,
                     'Autosave failed',
@@ -503,6 +504,53 @@ Check configuration!''')
         historyname = '@@history@@'
         history = '\n'.join(self.interpretereditor.history)
         z.writestr(historyname, history.encode('utf-8'))
+
+        z.close()
+
+    def _writefile01(self, fp):
+        '''Write file list files and history as a zip file called .pyn
+
+        Version 01
+
+        Puts all files in to a folder to make it match the writedir
+        method better.
+
+        '''
+        VERSION = 'pyn01'
+
+        _, fn = os.path.split(fp)
+        fbase, _ = os.path.splitext(fn)
+        if not fbase.endswith('_pynd'):
+            fbase = fbase + '_pynd'
+
+        z = zipfile.ZipFile(fp, 'w')
+
+        mselect = self.ui.mselect
+        for n in range(mselect.count()):
+            docid = unicode(mselect.itemData(n).toString())
+            code = unicode(self.editor.documents[docid])
+            code = self.cleancode(code)
+            self.editor.documents[docid] = code
+            arcname = '%05d.py' % n
+
+            zipi = zipfile.ZipInfo()
+            zipi.filename = os.path.join(fbase, arcname)
+            zipi.compress_type = zipfile.ZIP_DEFLATED
+            zipi.date_time = time.localtime()
+            zipi.external_attr = 0644 << 16
+            zipi.comment = VERSION
+            z.writestr(zipi, code.encode('utf-8'))
+
+        historyname = '@@history@@'
+        history = '\n'.join(self.interpretereditor.history)
+
+        zipi = zipfile.ZipInfo()
+        zipi.filename = os.path.join(fbase, historyname)
+        zipi.compress_type = zipfile.ZIP_DEFLATED
+        zipi.date_time = time.localtime()
+        zipi.external_attr = 0644 << 16
+        zipi.comment = VERSION
+        z.writestr(zipi, history.encode('utf-8'))
 
         z.close()
 
@@ -565,7 +613,7 @@ Check configuration!''')
 
         if self.writeable(self._filepath):
             if conf.use_pyn:
-                self._writefile(self._filepath)
+                self._writefile01(self._filepath)
             else:
                 self._writedir(self._filepath)
         else:
@@ -720,27 +768,7 @@ Check configuration!''')
             else:
                 self._opendir(fp)
 
-    def _openfile(self, fp, add_to_recent=True):
-        z = zipfile.ZipFile(fp, 'r')
-        for ename in z.namelist():
-            fo = z.open(ename, 'rU')
-            data = fo.read()
-            data = data.decode('utf-8')
-            load = ename.startswith('##') or (len(ename)==8 and ename.endswith('.py') and ename[:5].isdigit())
-            if load:
-                self.editor.add(data)
-                if data.startswith('def ') or data.startswith('class '):
-                    try:
-                        exec data in self.interpreter_locals
-                    except Exception, e:
-                        print 'problem', e
-                        print 'in...'
-                        line1 = data.split('\n')[0]
-                        print unicode(line1)
-            elif ename.startswith('@@history@@'):
-                history = data.split('\n')
-                self.interpretereditor.history = history
-
+    def _update_after_open(self, fp, add_to_recent=False):
         self.ui.mselect.setCurrentIndex(0)
         self.changedoc(0)
 
@@ -753,41 +781,94 @@ Check configuration!''')
         if add_to_recent:
             self.addrecentfile(self._filepath)
 
+    def _openfile(self, fp, add_to_recent=True):
+        '''Open single file pynguin archive.
+
+        First determine which file format version is used in
+            the file, then dispatch to the correct function.
+
+        '''
+        z = zipfile.ZipFile(fp, 'r')
+        infos = z.infolist()
+        info = infos[0]
+
+        logger.info('Opening file with version: "%s"' % info.comment)
+
+        if not info.comment:
+            self._openfile00(fp)
+        else:
+            if info.comment == 'pyn01':
+                self._openfile01(fp)
+            else:
+                QtGui.QMessageBox.information(self,
+                        'Unknown Format',
+                        'Unknown file format:\n\n"%s"' % info.comment)
+                return
+
+        self._update_after_open(fp, add_to_recent)
+
+    def _loaddata(self, data):
+        self.editor.add(data)
+        if data.startswith('def ') or data.startswith('class '):
+            try:
+                exec data in self.interpreter_locals
+            except Exception, e:
+                print 'problem', e
+                print 'in...'
+                line1 = data.split('\n')[0]
+                print unicode(line1)
+
+    def _loadhistory(self, data):
+        history = data.split('\n')
+        self.interpretereditor.history = history
+
+    def _shouldload00(self, ename):
+        '''tries to load both original file format and
+        '''
+        return ename.startswith('##')
+
+    def _openfile00(self, fp):
+        z = zipfile.ZipFile(fp, 'r')
+        for ename in z.namelist():
+            fo = z.open(ename, 'rU')
+            data = fo.read()
+            data = data.decode('utf-8')
+            if self._shouldload00(ename):
+                self._loaddata(data)
+            elif ename.startswith('@@history@@'):
+                self._loadhistory(data)
+
+    def _shouldload01(self, fp):
+        edir, ename = os.path.split(fp)
+        return len(ename)==8 and \
+                ename[:5].isdigit() and \
+                ename.endswith('.py')
+
+    def _openfile01(self, fp):
+        z = zipfile.ZipFile(fp, 'r')
+        for ename in z.namelist():
+            fo = z.open(ename, 'rU')
+            data = fo.read()
+            data = data.decode('utf-8')
+            if self._shouldload01(ename):
+                self._loaddata(data)
+            elif '@@history@@' in ename:
+                self._loadhistory(data)
+
     def _opendir(self, d):
         files = os.listdir(d)
         files.sort()
         for ename in files:
-            logger.info('loading %s' % ename)
             fp = os.path.join(d, ename)
-            logger.info('loading %s' % fp)
             fo = open(fp, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
-            logger.info('loaded %s' % data)
-            if len(ename)==8 and ename[:5].isdigit() and ename.endswith('.py'):
-                self.editor.add(data)
-                if data.startswith('def ') or data.startswith('class '):
-                    try:
-                        exec data in self.interpreter_locals
-                    except Exception, e:
-                        print 'problem', e
-                        print 'in...'
-                        line1 = data.split('\n')[0]
-                        print unicode(line1)
-            elif ename.startswith('@@history@@'):
-                history = data.split('\n')
-                self.interpretereditor.history = history
+            if self._shouldload01(ename):
+                self._loaddata(data)
+            elif ename == '@@history@@':
+                self._loadhistory(data)
 
-        self.ui.mselect.setCurrentIndex(0)
-        self.changedoc(0)
-
-        self._modified = False
-        fdir, fn = os.path.split(d)
-        windowtitle = '%s [*] - Pynguin' % fn
-        self.setWindowTitle(windowtitle)
-        self.setWindowModified(False)
-
-        self.addrecentfile(self._filepath)
+        self._update_after_open(d)
 
     def _verify_saved(self, fp):
         '''verify that the saved file contains the correct data.'''
