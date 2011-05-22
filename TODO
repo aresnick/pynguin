@@ -19,7 +19,6 @@ Add ability to "lock" documents in to place
 Use arcs instead of lines when slow drawing circles
 Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
-Remove button should show a warning or be more difficult to access
 Keep more settings in QSettings
 property access for color and fill?
 Pynguin subclass (Turtle?) that uses turtle.py API
