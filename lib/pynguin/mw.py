@@ -846,7 +846,9 @@ Check configuration!''')
 
     def _openfile01(self, fp):
         z = zipfile.ZipFile(fp, 'r')
-        for ename in z.namelist():
+        namelist = z.namelist()
+        namelist.sort()
+        for ename in namelist:
             fo = z.open(ename, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
