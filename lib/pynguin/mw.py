@@ -556,12 +556,19 @@ Check configuration!''')
 
     def _writedir(self, d):
         'Write file list files and history file in to a directory'
+
+        manifestname = '@@manifest@@'
+        manifp = os.path.join(d, manifestname)
+        manif = open(manifp, 'w')
+        manif.write('%s\n' % manifestname)
+
         mselect = self.ui.mselect
         count = mselect.count()
         for n in range(count):
             docid = unicode(mselect.itemData(n).toString())
             code = unicode(self.editor.documents[docid])
             arcname = '%05d.py' % n
+            manif.write('%s\n' % arcname)
             code = self.cleancode(code)
             self.editor.documents[docid] = code
             fp = os.path.join(d, arcname)
@@ -580,11 +587,13 @@ Check configuration!''')
                     os.remove(fp)
 
         historyname = '@@history@@'
+        manif.write('%s\n' % historyname)
         history = '\n'.join(self.interpretereditor.history)
         fp = os.path.join(d, historyname)
         f = open(fp, 'w')
         f.write(history.encode('utf-8'))
         f.close()
+        manif.close()
 
     def _savestate(self):
         '''write out the files in the editor window, and keep the list
@@ -859,7 +868,16 @@ Check configuration!''')
 
     def _opendir(self, d):
         files = os.listdir(d)
-        files.sort()
+        manifestname = '@@manifest@@'
+        if manifestname in files:
+            manifp = os.path.join(d, manifestname)
+            maniff = open(manifp)
+            manifest = maniff.read()
+            files = manifest.split('\n')
+            files = [os.path.join(d, f) for f in files if f]
+        else:
+            files.sort()
+
         for ename in files:
             fp = os.path.join(d, ename)
             fo = open(fp, 'rU')

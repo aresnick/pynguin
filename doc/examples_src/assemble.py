@@ -37,6 +37,10 @@ def zip_pyn(ex, zfp, files, d):
 
 
 def make_pyn(ex):
+    manif = os.path.join(ex, '@@manifest@@')
+    if os.path.exists(manif):
+        os.remove(manif)
+
     histf = os.path.join(ex, '@@history@@')
     history = open(histf, 'w')
     history.close()
