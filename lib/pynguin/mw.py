@@ -371,11 +371,15 @@ class MainWindow(QtGui.QMainWindow):
             self._filepath = None
 
         self._fdir, _ = os.path.split(fp)
-        self._new()
-        self._filepath = fp
         if fp.endswith('.pyn'):
+            self._new()
+            self._filepath = fp
+            self._openfile(fp)
+        elif fp.endswith('.py'):
             self._openfile(fp)
         elif fp.endswith('_pynd'):
+            self._new()
+            self._filepath = fp
             self._opendir(fp)
         else:
             try:
@@ -525,16 +529,28 @@ Check configuration!''')
 
         z = zipfile.ZipFile(fp, 'w')
 
+        manifest = []
+
         mselect = self.ui.mselect
         for n in range(mselect.count()):
             docid = unicode(mselect.itemData(n).toString())
+            textdoc = self.editor.textdocuments[docid]
             code = unicode(self.editor.documents[docid])
             code = self.cleancode(code)
             self.editor.documents[docid] = code
+
+            if hasattr(textdoc, '_title'):
+                manifest.append(textdoc._filepath)
+                f = open(textdoc._filepath, 'w')
+                f.write(code.encode('utf-8'))
+                f.close()
+                continue
+
             arcname = '%05d.py' % n
 
             zipi = zipfile.ZipInfo()
             zipi.filename = os.path.join(fbase, arcname)
+            manifest.append(zipi.filename)
             zipi.compress_type = zipfile.ZIP_DEFLATED
             zipi.date_time = time.localtime()
             zipi.external_attr = 0644 << 16
@@ -551,6 +567,16 @@ Check configuration!''')
         zipi.external_attr = 0644 << 16
         zipi.comment = VERSION
         z.writestr(zipi, history.encode('utf-8'))
+
+        manifestname = '@@manifest@@'
+        zipi = zipfile.ZipInfo()
+        zipi.filename = os.path.join(fbase, manifestname)
+        zipi.compress_type = zipfile.ZIP_DEFLATED
+        zipi.date_time = time.localtime()
+        zipi.external_attr = 0644 << 16
+        zipi.comment = VERSION
+        manifeststr = '\n'.join(manifest)
+        z.writestr(zipi, manifeststr.encode('utf-8'))
 
         z.close()
 
@@ -734,16 +760,21 @@ Check configuration!''')
             return True
 
     def open(self):
-        '''read in a previously written set of files
+        '''read in a previously written set of files,
+            or a single python source file.
 
         If conf.use_pyn is True:
             tries to read a .pyn file (written by _writefile)
         If conf.use_pyn is False:
             tries to read files from a _pynd directory
 
-        Any documents that look like function definitions will be
-            exec'd to load them in to the interpreter local namespace.
-        Any previous history will be lost and replaced with the
+        If the file is a lone python source file, no further processing
+            will occur. However, if the file has been loaded in pynguin
+            previously (it is being loaded from a .pyn or a _pynd):
+
+        Any documents that look like function or class definitions will
+            be exec'd to load them in to the interpreter local namespace.
+        Any current history will be lost and replaced with the
             history loaded from the file.
         '''
         if not self.maybe_save():
@@ -757,7 +788,7 @@ Check configuration!''')
         logger.info('open at %s' % fdir)
 
         if conf.use_pyn:
-            fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn)'))
+            fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn *.py)'))
         else:
             fp = unicode(QtGui.QFileDialog.getExistingDirectory(self, 'Choose _pynd Directory', fdir))
 
@@ -769,8 +800,10 @@ Check configuration!''')
                 return
 
             self._fdir, _ = os.path.split(fp)
-            self._new()
-            self._filepath = fp
+
+            if not fp.endswith('.py'):
+                self._new()
+                self._filepath = fp
 
             if conf.use_pyn:
                 self._openfile(fp)
@@ -791,30 +824,43 @@ Check configuration!''')
             self.addrecentfile(self._filepath)
 
     def _openfile(self, fp, add_to_recent=True):
-        '''Open single file pynguin archive.
+        '''Open the selected file.
 
-        First determine which file format version is used in
+        If the file is python source (.py) open the file and
+            add it as a new page in the editor window.
+
+        If the file is a pynguin archive (.pyn) open it and load
+            its contents to the correct places.
+
+            First determine which file format version is used in
             the file, then dispatch to the correct function.
 
         '''
-        z = zipfile.ZipFile(fp, 'r')
-        infos = z.infolist()
-        info = infos[0]
+        if fp.endswith('.pyn'):
+            z = zipfile.ZipFile(fp, 'r')
+            infos = z.infolist()
+            info = infos[0]
 
-        logger.info('Opening file with version: "%s"' % info.comment)
+            logger.info('Opening file with version: "%s"' % info.comment)
 
-        if not info.comment:
-            self._openfile00(fp)
-        else:
-            if info.comment == 'pyn01':
-                self._openfile01(fp)
+            if not info.comment:
+                self._openfile00(fp)
             else:
-                QtGui.QMessageBox.information(self,
-                        'Unknown Format',
-                        'Unknown file format:\n\n"%s"' % info.comment)
-                return
+                if info.comment == 'pyn01':
+                    self._openfile01(fp)
+                else:
+                    QtGui.QMessageBox.information(self,
+                            'Unknown Format',
+                            'Unknown file format:\n\n"%s"' % info.comment)
+                    return
 
-        self._update_after_open(fp, add_to_recent)
+        if fp.endswith('.py'):
+            self.editor.addexternal(fp)
+            self.addrecentfile(fp)
+            self._modified = True
+            self.setWindowModified(True)
+        else:
+            self._update_after_open(fp, add_to_recent)
 
     def _loaddata(self, data):
         self.editor.add(data)
@@ -856,9 +902,28 @@ Check configuration!''')
     def _openfile01(self, fp):
         z = zipfile.ZipFile(fp, 'r')
         namelist = z.namelist()
-        namelist.sort()
         for ename in namelist:
-            fo = z.open(ename, 'rU')
+            if '@@manifest@@' in ename:
+                fo = z.open(ename, 'rU')
+                data = fo.read()
+                data = data.decode('utf-8')
+                namelist = data.split('\n')
+            else:
+                namelist.sort()
+
+        for ename in namelist:
+            logger.info('loading %s' % ename)
+            if os.path.isabs(ename):
+                try:
+                    self._openfile(ename)
+                except IOError:
+                    self._loaddata('Could not load:\n%s' % ename)
+                    self.editor._doc._title = 'NOT LOADED'
+                    self.editor._doc._filepath = ename
+                    self.editor.settitle('NOT LOADED')
+                    continue
+            else:
+                fo = z.open(ename, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
             if self._shouldload01(ename):

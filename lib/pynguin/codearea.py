@@ -17,6 +17,7 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
 import logging
 logger = logging.getLogger('PynguinLogger')
 import time
@@ -225,9 +226,12 @@ class CodeArea(HighlightedTextEdit):
         if lead:
             self.insertPlainText(' '*lead)
 
-        fblk = self._doc.firstBlock()
-        txt = unicode(fblk.text())
-        self.settitle(txt)
+        if hasattr(self._doc, '_title'):
+            title = self._doc._title
+        else:
+            fblk = self._doc.firstBlock()
+            title = unicode(fblk.text())
+        self.settitle(title)
         if self.mw._modified or self._doc.isModified():
             self.mw.setWindowModified(True)
         elif not self.mw._modified and not self.mw.check_modified():
@@ -294,14 +298,29 @@ class CodeArea(HighlightedTextEdit):
         self.docid = docid
         doc = self.textdocuments[docid]
         self.setdoc(doc)
-        firstline = unicode(doctxt.split('\n')[0])
-        self.settitle(firstline)
+        if hasattr(self._doc, '_title'):
+            title = self._doc._title
+        else:
+            title = unicode(doctxt.split('\n')[0])
+        self.settitle(title)
 
     def add(self, txt):
         '''add a new document with txt as the contents'''
         self.new()
         self._doc.setPlainText(txt)
         title = txt.split('\n')[0]
+        self.settitle(title)
+        self.savecurrent()
+        self._doc.setModified(False)
+
+    def addexternal(self, fp):
+        '''Add an external python source file.'''
+        txt = open(fp).read()
+        self.new()
+        self._doc.setPlainText(txt)
+        self._doc._filepath = fp
+        _, title = os.path.split(fp)
+        self._doc._title = title
         self.settitle(title)
         self.savecurrent()
         self._doc.setModified(False)
