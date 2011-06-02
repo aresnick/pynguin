@@ -48,6 +48,9 @@ def make_pyn(ex):
     if ex.endswith('_pynd'):
         exfile = '%s.pyn' % ex[:-5]
         d = ex
+    elif ex.endswith('_pynd/'):
+        exfile = '%s.pyn' % ex[:-6]
+        d = ex
     else:
         exfile = '%s.pyn' % ex
         d = ex + '_pynd'
