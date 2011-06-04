@@ -909,13 +909,17 @@ Check configuration!''')
     def _loaddata(self, data):
         self.editor.add(data)
         if data.startswith('def ') or data.startswith('class '):
-            try:
-                exec data in self.interpreter_locals
-            except Exception, e:
-                print 'problem', e
-                print 'in...'
-                line1 = data.split('\n')[0]
-                print unicode(line1)
+            if data[4:12] == 'onclick(':
+                # don't install onclick handlers when loading
+                pass
+            else:
+                try:
+                    exec data in self.interpreter_locals
+                except Exception, e:
+                    print 'problem', e
+                    print 'in...'
+                    line1 = data.split('\n')[0]
+                    print unicode(line1)
 
     def _loadhistory(self, data):
         history = data.split('\n')
