@@ -74,6 +74,7 @@ class MainWindow(QtGui.QMainWindow):
         view.mousePressEvent = self.onclick
         view.wheelEvent = self.mousewheelscroll
         view.mouseMoveEvent = self.mousemove
+        view.mouseReleaseEvent = self.mouserelease
 
         self.setup_speed_choices()
         self.speedgroup = QtGui.QActionGroup(self)
@@ -151,6 +152,7 @@ class MainWindow(QtGui.QMainWindow):
 
         QtCore.QTimer.singleShot(60000, self.autosave)
         self._centerview()
+        self._leftdragstart = None
 
     def setup_interpreter_locals(self):
         ilocals = self.interpreter_locals
@@ -195,10 +197,14 @@ class MainWindow(QtGui.QMainWindow):
     def mousemove(self, ev):
         QtGui.QGraphicsView.mouseMoveEvent(self.scene.view, ev)
 
+        if self._leftdragstart is None:
+            ev.accept()
+            return
+
         buttons = ev.buttons()
-        if buttons & QtCore.Qt.MidButton:
+        if buttons & QtCore.Qt.LeftButton:
             pos = ev.posF()
-            dpos = self._middledragstart - pos
+            dpos = self._leftdragstart - pos
             ctr0 = self._dragstartcenter
             ctr = ctr0 + (dpos / self._scale)
 
@@ -240,10 +246,12 @@ class MainWindow(QtGui.QMainWindow):
         return QtCore.QRectF(tlt, brt)
 
     def _viewcenter(self):
+        'return the current center of the view'
         ctr = self._viewrect().center()
         return ctr
 
     def _centerview(self, ctr=None):
+        'set _cx and _cy to the given coord or to the current view center'
         if ctr is None:
             ctr = self._viewcenter()
         self._cx = ctr.x()
@@ -261,16 +269,27 @@ class MainWindow(QtGui.QMainWindow):
 
         self.interpretereditor.setFocus()
 
-    def middleclick(self, ev):
-        self._middledragstart = ev.posF()
-        self._dragstartcenter = self._viewcenter()
-
     def leftclick(self, ev):
+        if not ev.isAccepted():
+            self._leftdragstart = ev.posF()
+            self._dragstartcenter = self._viewcenter()
+        else:
+            self._leftdragstart = None
+
+    def mouserelease(self, ev):
+        QtGui.QGraphicsView.mouseReleaseEvent(self.scene.view, ev)
+        self._leftdragstart = None
+
+    def middleclick(self, ev):
         evpos = ev.pos()
         scpos = self.scene.view.mapToScene(evpos)
         for pyn in self.pynguins:
             if pyn.respond_to_mouse_click:
-                pyn.onclick(scpos.x(), scpos.y())
+                if pyn is self.pynguin and 'onclick' in self.interpreter_locals:
+                    onclick = self.interpreter_locals['onclick']
+                else:
+                    onclick = pyn.onclick
+                onclick(scpos.x(), scpos.y())
         ev.ignore()
 
     def recenter(self):
@@ -1199,7 +1218,6 @@ Check configuration!''')
                         tocall = line0[4:lastparen+1]
                         funcname = line0[4:firstparen]
                         if funcname == 'onclick':
-                            self.pynguin.__class__.onclick = self.interpreter_locals['onclick']
                             self.interpretereditor.write('# set onclick handler\n')
                             self.interpretereditor.write('>>> ')
                         else:

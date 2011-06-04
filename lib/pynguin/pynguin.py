@@ -1147,7 +1147,7 @@ class Pynguin(object):
         To override this method, define a new function called onclick(x, y)
             and it will be inserted for automatic calling.
         '''
-        self.goto(x, y)
+        pass
 
     def _stamp(self, x, y, imageid=None):
         gitem = self.gitem
@@ -1273,6 +1273,7 @@ class PynguinGraphicsItem(GraphicsItem):
                 scene.setSceneRect(newrect)
 
     def track(self):
+        'center the view on the pynguin'
         if track_main_pynguin and not self._notrack:
             pynguin = self.pynguin
             mainpyn = pynguin.mw.pynguin
@@ -1318,6 +1319,7 @@ class PynguinGraphicsItem(GraphicsItem):
     def mouseMoveEvent(self, ev):
         buttons = ev.buttons()
         if buttons & QtCore.Qt.LeftButton:
+            ev.accept()
             pynguin = self.pynguin
             if pynguin is not None:
                 self._notrack = True

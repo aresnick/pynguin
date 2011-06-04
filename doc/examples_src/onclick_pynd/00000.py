@@ -1,2 +1,2 @@
-def onclick(self, x, y):
-    self.lineto(x, y)
+def onclick(x, y):
+    lineto(x, y)

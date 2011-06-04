@@ -1,2 +1,2 @@
-def onclick(self, x, y):
-    self.home()
+def onclick(x, y):
+    home()

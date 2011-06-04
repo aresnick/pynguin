@@ -1,3 +1,3 @@
-def onclick(self, x, y):
-    self.goto(x, y)
-    self.circle(40, True)
+def onclick(x, y):
+    goto(x, y)
+    circle(40, True)

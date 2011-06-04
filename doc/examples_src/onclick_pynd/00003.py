@@ -1,3 +1,3 @@
-def onclick(self, x, y):
-    self.goto(x, y)
-    self.stamp()
+def onclick(x, y):
+    goto(x, y)
+    stamp()
