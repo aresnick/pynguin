@@ -926,7 +926,8 @@ Check configuration!''')
         self.interpretereditor.history = history
 
     def _shouldload00(self, ename):
-        '''tries to load both original file format and
+        '''tries to load both original file format and any
+            unknown format file.
         '''
         return ename.startswith('##')
 
