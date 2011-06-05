@@ -316,6 +316,7 @@ class CodeArea(HighlightedTextEdit):
     def addexternal(self, fp):
         '''Add an external python source file.'''
         txt = open(fp).read()
+        txt = txt.decode('utf-8')
         self.new()
         self._doc.setPlainText(txt)
         self._doc._filepath = fp
@@ -324,6 +325,7 @@ class CodeArea(HighlightedTextEdit):
         self.settitle(title)
         self.savecurrent()
         self._doc.setModified(False)
+        return self._doc
 
     def selectline(self, n, align=True):
         '''highlight line number n'''

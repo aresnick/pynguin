@@ -156,6 +156,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.watcher = QtCore.QFileSystemWatcher(self)
         self.watcher.fileChanged.connect(self._filechanged)
+        self._watchdocs = {}
         self._writing_external = None
 
     def setup_interpreter_locals(self):
@@ -906,22 +907,36 @@ Check configuration!''')
                     return
 
         if fp.endswith('.py'):
-            self.editor.addexternal(fp)
+            doc = self.editor.addexternal(fp)
             self.addrecentfile(fp)
             self._modified = True
             self.setWindowModified(True)
-            self.watcher.addPath(fp)
+            self._addwatcher(fp, doc)
         else:
             self._update_after_open(fp, add_to_recent)
+
+    def _addwatcher(self, fp, doc):
+            self.watcher.addPath(fp)
+            self._watchdocs[str(fp)] = doc
+
+    def _remwatcher(self, fp):
+        self.watcher.removePath(fp)
 
     def _filechanged(self, fp):
         '''called when an external file has changed on disk.
         '''
         logger.info('_fc %s' % fp)
         if str(fp) == str(self._writing_external):
-            logger.info('writing_external')
-        else:
-            logger.info('CHANGED: %s' % fp)
+            # Ignore notification when saving the file
+            return
+
+        if conf.auto_refresh_external:
+            doc = self._watchdocs[str(fp)]
+            txt = open(fp).read()
+            txt = txt.decode('utf-8')
+            doc.setPlainText(txt)
+            if conf.auto_test_external:
+                self.interpreter.runcode(txt)
 
     def _loaddata(self, data):
         self.editor.add(data)
@@ -1132,15 +1147,24 @@ Check configuration!''')
     def removedoc(self):
         '''throw away the currently displayed editor document'''
 
-        ret = QtGui.QMessageBox.warning(self, 'Are you sure?',
+        if hasattr(self.editor._doc, '_title'):
+            external = True
+            fp = self.editor._doc._filepath
+        else:
+            external = False
+
+        if not external:
+            ret = QtGui.QMessageBox.warning(self, 'Are you sure?',
                     'This page will be removed permanently.\n'
                     'Are you sure you want to remove this page?',
                     QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
                     QtGui.QMessageBox.No,
                     QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
-        if ret in (QtGui.QMessageBox.No, QtGui.QMessageBox.Cancel):
+
+        if not external and ret in (QtGui.QMessageBox.No,
+                                        QtGui.QMessageBox.Cancel):
             return
-        elif ret == QtGui.QMessageBox.Yes:
+        elif external or ret == QtGui.QMessageBox.Yes:
             mselect = self.ui.mselect
             idx = mselect.currentIndex()
             docname = unicode(mselect.itemText(idx))
@@ -1157,6 +1181,9 @@ Check configuration!''')
 
             self._modified = True
             self.setWindowModified(True)
+
+            if external:
+                self._remwatcher(fp)
 
     def nextdoc(self):
         self.editor.shownext()
