@@ -23,15 +23,18 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.10:
     Session
-        - added save to or load from directory instead of a file
+        - can now save to or load from directory instead of a file
 
     Pynguin API
         - allow setting drawing speed from code
         - add xyforward(dist) method (coords dist ahead of pynguin)
         - reset() is more thorough restoring pynguin to initial state
         - handle input() and raw_input() properly
+        - simple onclick() handler only affects the main pyguin
+            - onclick() responds to middle-click now (not left-click)
 
     Canvas
+        - use left mouse button to pan/drag the canvas
         - mouse wheel zooms around cursor
         - added menu entries and shortcuts for panning canvas
         - recenter canvas on home() and reset()
@@ -39,6 +42,8 @@ Changes in pynguin-0.10:
         - all canvas related shortcuts now use Alt-<key>
 
     Integrated Editor
+        - added ability to open plain python files
+            - can monitor file for changes made in external editor
         - removed "Remove" button from under editor
         - added warning when removing page with menu option
         - all editor related shortcuts now use Ctrl-<key>
