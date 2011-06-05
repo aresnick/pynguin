@@ -154,6 +154,10 @@ class MainWindow(QtGui.QMainWindow):
         self._centerview()
         self._leftdragstart = None
 
+        self.watcher = QtCore.QFileSystemWatcher(self)
+        self.watcher.fileChanged.connect(self._filechanged)
+        self._writing_external = None
+
     def setup_interpreter_locals(self):
         ilocals = self.interpreter_locals
         ilocals.update(PI=pi,
@@ -492,7 +496,8 @@ class MainWindow(QtGui.QMainWindow):
         folder = backupfolder or self._fdir
         fp = os.path.join(backupfolder, backupfile % '')
         if self.writeable(fp, use_pyn=True):
-            self._writefile01(fp)
+            self.editor.savecurrent()
+            self._writefile01(fp, backup=True)
         else:
             QtGui.QMessageBox.warning(self,
                     'Autosave failed',
@@ -540,7 +545,7 @@ Check configuration!''')
 
         z.close()
 
-    def _writefile01(self, fp):
+    def _writefile01(self, fp, backup=False):
         '''Write file list files and history as a zip file called .pyn
 
         Version 01
@@ -568,7 +573,7 @@ Check configuration!''')
             code = self.cleancode(code)
             self.editor.documents[docid] = code
 
-            if hasattr(textdoc, '_filepath'):
+            if not backup and hasattr(textdoc, '_filepath'):
                 efp = textdoc._filepath
                 manifest.append(efp)
 
@@ -576,9 +581,11 @@ Check configuration!''')
                     dirname, _ = os.path.split(fp)
                     efp = efp.replace('_@@', dirname)
                 logger.info('external: %s' % efp)
+                self._writing_external = efp
                 f = open(efp, 'w')
                 f.write(code.encode('utf-8'))
                 f.close()
+                self._writing_external = None
                 continue
 
             arcname = '%05d.py' % n
@@ -735,9 +742,9 @@ Check configuration!''')
         fp = unicode(QtGui.QFileDialog.getSaveFileName(self,
                         'Save As', fdir,
                         'Text files (*.pyn)'))
-        fp = self._correct_filename(fp)
 
         if fp:
+            fp = self._correct_filename(fp)
             dirname, fname = os.path.split(fp)
             if not conf.use_pyn:
                 fpd = self._related_dir(fp)
@@ -903,8 +910,18 @@ Check configuration!''')
             self.addrecentfile(fp)
             self._modified = True
             self.setWindowModified(True)
+            self.watcher.addPath(fp)
         else:
             self._update_after_open(fp, add_to_recent)
+
+    def _filechanged(self, fp):
+        '''called when an external file has changed on disk.
+        '''
+        logger.info('_fc %s' % fp)
+        if str(fp) == str(self._writing_external):
+            logger.info('writing_external')
+        else:
+            logger.info('CHANGED: %s' % fp)
 
     def _loaddata(self, data):
         self.editor.add(data)
