@@ -35,6 +35,7 @@ Changes in pynguin-0.10:
         - use left mouse button to pan/drag the canvas
         - mouse wheel zooms around cursor
         - added menu entries and shortcuts for panning canvas
+        - added menu item for tracking pynguin
         - recenter canvas on home() and reset()
         - fix crash on startup when pynguin tracking is enabled
         - all canvas related shortcuts now use Alt-<key>
