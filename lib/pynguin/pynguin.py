@@ -36,7 +36,7 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'penup', 'pendown', 'color', 'width',
                         'circle', 'fill', 'nofill', 'fillcolor',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
-                        'write', 'toward', 'distance', 'lineto',
+                        'write', 'toward', 'distance', 'lineto', 'xyforward',
                         'onscreen', 'viewcoords', 'stamp', 'square',
                         'avatar', 'remove', 'promote', 'reap',]
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
