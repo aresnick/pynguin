@@ -909,6 +909,9 @@ class Pynguin(object):
         self.ritem._fillmode = True
         self.qmove(self._gitem_fillmode, (True,))
 
+        if self is self.mw.pynguin:
+            self.mw._sync_fill_menu('fill')
+
         if color is not None:
             return self.fillcolor()
 
@@ -919,6 +922,9 @@ class Pynguin(object):
         '''
         self.ritem._fillmode = False
         self.qmove(self._gitem_fillmode, (False,))
+
+        if self is self.mw.pynguin:
+            self.mw._sync_fill_menu('nofill')
 
     def _gitem_fillrule(self, rule):
         self.gitem._fillrule = rule

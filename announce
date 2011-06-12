@@ -9,10 +9,8 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release has focused on improvements to usabilty and
-    user-friendliness, with much input and many reports
-    from actual users. Thanks Alec! There is a huge list
-    of bug fixes and new features.
+This release continues to expand basic functionality and
+    explores more user-friendly options in the interface.
 
 
 Pynguin is tested with Python 2.7.1 and PyQt 4.8.3 and
@@ -57,5 +55,6 @@ Changes in pynguin-0.10:
     General
         - remember drawing speed between sessions
         - remember avatar setting between sessions
+        - synchronize fill menu items when using fill() and nofill()
         - fixed crash trying to open non-existent file
         - fixed crash trying to save to non-writeable file

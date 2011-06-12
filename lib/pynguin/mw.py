@@ -26,6 +26,9 @@ import zipfile
 import logging
 logger = logging.getLogger('PynguinLogger')
 
+from bidict import bidict
+
+
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
@@ -139,6 +142,7 @@ class MainWindow(QtGui.QMainWindow):
         self.pengroup.setExclusive(True)
         self.pengroup.triggered.connect(self.setPen)
 
+        self._setup_fill_choices()
         self.fillgroup = QtGui.QActionGroup(self)
         self.fillgroup.addAction(self.ui.actionFill)
         self.fillgroup.addAction(self.ui.actionNofill)
@@ -1327,6 +1331,15 @@ Check configuration!''')
             self.pynguin.pendown()
             self.interpretereditor.addcmd('pendown()\n')
 
+    def _setup_fill_choices(self):
+        choices = ((self.ui.actionFill, 'fill'),
+                    (self.ui.actionNofill, 'nofill'))
+        self._fills = bidict(choices)
+
+    def _sync_fill_menu(self, choice):
+        action = self._fills.inv.get(str(choice))
+        action.setChecked(True)
+
     def setFill(self, ev):
         '''toggle fill on / off
 
@@ -1350,12 +1363,13 @@ Check configuration!''')
         ncolor = QtGui.QColorDialog.getColor(icolor, self)
         if ncolor.isValid():
             r, g, b, a = ncolor.getRgb()
+            self.pynguin.fill()
+            self._sync_fill_menu('fill')
             self.pynguin.fillcolor(r, g, b)
-            cmd = 'fillcolor(%s, %s, %s)\n' % (r, g, b)
+            cmd = 'fill(color=(%s, %s, %s))\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
     def setup_avatar_choices(self):
-        from bidict import bidict
         choices = ((self.ui.actionPynguin, 'pynguin'),
                     (self.ui.actionArrow, 'arrow'),
                     (self.ui.actionRobot, 'robot'),
@@ -1387,7 +1401,6 @@ Check configuration!''')
         self.set_pynguin_avatar(imageid)
 
     def setup_speed_choices(self):
-        from bidict import bidict
         choices = ((self.ui.actionSlow, 5),
                     (self.ui.actionMedium, 10),
                     (self.ui.actionFast, 20),
