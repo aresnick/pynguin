@@ -28,7 +28,7 @@ logger = logging.getLogger('PynguinLogger')
 from PyQt4 import QtCore, QtGui, QtSvg
 
 from util import sign, choose_color
-from conf import track_main_pynguin
+import conf
 
 
 pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
@@ -1280,7 +1280,7 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def track(self):
         'center the view on the pynguin'
-        if track_main_pynguin and not self._notrack:
+        if conf.track_main_pynguin and not self._notrack:
             pynguin = self.pynguin
             mainpyn = pynguin.mw.pynguin
             scene = self.scene()

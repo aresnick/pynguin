@@ -266,6 +266,13 @@ class MainWindow(QtGui.QMainWindow):
         self._cx = ctr.x()
         self._cy = ctr.y()
 
+    def settrack(self):
+        if self.ui.actionTrack.isChecked():
+            conf.track_main_pynguin = True
+            self.pynguin.gitem.track()
+        else:
+            conf.track_main_pynguin = False
+
     def onclick(self, ev):
         QtGui.QGraphicsView.mousePressEvent(self.scene.view, ev)
 

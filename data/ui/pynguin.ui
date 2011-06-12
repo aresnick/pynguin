@@ -198,6 +198,7 @@
     <addaction name="actionZoom_out"/>
     <addaction name="actionZoom_to_100"/>
     <addaction name="separator"/>
+    <addaction name="actionTrack"/>
     <addaction name="actionPan_left"/>
     <addaction name="actionPan_right"/>
     <addaction name="actionPan_up"/>
@@ -582,6 +583,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Space</string>
+   </property>
+  </action>
+  <action name="actionTrack">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Track main pynguin</string>
    </property>
   </action>
  </widget>
@@ -1099,6 +1108,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTrack</sender>
+   <signal>changed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>settrack()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1130,5 +1155,6 @@
   <slot>promotedoc()</slot>
   <slot>demotedoc()</slot>
   <slot>toggle_editor()</slot>
+  <slot>settrack()</slot>
  </slots>
 </ui>
