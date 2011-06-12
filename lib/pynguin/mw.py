@@ -268,10 +268,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def settrack(self):
         if self.ui.actionTrack.isChecked():
-            conf.track_main_pynguin = True
-            self.pynguin.gitem.track()
+            track = True
         else:
-            conf.track_main_pynguin = False
+            track = False
+
+        conf.track_main_pynguin = track
+        if track:
+            self.pynguin.gitem.track()
+
+        settings = QtCore.QSettings()
+        settings.setValue('pynguin/track', track)
 
     def onclick(self, ev):
         QtGui.QGraphicsView.mousePressEvent(self.scene.view, ev)
@@ -375,6 +381,11 @@ class MainWindow(QtGui.QMainWindow):
         imageid = settings.value('pynguin/avatar', 'pynguin').toString()
         self.set_pynguin_avatar(imageid)
         self.sync_avatar_menu(imageid)
+
+        track = settings.value('pynguin/track', False).toBool()
+        if track:
+            self.ui.actionTrack.setChecked(True)
+            self.settrack()
 
     def setup_recent(self):
         settings = self.settings
