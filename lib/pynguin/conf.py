@@ -20,7 +20,7 @@ track_main_pynguin = False
 use_pyn = True
 
 # If you will be editing with an external editor, you
-#   may want pynguin to automatically reload reload
+#   may want pynguin to automatically monitor and reload
 #   those external files any time you make changes
 # You may also want to automatically have the Test/Run
 #   function run when an external file changes
