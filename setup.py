@@ -17,10 +17,10 @@ import sys
 NAME = 'pynguin'
 VERSION = '0.10'
 
-DESC = 'Python-based turtle graphics application'
+DESC = 'Python turtle graphics application'
 
 LONG_DESC = '''\
-Pynguin is a python-based turtle graphics application.
+Pynguin is a python turtle graphics application.
 It combines an editor, interactive interpreter, and
 graphics display area.
 
@@ -61,7 +61,7 @@ DATA_FILES += [('share/applications',
 DATA_FILES += [('share/icons/hicolor/scalable/apps',
                         ['data/icons/scalable/pynguin.svg'])]
 DATA_FILES += [('share/pixmaps',
-                        ['data/images/48x48/pynguin.png'])]
+                        ['data/icons/48x48/pynguin.png'])]
 DATA_FILES += [('share/icons/hicolor/24x24/apps',
                         ['data/icons/24x24/pynguin.png'])]
 DATA_FILES += [('share/icons/hicolor/32x32/apps',
