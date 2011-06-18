@@ -783,6 +783,7 @@ class Pynguin(object):
 
     def _pendown(self, down=True):
         self.gitem._pen = down
+        self.mw._sync_pendown_menu(down)
 
     def penup(self):
         '''penup()
@@ -880,9 +881,13 @@ class Pynguin(object):
         if start:
             self.gitem._fillmode = True
             self._gitem_new_line()
+            if self is self.mw.pynguin:
+                self.mw._sync_fill_menu('fill')
         else:
             self.gitem._fillmode = False
             self._gitem_new_line()
+            if self is self.mw.pynguin:
+                self.mw._sync_fill_menu('nofill')
 
     def fill(self, color=None, rule=None):
         '''fill()
@@ -909,9 +914,6 @@ class Pynguin(object):
         self.ritem._fillmode = True
         self.qmove(self._gitem_fillmode, (True,))
 
-        if self is self.mw.pynguin:
-            self.mw._sync_fill_menu('fill')
-
         if color is not None:
             return self.fillcolor()
 
@@ -922,9 +924,6 @@ class Pynguin(object):
         '''
         self.ritem._fillmode = False
         self.qmove(self._gitem_fillmode, (False,))
-
-        if self is self.mw.pynguin:
-            self.mw._sync_fill_menu('nofill')
 
     def _gitem_fillrule(self, rule):
         self.gitem._fillrule = rule
@@ -961,6 +960,8 @@ class Pynguin(object):
         scene.addItem(gitem)
         self.gitem = gitem
         gitem.set_transform()
+        if self is self.mw.pynguin:
+            self.mw._sync_avatar_menu(imageid)
     def setImageid(self, imageid):
         '''change the visible (avatar) image'''
         self._imageid = imageid
@@ -970,8 +971,6 @@ class Pynguin(object):
             avatars = self.mw.avatars.values()
             if imageid in avatars:
                 self.setImageid(imageid)
-                if self is self.mw.pynguin:
-                    self.mw.sync_avatar_menu(imageid)
             else:
                 msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(avatars))
                 raise ValueError, msg

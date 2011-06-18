@@ -107,6 +107,13 @@ class MainWindow(QtGui.QMainWindow):
         self.interpretereditor.interpreter = self.interpreter
         self.interpretereditor.setFocus()
 
+        self._setup_pendown_choices()
+        self.pengroup = QtGui.QActionGroup(self)
+        self.pengroup.addAction(self.ui.actionPenUp)
+        self.pengroup.addAction(self.ui.actionPenDown)
+        self.pengroup.setExclusive(True)
+        self.pengroup.triggered.connect(self.setPen)
+
         Pynguin.mw = self
         Pynguin.rend = self.rend
         self.pynguins = []
@@ -136,6 +143,7 @@ class MainWindow(QtGui.QMainWindow):
         self.viewgroup.setExclusive(True)
         self.viewgroup.triggered.connect(self.setImageEvent)
 
+        self._setup_pendown_choices()
         self.pengroup = QtGui.QActionGroup(self)
         self.pengroup.addAction(self.ui.actionPenUp)
         self.pengroup.addAction(self.ui.actionPenDown)
@@ -380,7 +388,7 @@ class MainWindow(QtGui.QMainWindow):
 
         imageid = settings.value('pynguin/avatar', 'pynguin').toString()
         self.set_pynguin_avatar(imageid)
-        self.sync_avatar_menu(imageid)
+        self._sync_avatar_menu(imageid)
 
         track = settings.value('pynguin/track', False).toBool()
         if track:
@@ -1336,6 +1344,15 @@ Check configuration!''')
         cmd = 'width(%s)\n' % nwidth
         self.interpretereditor.addcmd(cmd)
 
+    def _setup_pendown_choices(self):
+        choices = ((self.ui.actionPenUp, False),
+                    (self.ui.actionPenDown, True))
+        self._pendowns = bidict(choices)
+
+    def _sync_pendown_menu(self, choice):
+        action = self._pendowns.inv.get(choice)
+        action.setChecked(True)
+
     def setPen(self, ev):
         '''toggle pen up and pen down
 
@@ -1395,7 +1412,7 @@ Check configuration!''')
                     (self.ui.actionHidden, 'hidden'))
         self.avatars = bidict(choices)
 
-    def sync_avatar_menu(self, imageid):
+    def _sync_avatar_menu(self, imageid):
         logger.info('sam %s'% imageid)
         action = self.avatars.inv.get(str(imageid))
         if action is not None:
@@ -1412,7 +1429,7 @@ Check configuration!''')
             added pynguins, use p.avatar()
         '''
         self.pynguin.avatar(imageid)
-        self.sync_avatar_menu(imageid)
+        self._sync_avatar_menu(imageid)
 
     def setImageEvent(self, ev):
         imageid = self.avatars[ev]
