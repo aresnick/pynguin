@@ -56,16 +56,18 @@ DATA_FILES += [('share/doc/pynguin', glob('doc/worksheets/*.pdf'))]
 
 
 # Data
-#DATA_FILES += [('share/applications', ['pynguin.desktop'])]
+DATA_FILES += [('share/applications',
+                        ['data/icons/pynguin.desktop'])]
 DATA_FILES += [('share/icons/hicolor/scalable/apps',
-                        ['data/images/scalable/pynguin.svg'])]
-DATA_FILES += [('share/pixmaps', ['data/images/48x48/pynguin.png'])]
-DATA_FILES += [('share/icons/hicolor/24x24/apps',
-                        ['data/images/24x24/pynguin.png'])]
-DATA_FILES += [('share/icons/hicolor/32x32/apps',
-                        ['data/images/32x32/pynguin.png'])]
-DATA_FILES += [('share/icons/hicolor/48x48/apps',
+                        ['data/icons/scalable/pynguin.svg'])]
+DATA_FILES += [('share/pixmaps',
                         ['data/images/48x48/pynguin.png'])]
+DATA_FILES += [('share/icons/hicolor/24x24/apps',
+                        ['data/icons/24x24/pynguin.png'])]
+DATA_FILES += [('share/icons/hicolor/32x32/apps',
+                        ['data/icons/32x32/pynguin.png'])]
+DATA_FILES += [('share/icons/hicolor/48x48/apps',
+                        ['data/icons/48x48/pynguin.png'])]
 
 # Manpages
 #DATA_FILES += [('share/man/man1', ['manpages/pynguin.1.gz'])]
