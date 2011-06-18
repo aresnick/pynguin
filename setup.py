@@ -10,7 +10,7 @@ import sys
 # cd deb_dist/pynguin-0.10/
 # add to debian/rules:
 #   override_dh_compress:
-#       dh_compress -X.pyn
+# --tab>       dh_compress -X.pyn
 # dpkg-buildpackage -rfakeroot -uc -us
 
 
@@ -57,9 +57,13 @@ DATA_FILES += [('share/doc/pynguin', glob('doc/worksheets/*.pdf'))]
 
 # Data
 #DATA_FILES += [('share/applications', ['pynguin.desktop'])]
-#DATA_FILES += [('share/icons/hicolor/scalable/apps', ['pynguin.svg'])]
-#DATA_FILES += [('share/pixmaps', ['pynguin.svg'])]
-#DATA_FILES += [('share/icons/hicolor/24x24/apps', ['pynguin.png'])]
+DATA_FILES += [('share/icons/hicolor/scalable/apps',
+                        ['data/images/pynguinlogo.svg'])]
+DATA_FILES += [('share/pixmaps', ['data/images/pynguinlogo32.png'])]
+DATA_FILES += [('share/icons/hicolor/24x24/apps',
+                        ['data/images/pynguinlogo24.png'])]
+DATA_FILES += [('share/icons/hicolor/32x32/apps',
+                        ['data/images/pynguinlogo32.png'])]
 
 # Manpages
 #DATA_FILES += [('share/man/man1', ['manpages/pynguin.1.gz'])]
