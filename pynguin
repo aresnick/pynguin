@@ -21,16 +21,22 @@
 import sys
 import os
 
-filepath = os.path.realpath(__file__)
-filedir, _ = os.path.split(filepath)
-os.chdir(filedir)
 
+def setup_devel():
+    # Change current dir to where this file lives
+    filepath = os.path.realpath(__file__)
+    filedir, _ = os.path.split(filepath)
+    os.chdir(filedir)
 
-if '-d' in sys.argv:
     # Use the pynguin lib here in the lib folder.
     # For development, or running from the source
     #   folder instead of a proper install.
     sys.path.insert(0, 'lib')
+
+
+if '-d' in sys.argv:
+    setup_devel()
+
 
 try:
     from pynguin import main
@@ -39,7 +45,8 @@ except ImportError:
     if '-d' not in sys.argv:
         sys.argv.append('-d')
 
-    sys.path.insert(0, 'lib')
+    setup_devel()
+
     try:
         from pynguin import main
     except ImportError:
@@ -51,12 +58,13 @@ except ImportError:
 if main:
     if '-D' in sys.argv:
         main.setup_logging()
-	
+
     from pynguin import util
     if not util.check_data_doc_dir():
         print 'Unable to locate pynguin data.'
         print 'Check your installation.'
         main = False
+
 
 if main:
     main.run()
