@@ -45,7 +45,7 @@ DATA_FILES = [('share/doc/pynguin', ['README', 'COPYING', ])]
 
 # ui
 DATA_FILES += [('share/pynguin/ui', glob('data/ui/*.ui'))]
-DATA_FILES += [('share/pynguin/images', glob('data/images/*'))]
+DATA_FILES += [('share/pynguin/images', glob('data/images/*.svg'))]
 
 # examples
 DATA_FILES += [('share/doc/pynguin/examples', glob('doc/examples/*.pyn'))]
@@ -58,12 +58,14 @@ DATA_FILES += [('share/doc/pynguin', glob('doc/worksheets/*.pdf'))]
 # Data
 #DATA_FILES += [('share/applications', ['pynguin.desktop'])]
 DATA_FILES += [('share/icons/hicolor/scalable/apps',
-                        ['data/images/pynguinlogo.svg'])]
-DATA_FILES += [('share/pixmaps', ['data/images/pynguinlogo32.png'])]
+                        ['data/images/scalable/pynguin.svg'])]
+DATA_FILES += [('share/pixmaps', ['data/images/48x48/pynguin.png'])]
 DATA_FILES += [('share/icons/hicolor/24x24/apps',
-                        ['data/images/pynguinlogo24.png'])]
+                        ['data/images/24x24/pynguin.png'])]
 DATA_FILES += [('share/icons/hicolor/32x32/apps',
-                        ['data/images/pynguinlogo32.png'])]
+                        ['data/images/32x32/pynguin.png'])]
+DATA_FILES += [('share/icons/hicolor/48x48/apps',
+                        ['data/images/48x48/pynguin.png'])]
 
 # Manpages
 #DATA_FILES += [('share/man/man1', ['manpages/pynguin.1.gz'])]
