@@ -606,6 +606,12 @@ class Pynguin(object):
             to the initial angle. For relative angles, use left or right.
         '''
         if ang != 'random':
+            try:
+                test = float(ang)
+                test2 = ang + 1
+            except (TypeError, ValueError):
+                raise TypeError('turnto(ang) takes one number as a parameter: the angle to turn to.')
+
             self._item_setangle(self.ritem, ang)
             self.qmove(self._gitem_setangle, (ang,))
 
