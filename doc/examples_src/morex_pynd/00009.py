@@ -8,7 +8,9 @@ def arc(w=150, b=50, e=500, rstep=10):
     h = b
     while h < e:
         r = sqrt(w**2 + h**2)
+        pendown()
         circle(r, True)
+        penup()
         fd(rstep)
         h += rstep
 
