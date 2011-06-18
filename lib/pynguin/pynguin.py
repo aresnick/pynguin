@@ -937,6 +937,8 @@ class Pynguin(object):
             fr = QtCore.Qt.OddEvenFill
         elif rule == 'winding':
             fr = QtCore.Qt.WindingFill
+        else:
+            raise ValueError
         self.ritem._fillrule = fr
         self.qmove(self._gitem_fillrule, (fr,))
 
