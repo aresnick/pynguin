@@ -37,7 +37,7 @@ class ZZ(Pynguin):
         else:
             self.rt(angle/2)
 
-        for s in range(steps):
+        for s in range(int(steps)):
             self.fd(arc)
             if direction:
                 self.lt(angle)
