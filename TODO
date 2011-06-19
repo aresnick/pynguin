@@ -21,6 +21,7 @@ Pygments color in interactive console area
 Keep more settings in QSettings
 property access for color and fill?
 Pynguin subclass (Turtle?) that uses turtle.py API
+Home key in editor should toggle between start of line and start of text
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
