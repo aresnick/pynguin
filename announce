@@ -55,6 +55,14 @@ Changes in pynguin-0.10:
     Integrated Console
         - added Ctrl-<space> shortcut to toggle between editor/console
 
+    Examples
+        - improved threaded examples
+            - can start pynguin moving in one separate thread and
+                get cursor back to do something else in a new thread
+        - improved multi examples
+            - implements the same bugs() example as the threaded
+                example but in a different style
+
     General
         - synchronize fill menu items when using fill() and nofill()
         - synchronize pen menu items when using penup() and pendown()
