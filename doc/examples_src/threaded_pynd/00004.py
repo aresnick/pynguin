@@ -1,2 +1,2 @@
-def tgoto(x, y=None):
-    trun('goto', x, y)
+def afd(d):
+    arun('forward', d)
