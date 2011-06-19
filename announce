@@ -22,10 +22,12 @@ Pynguin is released under GPLv3.
 Changes in pynguin-0.10:
     Session
         - can now save to or load from directory instead of a file
+        - remember drawing speed between sessions
+        - remember avatar setting between sessions
 
     Pynguin API
         - allow setting drawing speed from code
-        - add xyforward(dist) method (coords dist ahead of pynguin)
+        - add xyforward(dist) method to return coords dist ahead of pynguin
         - reset() is more thorough restoring pynguin to initial state
         - handle input() and raw_input() properly
         - simple onclick() handler only affects the main pyguin
@@ -54,8 +56,8 @@ Changes in pynguin-0.10:
         - added Ctrl-<space> shortcut to toggle between editor/console
 
     General
-        - remember drawing speed between sessions
-        - remember avatar setting between sessions
         - synchronize fill menu items when using fill() and nofill()
+        - synchronize pen menu items when using penup() and pendown()
         - fixed crash trying to open non-existent file
         - fixed crash trying to save to non-writeable file
+        - experimental .deb distribution format
