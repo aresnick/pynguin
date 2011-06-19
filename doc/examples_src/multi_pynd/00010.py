@@ -1,2 +1,2 @@
-def allcircle(r, center=False):
-    cmdall('circle', r, center)
+def acircle(r, center=False):
+    acmd('circle', r, center)

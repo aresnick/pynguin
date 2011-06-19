@@ -1,2 +1,2 @@
-def allrt(a):
-    cmdall('rt', a)
+def art(a):
+    acmd('rt', a)

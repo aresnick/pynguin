@@ -1,2 +1,2 @@
-def alllt(a):
-    allrt(-a)
+def alt(a):
+    art(-a)

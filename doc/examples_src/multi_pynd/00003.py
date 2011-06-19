@@ -1,4 +1,9 @@
 def follow_switch(n):
+    '''Like follow() but occasionally
+    a pynguin will decide to follow a
+    different pynguin.
+    '''
+
     import random
     p._fspeed = 1
     p._tspeed = 3
@@ -7,9 +12,9 @@ def follow_switch(n):
         pyn._fspeed = 1 + random.randrange(1900)/1000.
         pyn._tspeed = 3 + random.randrange(1900)/1000.
 
-    allgoto('random')
-    allcolor('random')
-    allturnto('random')
+    agoto('random')
+    acolor('random')
+    aturnto('random')
 
     def follow_who(pyn, pyns):
         following = pyn

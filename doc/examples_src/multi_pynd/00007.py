@@ -1,2 +1,2 @@
-def allfd(d):
-    cmdall('forward', d)
+def afd(d):
+    acmd('forward', d)

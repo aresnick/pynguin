@@ -1,4 +1,16 @@
 def follow(n):
+    '''Create n new pynguins, each
+    one following one of the others.
+
+    Each pynguin has its own forward
+    speed and turn speed randomly generated.
+
+    If a pynguin happens to wander off the
+    screen, it will head back to the center
+    before resuming following its chosen
+    other pynguin.
+    '''
+
     import random
     p._fspeed = 1
     p._tspeed = 3
@@ -7,9 +19,9 @@ def follow(n):
         pyn._fspeed = 1 + random.randrange(1900)/1000.
         pyn._tspeed = 3 + random.randrange(1900)/1000.
 
-    allgoto('random')
-    allcolor('random')
-    allturnto('random')
+    agoto('random')
+    acolor('random')
+    aturnto('random')
 
     for pyn in pynguins:
         pyn.tocenter = False

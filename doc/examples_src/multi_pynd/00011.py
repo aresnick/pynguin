@@ -1,2 +1,2 @@
-def allgoto(x, y=None):
-    cmdall('goto', x, y)
+def agoto(x, y=None):
+    acmd('goto', x, y)

@@ -1,4 +1,8 @@
 def anglefromto(pyn1, pyn2=None):
+    '''return the angle from pynguin
+    pyn1 to pynguin pyn2.
+    '''
+
     x1, y1 = pyn1.xy()
     if pyn2 is not None:
         x2, y2 = pyn2.xy()

@@ -1,2 +1,2 @@
-def allcolor(r, g=None, b=None):
-    cmdall('color', r, g, b)
+def acolor(r, g=None, b=None):
+    acmd('color', r, g, b)

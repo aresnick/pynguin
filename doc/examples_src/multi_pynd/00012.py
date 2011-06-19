@@ -1,2 +1,2 @@
-def allturnto(a):
-    cmdall('turnto', a)
+def aturnto(a):
+    acmd('turnto', a)
