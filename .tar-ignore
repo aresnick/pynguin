@@ -6,3 +6,4 @@ doc/examples/test
 *.log
 backup*
 wiki
+deb_dist
