@@ -65,6 +65,13 @@ if main:
         print 'Check your installation.'
         main = False
 
+    if util.__file__.startswith('/usr/local') and sys.prefix == '/usr':
+        print
+        print 'If this is a Debian or Ubuntu system,'
+        print 'You may have forgotten to pass'
+        print '--install-layout=deb'
+        print 'when installing.'
+
 
 if main:
     main.run()

@@ -10,19 +10,31 @@ INSTALLATION:
     the instructions in the appropriate section below:
 
     Ubuntu Linux:
-        There is experimental support for installing from a .deb
-        distribution. The .deb was produced on Ubuntu 11.04.
-        Attempting to install it on other versions may or may not
-        work. Please report success or failure either way!
+        In the unpacked .tgz or .zip archive, run the command:
+
+            python setup.py install --install-layout=deb
+
+        There is also experimental support for installing from a .deb
+        file. The .deb was produced on Ubuntu 11.04. Attempting to
+        use it on other versions may or may not work. Please report
+        any problems!
 
     Others:
-        Unpack the archive, then run setup from a command line:
+        In the unpacked .tgz or .zip archive, run the command:
 
-        python setup.py install
+            python setup.py install
 
+    If All Else Fails:
+        Run the application directly from the unpacked archive.
 
-        It is also possible to run the application directly from
-        the unpacked archive.
+        Unpack the .tgz or .zip archive, change to the directory
+        created and run the command:
+
+            ./pynguin
+
+        or
+
+            python pynguin
 
 
 DEPENDENCIES:
