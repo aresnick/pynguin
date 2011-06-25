@@ -1,24 +1,23 @@
-def c(pyn):
-    '''Use pyn to make a circle.
-    Watches the kill_threads()
-    mechanism to know when to stop.
+def slash(pyn, n):
+    '''Use pyn to create a slash
+    pattern.
 
-    To start this running in a
-    separate thread, use this:
-
-    p4 = Pynguin()
-    trun(p4, c, p4)
-
-    You should get your cursor back
-    almost immediately, so that you
-    can carry on with other commands.
-
-    To stop the action, use
-    kill_threads()
+    Cooperates with the kill_threads()
+    mechanism by watching to see if it
+    has been asked to stop, and also by
+    indicating when it is finished
+    working by setting
+    threading.threads[pyn] = 0
     '''
 
     import threading
     ts = threading.threads
-    while ts[pyn]:
-        pyn.fd(1)
-        pyn.rt(1)
+
+    for s in range(n):
+        if not ts[pyn]:
+            break
+        pyn.goto('random')
+        pyn.fd(100)
+        pyn.lt(360./n)
+
+    ts[pyn] = 0

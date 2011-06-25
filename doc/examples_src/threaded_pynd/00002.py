@@ -1,6 +1,7 @@
-def kill_threads():
-    '''Signal running threads that
-    they should stop working.
+def kill_thread(pyn):
+    '''Signal the thread being used
+    by Pynguin pyn that it should
+    stop work.
 
     Threaded commands must cooperate
     by watching for this signal and
@@ -8,5 +9,5 @@ def kill_threads():
     '''
 
     import threading
-    for pyn in threading.threads:
-        threading.threads[pyn] = 0
+    ts = threading.threads
+    ts[pyn] = 0

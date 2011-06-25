@@ -1,18 +1,19 @@
-def burst(pyn, x, y):
-    '''Use pyn to create a starburst
-    pattern. Watches the kill_threads
-    mechanism to know when to stop.
+def burster(n, center=False):
+    '''Create n pynguins, then use
+    all available pynguins to create
+    a multicolored starburst pattern.
+
+    Stop the action with the
+    kill_threads() function.
     '''
 
-    pyn.color('random')
-    pyn.goto('random')
-    pyn.toward(x, y)
+    make(n)
 
-    import threading
-    ts = threading.threads
+    if not center:
+        goto('random')
+        x, y = xy()
+    else:
+        x, y = 0, 0
 
-    while ts[pyn]:
-        pyn.fd(10)
-        if not pyn.onscreen():
-            pyn.goto('random')
-            pyn.toward(x, y)
+    for pyn in pynguins:
+        trun(pyn, burst, pyn, x, y)

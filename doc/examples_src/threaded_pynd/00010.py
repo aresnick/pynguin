@@ -1,23 +1,10 @@
-def slash(pyn, n):
-    '''Use pyn to create a slash
-    pattern.
-
-    Cooperates with the kill_threads()
-    mechanism by watching to see if it
-    has been asked to stop, and also by
-    indicating when it is finished
-    working by setting
-    threading.threads[pyn] = 0
+def slasher(n, slashes=6):
+    '''Create n pynguins, then use
+    all available pynguins to
+    make a slash pattern.
     '''
 
-    import threading
-    ts = threading.threads
+    make(n)
 
-    for s in range(n):
-        if not ts[pyn]:
-            break
-        pyn.goto('random')
-        pyn.fd(100)
-        pyn.lt(360./n)
-
-    ts[pyn] = 0
+    for pyn in pynguins:
+        trun(pyn, slash, pyn, slashes)

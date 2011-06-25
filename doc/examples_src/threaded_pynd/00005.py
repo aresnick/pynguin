@@ -1,2 +1,2 @@
-def alt(a):
-    arun('left', a)
+def afd(d):
+    arun('forward', d)

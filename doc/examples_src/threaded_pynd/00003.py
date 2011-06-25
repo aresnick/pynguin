@@ -1,12 +1,12 @@
-def arun(cmdname, *args):
-    '''Have all pynguins run the named
-    command, each in its own separate
-    thread. Any dditional arguments will
-    be passed on to the command.
+def kill_threads():
+    '''Signal running threads that
+    they should stop working.
+
+    Threaded commands must cooperate
+    by watching for this signal and
+    doing the right thing.
     '''
 
-    for pyn in pynguins:
-        cmd = getattr(pyn, cmdname)
-        trun(pyn, cmd, *args)
-
-    kill_threads()
+    import threading
+    for pyn in threading.threads:
+        threading.threads[pyn] = 0

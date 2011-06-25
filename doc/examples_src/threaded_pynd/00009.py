@@ -1,10 +1,18 @@
-def slasher(n, slashes=6):
-    '''Create n pynguins, then use
-    all available pynguins to
-    make a slash pattern.
+def burst(pyn, x, y):
+    '''Use pyn to create a starburst
+    pattern. Watches the kill_threads
+    mechanism to know when to stop.
     '''
 
-    make(n)
+    pyn.color('random')
+    pyn.goto('random')
+    pyn.toward(x, y)
 
-    for pyn in pynguins:
-        trun(pyn, slash, pyn, slashes)
+    import threading
+    ts = threading.threads
+
+    while ts[pyn]:
+        pyn.fd(10)
+        if not pyn.onscreen():
+            pyn.goto('random')
+            pyn.toward(x, y)
