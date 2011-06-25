@@ -1154,11 +1154,14 @@ class Pynguin(object):
         return self._viewrect().getCoords()
 
     def onclick(self, x, y):
-        '''This method will be called automatically when the user clicks
-            the mouse in the viewable area.
+        '''This method will be called automatically when the user
+            right-clicks the mouse in the viewable area.
 
         To override this method, define a new function called onclick(x, y)
             and it will be inserted for automatic calling.
+
+        Alternately, create a Pynguin subclass with its own
+            onclick(self, x, y) method.
         '''
         pass
 
