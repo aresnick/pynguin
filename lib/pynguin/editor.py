@@ -280,15 +280,12 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         elif col == 0:
             if k == Tab:
                 self.insertPlainText(spaces4)
-
             elif k == Backtab:
                 if txt[:4] == '    ':
                     for char in range(4):
                         curs.deleteChar()
-
             elif k == Backspace:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
-
             elif k == Home:
                 curs.setPosition(blk0+self.col0+firstnonspace, 0)
                 self.setTextCursor(curs)
@@ -298,14 +295,12 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                 nexttabstop = 4-(col%4)
                 spaces = QtCore.QString(' '*nexttabstop)
                 self.insertPlainText(spaces)
-
             elif k in (Backtab, Backspace):
                 prevtabstop = col%4
                 if not prevtabstop:
                     prevtabstop = 4
                 for char in range(prevtabstop):
                     curs.deletePreviousChar()
-
             elif k == Home:
                 curs.setPosition(blk0+self.col0, 0)
                 self.setTextCursor(curs)
