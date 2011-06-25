@@ -1302,6 +1302,24 @@ Check configuration!''')
                         else:
                             self.interpretereditor.addcmd(tocall)
 
+                elif line0.startswith('class ') and line0.endswith(':'):
+                    self.interpretereditor.movetoend()
+                    self.interpretereditor.erasetostart()
+
+                    firstparen = line0.find('(')
+                    lastparen = line0.rfind(')')
+                    if firstparen > -1 and lastparen > -1:
+                        clsname = line0[6:firstparen]
+                    elif firstparen == lastparen == -1:
+                        clsname = line0[6:-1]
+                    varname = clsname.lower()
+                    if varname == clsname:
+                        self.interpretereditor.write('# Class names should be capitalized \n')
+                        self.interpretereditor.write('>>> ')
+                        varname = varname[0]
+                    call_line = '%s = %s()' % (varname, clsname)
+                    self.interpretereditor.addcmd(call_line)
+
             else:
                 self.interpretereditor.write('not starting...\n')
                 self.interpretereditor.write('code already running\n')
