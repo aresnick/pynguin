@@ -223,8 +223,9 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
         Backspace = QtCore.Qt.Key_Backspace
+        Home = QtCore.Qt.Key_Home
 
-        if k not in (Tab, Backtab, Backspace):
+        if k not in (Tab, Backtab, Backspace, Home):
             QtGui.QTextEdit.keyPressEvent(self, ev)
             return
 
@@ -232,6 +233,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         col = curs.columnNumber() - self.col0
         blkn = curs.blockNumber()
         blk = self._doc.findBlockByNumber(blkn)
+        blk0 = blk.position()
         txt = blk.text()
         firstnonspace = 0
         hasselection = curs.hasSelection()
@@ -287,6 +289,10 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
             elif k == Backspace:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
 
+            elif k == Home:
+                curs.setPosition(blk0+self.col0+firstnonspace, 0)
+                self.setTextCursor(curs)
+
         elif col == firstnonspace:
             if k == Tab:
                 nexttabstop = 4-(col%4)
@@ -300,8 +306,11 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                 for char in range(prevtabstop):
                     curs.deletePreviousChar()
 
+            elif k == Home:
+                curs.setPosition(blk0+self.col0, 0)
+                self.setTextCursor(curs)
+
         elif 0 < col < firstnonspace:
-            blk0 = blk.position()
             if k == Tab:
                 curs.setPosition(blk0+self.col0+firstnonspace, 0)
                 self.setTextCursor(curs)
@@ -311,11 +320,18 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                 self.setTextCursor(curs)
                 for char in range(4):
                     curs.deleteChar()
+            elif k == Home:
+                curs.setPosition(blk0+self.col0+firstnonspace, 0)
+                self.setTextCursor(curs)
             else:
                 QtGui.QTextEdit.keyPressEvent(self, ev)
 
         else:
-            QtGui.QTextEdit.keyPressEvent(self, ev)
+            if k == Home:
+                curs.setPosition(blk0+self.col0+firstnonspace, 0)
+                self.setTextCursor(curs)
+            else:
+                QtGui.QTextEdit.keyPressEvent(self, ev)
 
 
 class PythonHighlighter(highlightedtextedit.PythonHighlighter):
