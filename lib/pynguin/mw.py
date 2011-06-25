@@ -294,8 +294,8 @@ class MainWindow(QtGui.QMainWindow):
         if not ev.isAccepted() and button==QtCore.Qt.LeftButton:
             self.leftclick(ev)
 
-        elif button==QtCore.Qt.MidButton:
-            self.middleclick(ev)
+        elif button==QtCore.Qt.RightButton:
+            self.rightclick(ev)
 
         self.interpretereditor.setFocus()
 
@@ -310,7 +310,7 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QGraphicsView.mouseReleaseEvent(self.scene.view, ev)
         self._leftdragstart = None
 
-    def middleclick(self, ev):
+    def rightclick(self, ev):
         evpos = ev.pos()
         scpos = self.scene.view.mapToScene(evpos)
         for pyn in self.pynguins:

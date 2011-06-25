@@ -6,4 +6,4 @@ def onclick(x, y):
 
 # onclick handlers
 #   now respond to
-#    MIDDLE CLICK
+#    RIGHT CLICK

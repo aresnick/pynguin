@@ -31,7 +31,7 @@ Changes in pynguin-0.10:
         - reset() is more thorough restoring pynguin to initial state
         - handle input() and raw_input() properly
         - simple onclick() handler only affects the main pyguin
-            - onclick() responds to middle-click now (not left-click)
+            - onclick() responds to right-click now (not left-click)
 
     Canvas
         - use left mouse button to pan/drag the canvas
