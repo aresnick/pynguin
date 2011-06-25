@@ -6,10 +6,23 @@ http://pynguin.googlecode.com/
 
 
 INSTALLATION:
-    There is no support currently for installing pynguin.
+    First, make sure the dependencies are installed, then follow
+    the instructions in the appropriate section below:
 
-    Make sure the dependencies are installed, and run the
-    application from the unpacked archive directly.
+    Ubuntu Linux:
+        There is experimental support for installing from a .deb
+        distribution. The .deb was produced on Ubuntu 11.04.
+        Attempting to install it on other versions may or may not
+        work. Please report success or failure either way!
+
+    Others:
+        Unpack the archive, then run setup from a command line:
+
+        python setup.py install
+
+
+        It is also possible to run the application directly from
+        the unpacked archive.
 
 
 DEPENDENCIES:
@@ -25,10 +38,16 @@ DEPENDENCIES:
         http://pygments.org/
             (tested with 1.3.1)
 
+
 RUNNING:
     Run the program from the command prompt like this:
 
-        python main.py
+        ./pynguin
+
+    or
+
+        python pynguin
+
 
     For a quick introduction, choose welcome.pyn
         from the File->Examples menu
