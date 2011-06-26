@@ -30,7 +30,7 @@ Changes in pynguin-0.10:
         - add xyforward(dist) method to return coords dist ahead of pynguin
         - reset() is more thorough restoring pynguin to initial state
         - handle input() and raw_input() properly
-        - simple onclick() handler only affects the main pyguin
+        - simple onclick() handler only affects the main pynguin
             - onclick() responds to right-click now (not left-click)
 
     Canvas
@@ -39,7 +39,7 @@ Changes in pynguin-0.10:
         - added menu entries and shortcuts for panning canvas
         - added menu item for tracking pynguin
         - recenter canvas on home() and reset()
-        - fix crash on startup when pynguin tracking is enabled
+        - fixed crash on startup when pynguin tracking is enabled
         - all canvas related shortcuts now use Alt-<key>
 
     Integrated Editor
