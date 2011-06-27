@@ -64,6 +64,8 @@ class Pynguin(object):
 
     _zvalue = 0
 
+    _label = ''
+
     respond_to_mouse_click = True
 
     mw = None # set by MainWindow before any Pynguin get instantiated
@@ -103,6 +105,9 @@ class Pynguin(object):
             pyn.drawn_items = []
 
         pyn._setImageid('hidden')
+        self.scene.removeItem(pyn.gitem)
+        if pyn.gitem.litem is not None:
+            self.scene.removeItem(pyn.gitem.litem)
         pyn.gitem = None
         self.mw.pynguins.remove(pyn)
         if pyn == self.mw.pynguin:
@@ -767,6 +772,7 @@ class Pynguin(object):
             if self.avatar() == 'hidden':
                 self.avatar('pynguin')
             self.clear()
+            self.label = ''
             self.goto(0, 0)
             self.turnto(0)
             self.pendown()
@@ -785,6 +791,8 @@ class Pynguin(object):
         while pynguins:
             pyn = pynguins.pop()
             self.scene.removeItem(pyn.gitem)
+            if pyn.gitem.litem is not None:
+                self.scene.removeItem(pyn.gitem.litem)
         pynguins.append(self)
 
     def _pendown(self, down=True):
@@ -962,6 +970,7 @@ class Pynguin(object):
         gitem._pen = ogitem._pen
         gitem._fillrule = ogitem._fillrule
         gitem._current_line = ogitem._current_line
+        gitem.litem = ogitem.litem
         scene.removeItem(ogitem)
         scene.addItem(gitem)
         self.gitem = gitem
@@ -1188,6 +1197,17 @@ class Pynguin(object):
         x, y = pos.x(), pos.y()
         self.qmove(self._stamp, (x, y, imageid))
 
+    def _gitem_setlabel(self, label):
+        self.gitem.setlabel(label)
+
+    def _setlabel(self, label):
+        if label != self._label:
+            self._label = label
+            self.qmove(self._gitem_setlabel, (label,))
+    def _getlabel(self):
+        return self._label
+    label = property(_getlabel, _setlabel)
+
 
 class RItem(object):
     '''Used to track the "real" state of the pynguin (as opposed
@@ -1250,6 +1270,8 @@ class PynguinGraphicsItem(GraphicsItem):
 
         self.setImageid(imageid)
 
+        self.litem = None # label item
+
         self.set_transform()
 
         self.pen = QtGui.QPen(QtCore.Qt.white)
@@ -1263,6 +1285,17 @@ class PynguinGraphicsItem(GraphicsItem):
         self._notrack = False # set when dragging to prevent crash
 
         self.ready = False
+
+    def setlabel(self, text):
+        if self.litem is not None:
+            self.scene().removeItem(self.litem.item)
+            self.scene().removeItem(self.litem)
+
+        if text:
+            self.litem = PynguinLabelItem(self)
+            self.scene().addItem(self.litem)
+            self.litem._settext(text)
+            self.set_transform()
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)
@@ -1302,7 +1335,8 @@ class PynguinGraphicsItem(GraphicsItem):
         cpt = self.cpt
         cx, cy = cpt.x(), cpt.y()
         #pt = self.pos
-        pt = self.pos() - cpt
+        pos = self.pos()
+        pt = pos - cpt
         x, y = pt.x(), pt.y()
 
         ang = self.ang
@@ -1311,6 +1345,10 @@ class PynguinGraphicsItem(GraphicsItem):
         trans.translate(-cx, -cy)
         trans.translate(cx, cy).rotate(ang).translate(-cx, -cy)
         trans.scale(self.scale, self.scale)
+
+        if self.litem is not None:
+            self.litem.set_transform()
+
         self.setTransform(trans)
 
     def rotate(self, deg):
@@ -1346,3 +1384,62 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def mouseReleaseEvent(self, ev):
         self.track()
+
+
+class PynguinLabelItem(GraphicsItem):
+    def __init__(self, parent):
+        self.parent = parent
+        offx, offy = 0, 40
+        scale = 5.0
+        offxs, offys = offx*scale, offy*scale
+        offpt = QtCore.QPointF(offxs, offys)
+        self.offpt = offpt
+        self.scale = scale
+        self._text = ''
+        self._zvalue = 99999
+
+        GraphicsItem.__init__(self)
+
+        self._setup()
+        self.set_transform()
+
+    def _setup(self):
+        self._settext('')
+        self.setZValue(self._zvalue)
+
+    def _settext(self, text):
+        self._text = text
+        font = QtGui.QFont('Arial', 22)
+        item = QtGui.QGraphicsTextItem(self.parent)
+        item.setPlainText(text)
+        item.setZValue(self._zvalue)
+        self.item = item
+        br = item.boundingRect()
+        self.cpt = br.center()
+        offpt = self.offpt
+        offx, offy = offpt.x(), offpt.y()
+        pcpt = self.parent.cpt
+        px, py = pcpt.x(), pcpt.y()
+        item.setTransformOriginPoint(-px, -py)
+
+    def boundingRect(self):
+        return self.item.boundingRect()
+
+    def set_transform(self):
+        pcpt = self.parent.cpt
+        pcx, pcy = pcpt.x(), pcpt.y()
+        offpt = self.offpt
+        offx, offy = offpt.x(), offpt.y()
+        cpt = self.cpt
+        cx, cy = cpt.x(), cpt.y()
+        ang = self.parent.ang
+        trans = QtGui.QTransform()
+        pscale = self.parent.scale
+        pscale1 = 1/pscale
+        trans.translate(pscale1*pcx, pscale1*pcy)
+        trans.rotate(-ang)
+        scale = self.scale
+        trans.translate(-scale*cx, -scale*cy)
+        trans.translate(offx, offy)
+        trans.scale(self.scale, self.scale)
+        self.item.setTransform(trans)
