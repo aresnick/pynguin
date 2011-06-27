@@ -64,7 +64,7 @@ class Pynguin(object):
 
     _zvalue = 0
 
-    _label = ''
+    _name = ''
 
     respond_to_mouse_click = True
 
@@ -1197,16 +1197,19 @@ class Pynguin(object):
         x, y = pos.x(), pos.y()
         self.qmove(self._stamp, (x, y, imageid))
 
-    def _gitem_setlabel(self, label):
-        self.gitem.setlabel(label)
+    def _gitem_setlabel(self, name):
+        self.gitem.setlabel(name)
 
-    def _setlabel(self, label):
-        if label != self._label:
-            self._label = label
-            self.qmove(self._gitem_setlabel, (label,))
-    def _getlabel(self):
-        return self._label
-    label = property(_getlabel, _setlabel)
+    def _setname(self, name):
+        if name != self._name:
+            self._name = name
+            self.qmove(self._gitem_setlabel, (name,))
+    def _getname(self):
+        return self._name
+    name = property(_getname, _setname)
+
+    def label(self, name):
+        self.name = name
 
 
 class RItem(object):
