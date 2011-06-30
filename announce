@@ -19,53 +19,18 @@ Pynguin is tested with Python 2.7.1 and PyQt 4.8.3 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.10:
+Changes in pynguin-0.11:
     Session
-        - can now save to or load from directory instead of a file
-        - remember drawing speed between sessions
-        - remember avatar setting between sessions
 
     Pynguin API
-        - allow setting drawing speed from code
-        - add xyforward(dist) method to return coords dist ahead of pynguin
-        - reset() is more thorough restoring pynguin to initial state
-        - handle input() and raw_input() properly
-        - simple onclick() handler only affects the main pynguin
-            - onclick() responds to right-click now (not left-click)
 
     Canvas
-        - use left mouse button to pan/drag the canvas
-        - mouse wheel zooms around cursor
-        - added menu entries and shortcuts for panning canvas
-        - added menu item for tracking pynguin
-        - recenter canvas on home() and reset()
-        - fixed crash on startup when pynguin tracking is enabled
-        - all canvas related shortcuts now use Alt-<key>
 
     Integrated Editor
-        - added ability to open plain python files
-            - can monitor file for changes made in external editor
-        - removed "Remove" button from under editor
-        - added warning when removing page with menu option
-        - all editor related shortcuts now use Ctrl-<key>
-        - Ctrl-N is now for new editor page, not new Pynguin file
-        - added shortcuts for switching docs
-        - added shortcut for Test/run code
 
     Integrated Console
-        - added Ctrl-<space> shortcut to toggle between editor/console
 
     Examples
-        - improved threaded examples
-            - can start pynguin moving in one separate thread and
-                get cursor back to do something else in a new thread
-        - improved multi examples
-            - implements the same bugs() example as the threaded
-                example but in a different style
 
     General
-        - synchronize fill menu items when using fill() and nofill()
-        - synchronize pen menu items when using penup() and pendown()
-        - fixed crash trying to open non-existent file
-        - fixed crash trying to save to non-writeable file
-        - experimental .deb distribution format
+        - added support for custom avatars
