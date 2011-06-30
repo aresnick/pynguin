@@ -51,7 +51,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, app):
         self.app = app
         self.paused = False
-        self.rend = getrend(self.app)
+        self.svgrenderer = util.SvgRenderer(self.app)
+        self.rend = self.svgrenderer.getrend()
 
         self._fdir = os.path.expanduser('~')
         self._filepath = None

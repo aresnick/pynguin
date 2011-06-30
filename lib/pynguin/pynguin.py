@@ -955,11 +955,14 @@ class Pynguin(object):
         self.ritem._fillrule = fr
         self.qmove(self._gitem_fillrule, (fr,))
 
-    def _setImageid(self, imageid):
+    def _setImageid(self, imageid, filepath=None):
         ogitem = self.gitem
         pos = ogitem.pos()
         ang = ogitem.ang
-        rend = ogitem.rend
+        if filepath is None:
+            rend = self.mw.rend
+        else:
+            rend = self.mw.svgrenderer.getrend(filepath)
         pen = ogitem.pen
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(rend, imageid, self)
@@ -981,8 +984,11 @@ class Pynguin(object):
         '''change the visible (avatar) image'''
         self._imageid = imageid
         self.qmove(self._setImageid, (imageid,))
-    def avatar(self, imageid=None):
-        if imageid is not None:
+    def avatar(self, imageid=None, filepath=None):
+        if filepath is not None:
+            self._imageid = imageid
+            self.qmove(self._setImageid, (imageid, filepath))
+        elif imageid is not None:
             avatars = self.mw.avatars.values()
             if imageid in avatars:
                 self.setImageid(imageid)

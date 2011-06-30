@@ -28,13 +28,28 @@ def sign(x):
     'return 1 if x is positive, -1 if negative, or zero'
     return cmp(x, 0)
 
-def getrend(app):
-    'return a handle to the app-wide shared SVG renderer'
-    filename = 'pynguin.svg'
-    filepath = os.path.join(datadir, 'images', filename)
-    fp = QtCore.QString(filepath)
-    rend = QtSvg.QSvgRenderer(fp, app)
-    return rend
+
+class SvgRenderer(object):
+    'factory for svg renderer objects'
+
+    def __init__(self, app):
+        self.app = app
+
+    def getrend(self, filepath=None):
+        '''return a handle to the shared SVG renderer
+            for the given svg file.
+
+        If no filepath is given, return the renderer for
+            the default svg file.
+
+        '''
+        if filepath is None:
+            filename = 'pynguin.svg'
+            filepath = os.path.join(datadir, 'images', filename)
+        fp = QtCore.QString(filepath)
+        rend = QtSvg.QSvgRenderer(fp, self.app)
+        return rend
+
 
 def choose_color(r=None, g=None, b=None):
     if r == 'random':
