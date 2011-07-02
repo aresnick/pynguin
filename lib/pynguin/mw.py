@@ -1431,15 +1431,31 @@ Check configuration!''')
                     (self.ui.actionHidden, 'hidden'))
         self.avatars = bidict(choices)
 
-    def _sync_avatar_menu(self, imageid):
-        logger.info('sam %s'% imageid)
-        action = self.avatars.inv.get(str(imageid))
-        if action is not None:
-            logger.info('sama %s'% action)
-            action.setChecked(True)
+    def _sync_avatar_menu(self, imageid, filepath=None):
+        if not filepath:
+            # built-in avatar choices
+            action = self.avatars.inv.get(str(imageid))
+            if action is not None:
+                action.setChecked(True)
 
-            settings = QtCore.QSettings()
-            settings.setValue('pynguin/avatar', imageid)
+                settings = QtCore.QSettings()
+                settings.setValue('pynguin/avatar', imageid)
+        else:
+            fmt = QtGui.QImageReader.imageFormat(filepath)
+            if fmt == 'svg':
+                idpathstr = '@@_%s@@%s'
+            else:
+                idpathstr = '@@%s@@%s'
+            idpath = idpathstr % (imageid, filepath)
+
+            action = self.avatars.inv.get(idpath)
+            if action is None:
+                custommenu = self.ui.menuCustom
+                action = custommenu.addAction(imageid)
+                action.setCheckable(True)
+                self.viewgroup.addAction(action)
+                self.avatars[action:] = idpath
+            action.setChecked(True)
 
     def set_pynguin_avatar(self, imageid):
         '''select which image to show
@@ -1447,8 +1463,20 @@ Check configuration!''')
         sets the image for the primary pynguin only. For other later
             added pynguins, use p.avatar()
         '''
-        self.pynguin.avatar(imageid)
-        self._sync_avatar_menu(imageid)
+        idpath = str(imageid)
+        if idpath.startswith('@@_'):
+            # custom svg
+            imageid, filepath = idpath[3:].split('@@')
+            imid = imageid
+        elif idpath.startswith('@@'):
+            # custom non-svg
+            imageid, filepath = idpath[2:].split('@@')
+            imid = None
+        else:
+            imid = imageid
+            filepath = None
+        self.pynguin.avatar(imid, filepath)
+        self._sync_avatar_menu(imageid, filepath)
 
     def setImageEvent(self, ev):
         imageid = self.avatars[ev]

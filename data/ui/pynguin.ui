@@ -188,11 +188,18 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuCustom">
+     <property name="title">
+      <string>Custom</string>
+     </property>
+     <addaction name="actionAdd_new_avatar"/>
+    </widget>
     <addaction name="actionPynguin"/>
     <addaction name="actionArrow"/>
     <addaction name="actionRobot"/>
     <addaction name="actionTurtle"/>
     <addaction name="actionHidden"/>
+    <addaction name="menuCustom"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
@@ -591,6 +598,11 @@
    </property>
    <property name="text">
     <string>Track main pynguin</string>
+   </property>
+  </action>
+  <action name="actionAdd_new_avatar">
+   <property name="text">
+    <string>Add new avatar</string>
    </property>
   </action>
  </widget>

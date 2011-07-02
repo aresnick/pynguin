@@ -17,6 +17,7 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
 import Queue
 from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
@@ -959,34 +960,40 @@ class Pynguin(object):
         ogitem = self.gitem
         pos = ogitem.pos()
         ang = ogitem.ang
-        if filepath is None:
-            rend = self.mw.rend
-        elif filepath is not None and imageid is not None:
-            # custom svg avatar
-            rend = self.mw.svgrenderer.getrend(filepath)
-        else:
-            # custom non-svg avatar
-            rend = None
-            pm = QtGui.QPixmap(filepath)
-            w, h = pm.width(), pm.height()
-            if w > h:
-                pm = pm.scaledToWidth(250)
-                h = pm.height()
-                ho = (250 - h) / 2
-                wo = 0
-            elif h > w:
-                pm = pm.scaledToHeight(250)
-                w = pm.width()
-                wo = (250 - w) / 2
-                ho = 0
-            else:
-                rend = pm
 
-            if rend is None:
-                rend = QtGui.QPixmap(250, 250)
-                rend.fill(QtCore.Qt.transparent)
-                painter = QtGui.QPainter(rend)
-                painter.drawPixmap(wo, ho, pm)
+        if filepath is None:
+            # one of the built-in avatars
+            rend = self.mw.rend
+        else:
+            # custom avatar
+            fmt = QtGui.QImageReader.imageFormat(filepath)
+
+            if fmt == 'svg':
+                # custom svg avatar
+                rend = self.mw.svgrenderer.getrend(filepath)
+            else:
+                # custom non-svg avatar
+                rend = None
+                pm = QtGui.QPixmap(filepath)
+                w, h = pm.width(), pm.height()
+                if w > h:
+                    pm = pm.scaledToWidth(250)
+                    h = pm.height()
+                    ho = (250 - h) / 2
+                    wo = 0
+                elif h > w:
+                    pm = pm.scaledToHeight(250)
+                    w = pm.width()
+                    wo = (250 - w) / 2
+                    ho = 0
+                else:
+                    rend = pm
+
+                if rend is None:
+                    rend = QtGui.QPixmap(250, 250)
+                    rend.fill(QtCore.Qt.transparent)
+                    painter = QtGui.QPainter(rend)
+                    painter.drawPixmap(wo, ho, pm)
 
         pen = ogitem.pen
         scene = ogitem.scene()
@@ -1004,7 +1011,9 @@ class Pynguin(object):
         self.gitem = gitem
         gitem.set_transform()
         if self is self.mw.pynguin:
-            self.mw._sync_avatar_menu(imageid)
+            if imageid is None:
+                _, imageid = os.path.split(filepath)
+            self.mw._sync_avatar_menu(imageid, filepath)
     def setImageid(self, imageid):
         '''change the visible (avatar) image'''
         self._imageid = imageid
