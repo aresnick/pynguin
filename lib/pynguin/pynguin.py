@@ -961,8 +961,11 @@ class Pynguin(object):
         ang = ogitem.ang
         if filepath is None:
             rend = self.mw.rend
-        else:
+        elif filepath is not None and imageid is not None:
             rend = self.mw.svgrenderer.getrend(filepath)
+        else:
+            rend = QtGui.QPixmap(filepath)
+            rend = rend.scaledToHeight(250)
         pen = ogitem.pen
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(rend, imageid, self)
@@ -985,7 +988,11 @@ class Pynguin(object):
         self._imageid = imageid
         self.qmove(self._setImageid, (imageid,))
     def avatar(self, imageid=None, filepath=None):
-        if filepath is not None:
+        if filepath is not None and imageid is not None:
+            self._imageid = imageid
+            self.qmove(self._setImageid, (imageid, filepath))
+        elif filepath is not None and imageid is None:
+            # load from non-svg image
             self._imageid = imageid
             self.qmove(self._setImageid, (imageid, filepath))
         elif imageid is not None:
@@ -1366,10 +1373,14 @@ class PynguinGraphicsItem(GraphicsItem):
         self.set_transform()
 
     def setImageid(self, imageid):
-        self.imageid = imageid
-        self.item = QtSvg.QGraphicsSvgItem(self)
-        self.item.setSharedRenderer(self.rend)
-        self.item.setElementId(imageid)
+        if imageid is not None:
+            self.imageid = imageid
+            self.item = QtSvg.QGraphicsSvgItem(self)
+            self.item.setSharedRenderer(self.rend)
+            self.item.setElementId(imageid)
+        else:
+            # non-svg image
+            self.item = QtGui.QGraphicsPixmapItem(self.rend, self)
 
     def boundingRect(self):
         return self.item.boundingRect()
