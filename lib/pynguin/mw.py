@@ -34,7 +34,7 @@ from PyQt4.Qt import QHBoxLayout
 
 from pynguin import Pynguin, pynguin_functions, interpreter_protect
 import util
-from util import getrend, sign, get_datadir, get_docdir
+from util import sign, get_datadir, get_docdir
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog

@@ -21,7 +21,8 @@ import os
 
 from PyQt4 import QtGui, QtCore, uic
 
-from util import getrend, get_datadir
+import util
+from util import get_datadir
 from conf import version
 
 datadir = get_datadir()
@@ -34,7 +35,8 @@ class AboutDialog(QtGui.QDialog):
         uipath = os.path.join(uidir, uifile)
         self.ui = uic.loadUi(uipath, self)
 
-        rend = getrend(app)
+        svgrenderer = util.SvgRenderer(app)
+        rend = svgrenderer.getrend()
         img = QtGui.QPixmap(225, 144)
         img.fill(QtCore.Qt.transparent)
         self.img = img

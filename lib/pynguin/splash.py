@@ -19,12 +19,13 @@
 
 from PyQt4 import QtGui, QtCore
 
-from util import getrend
+import util
 
 
 class Splash(QtGui.QSplashScreen):
     def __init__(self, app):
-        rend = getrend(app)
+        svgrenderer = util.SvgRenderer(app)
+        rend = svgrenderer.getrend()
         img = QtGui.QPixmap(500, 320)
         img.fill(QtCore.Qt.transparent)
         self.img = img
