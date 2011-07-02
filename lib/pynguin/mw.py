@@ -387,7 +387,18 @@ class MainWindow(QtGui.QMainWindow):
             self.set_speed(speed)
             self.sync_speed_menu(speed)
 
+        # remember the saved avatar
         imageid = settings.value('pynguin/avatar', 'pynguin').toString()
+
+        # set up any custom avatars
+        n = settings.beginReadArray('pynguin/custom_avatars')
+        for i in range(n):
+            settings.setArrayIndex(i)
+            idp = settings.value('idpath').toString()
+            self.set_pynguin_avatar(idp)
+        settings.endArray()
+
+        # then set the saved avatar that we remembered earlier
         self.set_pynguin_avatar(imageid)
         self._sync_avatar_menu(imageid)
 
@@ -1432,6 +1443,7 @@ Check configuration!''')
         self.avatars = bidict(choices)
 
     def _sync_avatar_menu(self, imageid, filepath=None):
+        settings = QtCore.QSettings()
         if not filepath:
             # built-in avatar choices
             action = self.avatars.inv.get(str(imageid))
@@ -1453,9 +1465,23 @@ Check configuration!''')
                 action.setCheckable(True)
                 self.viewgroup.addAction(action)
                 self.avatars[action:] = idpath
+
+            cavs = []
+            n = settings.beginReadArray('pynguin/custom_avatars')
+            for i in range(n):
+                settings.setArrayIndex(i)
+                cavs.append(settings.value('idpath').toString())
+            settings.endArray()
+            if idpath not in cavs:
+                cavs.append(idpath)
+            settings.beginWriteArray('pynguin/custom_avatars')
+            for i, idp in enumerate(cavs):
+                settings.setArrayIndex(i)
+                settings.setValue('idpath', idp)
+            settings.endArray()
+
             action.setChecked(True)
 
-        settings = QtCore.QSettings()
         settings.setValue('pynguin/avatar', idpath)
 
     def set_pynguin_avatar(self, imageid):
