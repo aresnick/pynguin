@@ -1437,9 +1437,7 @@ Check configuration!''')
             action = self.avatars.inv.get(str(imageid))
             if action is not None:
                 action.setChecked(True)
-
-                settings = QtCore.QSettings()
-                settings.setValue('pynguin/avatar', imageid)
+            idpath = imageid
         else:
             fmt = QtGui.QImageReader.imageFormat(filepath)
             if fmt == 'svg':
@@ -1456,6 +1454,9 @@ Check configuration!''')
                 self.viewgroup.addAction(action)
                 self.avatars[action:] = idpath
             action.setChecked(True)
+
+        settings = QtCore.QSettings()
+        settings.setValue('pynguin/avatar', idpath)
 
     def set_pynguin_avatar(self, imageid):
         '''select which image to show
