@@ -962,10 +962,32 @@ class Pynguin(object):
         if filepath is None:
             rend = self.mw.rend
         elif filepath is not None and imageid is not None:
+            # custom svg avatar
             rend = self.mw.svgrenderer.getrend(filepath)
         else:
-            rend = QtGui.QPixmap(filepath)
-            rend = rend.scaledToHeight(250)
+            # custom non-svg avatar
+            rend = None
+            pm = QtGui.QPixmap(filepath)
+            w, h = pm.width(), pm.height()
+            if w > h:
+                pm = pm.scaledToWidth(250)
+                h = pm.height()
+                ho = (250 - h) / 2
+                wo = 0
+            elif h > w:
+                pm = pm.scaledToHeight(250)
+                w = pm.width()
+                wo = (250 - w) / 2
+                ho = 0
+            else:
+                rend = pm
+
+            if rend is None:
+                rend = QtGui.QPixmap(250, 250)
+                rend.fill(QtCore.Qt.transparent)
+                painter = QtGui.QPainter(rend)
+                painter.drawPixmap(wo, ho, pm)
+
         pen = ogitem.pen
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(rend, imageid, self)
