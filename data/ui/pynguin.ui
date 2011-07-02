@@ -1136,6 +1136,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAdd_new_avatar</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setcustomavatar()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1168,5 +1184,6 @@
   <slot>demotedoc()</slot>
   <slot>toggle_editor()</slot>
   <slot>settrack()</slot>
+  <slot>setcustomavatar()</slot>
  </slots>
 </ui>
