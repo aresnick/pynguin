@@ -1442,6 +1442,10 @@ Check configuration!''')
                     (self.ui.actionHidden, 'hidden'))
         self.avatars = bidict(choices)
 
+        custommenu = self.ui.menuCustom
+        custommenu.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        custommenu.connect(custommenu, QtCore.SIGNAL('customContextMenuRequested(const QPoint&)'), self.makedeleteaction())
+
     def _sync_avatar_menu(self, imageid, filepath=None):
         settings = QtCore.QSettings()
         if not filepath:
@@ -1465,24 +1469,42 @@ Check configuration!''')
                 action.setCheckable(True)
                 self.viewgroup.addAction(action)
                 self.avatars[action:] = idpath
-
-            cavs = []
-            n = settings.beginReadArray('pynguin/custom_avatars')
-            for i in range(n):
-                settings.setArrayIndex(i)
-                cavs.append(settings.value('idpath').toString())
-            settings.endArray()
-            if idpath not in cavs:
-                cavs.append(idpath)
-            settings.beginWriteArray('pynguin/custom_avatars')
-            for i, idp in enumerate(cavs):
-                settings.setArrayIndex(i)
-                settings.setValue('idpath', idp)
-            settings.endArray()
+                self._save_custom_avatar(idpath)
 
             action.setChecked(True)
 
         settings.setValue('pynguin/avatar', idpath)
+
+    def _save_custom_avatar(self, idpath, remove=False):
+        settings = QtCore.QSettings()
+        cavs = []
+        n = settings.beginReadArray('pynguin/custom_avatars')
+        for i in range(n):
+            settings.setArrayIndex(i)
+            cavs.append(settings.value('idpath').toString())
+        settings.endArray()
+        if not remove and idpath not in cavs:
+            cavs.append(idpath)
+        elif remove and idpath in cavs:
+            cavs.remove(idpath)
+        settings.beginWriteArray('pynguin/custom_avatars')
+        for i, idp in enumerate(cavs):
+            settings.setArrayIndex(i)
+            settings.setValue('idpath', idp)
+        settings.endArray()
+
+    def makedeleteaction(self):
+        def deleteaction(pt, self=self):
+            popup = QtGui.QMenu(self)
+            custommenu = self.ui.menuCustom
+            action = custommenu.actionAt(pt)
+            def dodelete(action=action, menu=custommenu):
+                menu.removeAction(action)
+                idpath = self.avatars[action]
+                self._save_custom_avatar(idpath, remove=True)
+            popup.addAction('Remove', dodelete)
+            popup.exec_(custommenu.mapToGlobal(pt))
+        return deleteaction
 
     def set_pynguin_avatar(self, imageid):
         '''select which image to show
