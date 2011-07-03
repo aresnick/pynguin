@@ -1510,21 +1510,19 @@ Check configuration!''')
         self.set_pynguin_avatar(imageid)
 
     def setcustomavatar(self):
-        uifile = 'avatar.ui'
-        uipath = os.path.join(uidir, uifile)
-        DClass, _ = uic.loadUiType(uipath)
-        dc = DClass()
-        d = QtGui.QDialog(self)
-        d.ui = DClass()
-        dc.setupUi(d)
-        r = d.exec_()
+        import avatar
+        ad = avatar.CustomAvatar(self)
+        r = ad.exec_()
         if r:
-            filepath = str(dc.filepath.text())
-            element = str(dc.element.text())
+            filepath = str(ad.ui.filepath.text())
+            element = str(ad.ui.element.text())
             if not element:
                 element = None
+                cmdstr = "avatar(%s, '%s')\n"
+            else:
+                cmdstr = "avatar('%s', '%s')\n"
             self.pynguin.avatar(element, filepath)
-            cmd = "avatar(%s, '%s')\n" % (element, filepath)
+            cmd = cmdstr % (element, filepath)
             self.interpretereditor.addcmd(cmd)
 
     def setup_speed_choices(self):
