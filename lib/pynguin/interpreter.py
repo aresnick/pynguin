@@ -99,7 +99,13 @@ class Interpreter(HighlightedTextEdit):
         self._doc.clear()
         self.write('>>> ')
 
-    def addcmd(self, cmd):
+    def addcmd(self, cmd, force=False):
+        if not force and self.cmdthread is not None:
+            # Don't bother writing cmd if there is already
+            #   a thread in progress...
+            # force=True forces write even if cmd in progress.
+            return
+
         self.write(cmd)
         if cmd[-1] == '\n':
             self.write('>>> ')

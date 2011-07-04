@@ -1312,7 +1312,7 @@ Check configuration!''')
                             self.interpretereditor.write('# set onclick handler\n')
                             self.interpretereditor.write('>>> ')
                         else:
-                            self.interpretereditor.addcmd(tocall)
+                            self.interpretereditor.addcmd(tocall, force=True)
 
                 elif line0.startswith('class ') and line0.endswith(':'):
                     self.interpretereditor.movetoend()
@@ -1330,7 +1330,7 @@ Check configuration!''')
                         self.interpretereditor.write('>>> ')
                         varname = varname[0]
                     call_line = '%s = %s()' % (varname, clsname)
-                    self.interpretereditor.addcmd(call_line)
+                    self.interpretereditor.addcmd(call_line, force=True)
 
             else:
                 self.interpretereditor.write('not starting...\n')
@@ -1575,6 +1575,14 @@ Check configuration!''')
 
         speed = self.speeds[ev]
         self.set_speed(speed)
+        choices = { 5: 'slow',
+                    10: 'medium',
+                    20: 'fast',
+                    0: 'instant'}
+        choice = choices.get(speed)
+        cmd = "speed('%s')\n" % choice
+        self.interpretereditor.addcmd(cmd)
+
 
     def wordwrap(self):
         checked = self.ui.actionWordwrap.isChecked()
