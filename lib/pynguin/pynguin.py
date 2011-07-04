@@ -1070,13 +1070,13 @@ class Pynguin(object):
         self.drawn_items.append(circle)
         gitem.expand()
 
-    def _extend_circle(self, crect, distance):
+    def _extend_circle(self, crect, distance, signal=None):
         '''individual steps for animated circle drawing
         '''
         gitem = self.gitem
         scene = gitem.scene()
         cl = gitem._current_line
-        if cl is not None and not distance:
+        if cl is not None and signal=='finish':
             # circle complete.
             # replace the circle drawn using line segments
             # with a real ellipse item
@@ -1089,7 +1089,7 @@ class Pynguin(object):
             circle.setZValue(self._zvalue)
             Pynguin._zvalue += 1
             self.drawn_items.append(circle)
-        elif cl is None:
+        elif signal == 'start':
             # first segment
             self._item_left(gitem, -2)
             self._item_forward(gitem, distance)
@@ -1113,9 +1113,10 @@ class Pynguin(object):
                 self.pendown()
 
         circumference = 2 * PI * r
-        for n in range(1, 90):
+        self.qmove(self._extend_circle, (crect, circumference/90., 'start'))
+        for n in range(2, 90):
             self.qmove(self._extend_circle, (crect, circumference/90.))
-        self.qmove(self._extend_circle, (crect, 0))
+        self.qmove(self._extend_circle, (crect, 0, 'finish'))
 
         if center:
             self.penup()
