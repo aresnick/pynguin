@@ -32,17 +32,19 @@ from util import sign, choose_color
 import conf
 
 
-pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
-                        'lt', 'right', 'rt', 'reset', 'home',
-                        'penup', 'pendown', 'color', 'width',
-                        'circle', 'fill', 'nofill', 'fillcolor',
-                        'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
-                        'write', 'toward', 'distance', 'lineto', 'xyforward',
-                        'onscreen', 'viewcoords', 'stamp', 'square',
-                        'avatar', 'remove', 'promote', 'reap',
-                        'speed']
-interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
-                        'history', 'util',]
+pynguin_functions = [
+    'forward', 'fd', 'backward', 'bk', 'left',
+    'lt', 'right', 'rt', 'reset', 'home',
+    'penup', 'pendown', 'color', 'width',
+    'circle', 'fill', 'nofill', 'fillcolor',
+    'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
+    'write', 'toward', 'distance', 'lineto', 'xyforward',
+    'onscreen', 'viewcoords', 'stamp', 'square',
+    'avatar', 'remove', 'promote', 'reap',
+    'speed']
+interpreter_protect = [
+    'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
+    'history', 'util',]
 
 class TooManyPynguins(RuntimeError):
     pass
@@ -1281,7 +1283,7 @@ class Pynguin(object):
 class RItem(object):
     '''Used to track the "real" state of the pynguin (as opposed
         to the visible state which may be delayed for animation
-        at slower speeds
+        at slower speeds)
 
         RItem uses the same API as GraphicsItem
     '''
