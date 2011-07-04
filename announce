@@ -38,3 +38,4 @@ Changes in pynguin-0.11:
     General
         - added support for custom avatars
             - both svg and bitmap images supported
+        - fixed motion when drawing slow circles with pen up
