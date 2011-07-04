@@ -1493,6 +1493,12 @@ Check configuration!''')
             settings.setValue('idpath', idp)
         settings.endArray()
 
+        if remove:
+            currid = settings.value('pynguin/avatar', 'pynguin').toString()
+            if currid == idpath:
+                # Removed the current avatar
+                self.set_pynguin_avatar('pynguin')
+
     def makedeleteaction(self):
         def deleteaction(pt, self=self):
             popup = QtGui.QMenu(self)
