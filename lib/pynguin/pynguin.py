@@ -1241,7 +1241,10 @@ class Pynguin(object):
         gitem = self.gitem
         if imageid is None:
             imageid = gitem.imageid
-        item = PynguinGraphicsItem(gitem.rend, imageid, None)
+            rend = gitem.rend
+        else:
+            rend = self.mw.rend
+        item = PynguinGraphicsItem(rend, imageid, None)
         item.ang = gitem.ang
         item.setPos(gitem.pos())
         item.setZValue(self._zvalue)
@@ -1423,8 +1426,8 @@ class PynguinGraphicsItem(GraphicsItem):
         self.set_transform()
 
     def setImageid(self, imageid):
+        self.imageid = imageid
         if imageid is not None:
-            self.imageid = imageid
             self.item = QtSvg.QGraphicsSvgItem(self)
             self.item.setSharedRenderer(self.rend)
             self.item.setElementId(imageid)
