@@ -1533,9 +1533,22 @@ Check configuration!''')
         self.pynguin.avatar(imid, filepath)
         self._sync_avatar_menu(imageid, filepath)
 
+        if not imid:
+            imid = None
+            cmdstr = "avatar(%s, '%s')\n"
+            cmd = cmdstr % (imid, filepath)
+        elif filepath is None:
+            cmdstr = "avatar('%s')\n"
+            cmd = cmdstr % imid
+        else:
+            cmdstr = "avatar('%s', '%s')\n"
+            cmd = cmdstr % (imid, filepath)
+        return cmd
+
     def setImageEvent(self, ev):
         imageid = self.avatars[ev]
-        self.set_pynguin_avatar(imageid)
+        cmd = self.set_pynguin_avatar(imageid)
+        self.interpretereditor.addcmd(cmd)
 
     def setcustomavatar(self):
         import avatar
@@ -1550,8 +1563,6 @@ Check configuration!''')
             else:
                 cmdstr = "avatar('%s', '%s')\n"
             self.pynguin.avatar(element, filepath)
-            cmd = cmdstr % (element, filepath)
-            self.interpretereditor.addcmd(cmd)
 
     def setup_speed_choices(self):
         choices = ((self.ui.actionSlow, 5),
