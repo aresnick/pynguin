@@ -39,7 +39,8 @@ pynguin_functions = ['forward', 'fd', 'backward', 'bk', 'left',
                         'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
                         'write', 'toward', 'distance', 'lineto', 'xyforward',
                         'onscreen', 'viewcoords', 'stamp', 'square',
-                        'avatar', 'remove', 'promote', 'reap',]
+                        'avatar', 'remove', 'promote', 'reap',
+                        'speed']
 interpreter_protect = ['p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
                         'history', 'util',]
 
@@ -1035,6 +1036,24 @@ class Pynguin(object):
                 raise ValueError, msg
         else:
             return self._imageid
+
+    def _speed(self, s):
+        self.mw.set_speed(s)
+    def speed(self, s):
+        '''Set speed of animation for all pynguins.
+
+        Choices are: 'slow', 'medium', 'fast', 'instant'
+        '''
+
+        choices = { 'slow': 5,
+                    'medium': 10,
+                    'fast': 20,
+                    'instant': 0}
+        choice = choices.get(s)
+        if choice is None:
+            raise ValueError, "Speed choices are %s" % choices.keys()
+        else:
+            self.qmove(self._speed, (choice,))
 
     def _circle(self, crect):
         '''instant circle'''
