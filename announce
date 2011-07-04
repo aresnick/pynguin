@@ -23,6 +23,9 @@ Changes in pynguin-0.11:
     Session
 
     Pynguin API
+        - added .label() method to have a label attached to a pynguin
+            - also accessible as .name attribute
+        - added .speed() method to change speed from user code
 
     Canvas
 
@@ -34,3 +37,4 @@ Changes in pynguin-0.11:
 
     General
         - added support for custom avatars
+            - both svg and bitmap images supported
