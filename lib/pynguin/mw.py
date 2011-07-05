@@ -276,14 +276,13 @@ class MainWindow(QtGui.QMainWindow):
         self._cy = ctr.y()
 
     def settrack(self):
-        if self.ui.actionTrack.isChecked():
-            track = True
-        else:
-            track = False
+        track = self.ui.actionTrack.isChecked()
 
-        conf.track_main_pynguin = track
         if track:
+            Pynguin.track_main_pynguin = True
             self.pynguin.gitem.track()
+        else:
+            Pynguin.track_main_pynguin = False
 
         settings = QtCore.QSettings()
         settings.setValue('pynguin/track', track)

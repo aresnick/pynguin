@@ -75,6 +75,8 @@ class Pynguin(object):
     mw = None # set by MainWindow before any Pynguin get instantiated
     rend = None # set by MainWindow before any Pynguin get instantiated
 
+    track_main_pynguin = None # set up by mw.setup_settings
+
     def __init__(self, pos=(0, 0), ang=0):
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
@@ -1404,7 +1406,7 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def track(self):
         'center the view on the pynguin'
-        if conf.track_main_pynguin and not self._notrack:
+        if Pynguin.track_main_pynguin and not self._notrack:
             pynguin = self.pynguin
             mainpyn = pynguin.mw.pynguin
             scene = self.scene()
