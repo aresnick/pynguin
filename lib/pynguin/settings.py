@@ -25,6 +25,10 @@ class Settings(QtGui.QDialog):
         if filepath:
             self.ui.backupfilepath.setText(filepath)
 
+    def externaloption(self):
+        rel = self.ui.reloadexternal.isChecked()
+        self.ui.autorun.setEnabled(rel)
+
     def accept(self):
         'Verify'
         if False:

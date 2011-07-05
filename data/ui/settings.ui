@@ -57,14 +57,14 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="reloadexternal">
             <property name="text">
              <string>Reload changed file automatically</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="autorun">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -293,8 +293,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>reloadexternal</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>externaloption()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>backupbrowse()</slot>
+  <slot>externaloption()</slot>
  </slots>
 </ui>
