@@ -1218,15 +1218,24 @@ class Pynguin(object):
         pos = self.ritem.pos()
         return pos in self._viewrect()
 
-    def viewcoords(self):
+    def viewcoords(self, ints=False):
         '''viewcoords()
 
         return the coordinates of the boundaries of the visible area.
 
         Get the coords with code like this:
             xmin, xmax, ymin, ymax = viewcoords()
+
+        To get integer values instead of floats, pass in the optional
+            parameter ints=True
+            This is useful, for example, when you want to pass the
+            values to the range function which now requires ints.
         '''
-        return self._viewrect().getCoords()
+        coords = self._viewrect().getCoords()
+        if ints:
+            coords = [int(c) for c in coords]
+        return coords
+
 
     def onclick(self, x, y):
         '''This method will be called automatically when the user
