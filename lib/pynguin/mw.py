@@ -366,6 +366,10 @@ class MainWindow(QtGui.QMainWindow):
         self._new()
         self._openfile(fp, False)
 
+    def settings(self):
+        'open the settings dialog'
+        pass
+
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
         QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')

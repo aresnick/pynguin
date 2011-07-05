@@ -230,11 +230,18 @@
     <addaction name="actionIncrease_font_size"/>
     <addaction name="actionDecrease_font_size"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
    <addaction name="penmenu"/>
    <addaction name="speedmenu"/>
    <addaction name="editormenu"/>
+   <addaction name="menuSettings"/>
    <addaction name="helpmenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -603,6 +610,11 @@
   <action name="actionAdd_new_avatar">
    <property name="text">
     <string>Add new avatar</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences...</string>
    </property>
   </action>
  </widget>
@@ -1152,6 +1164,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPreferences</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1185,5 +1213,6 @@
   <slot>toggle_editor()</slot>
   <slot>settrack()</slot>
   <slot>setcustomavatar()</slot>
+  <slot>settings()</slot>
  </slots>
 </ui>
