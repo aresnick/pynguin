@@ -368,7 +368,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def settings(self):
         'open the settings dialog'
-        pass
+        import settings
+        s = settings.Settings(self)
+        r = s.exec_()
+        if r:
+            pass
 
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')

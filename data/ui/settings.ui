@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -93,10 +93,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="backupfilepath"/>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="backupbrowseButton">
            <property name="text">
             <string>Browse</string>
            </property>
@@ -277,5 +277,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>backupbrowseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>backupbrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>351</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>backupbrowse()</slot>
+ </slots>
 </ui>
