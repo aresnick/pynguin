@@ -11,12 +11,6 @@ keepbackups = 5 # set to 0 to disable automatic backups
 
 KeyboardInterrupt_quiet = True
 
-# The default is to save the Pynguin file list as
-#   a single file with all of the files zipped together.
-# To override this behavior, and instead save the files
-#   as a directory full of files, change use_pyn to False
-use_pyn = True
-
 # If you will be editing with an external editor, you
 #   may want pynguin to automatically monitor and reload
 #   those external files any time you make changes

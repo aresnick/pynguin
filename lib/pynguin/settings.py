@@ -1,7 +1,6 @@
 import os
 
 from PyQt4 import QtCore, QtGui, uic
-from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 
 import util
 import conf
@@ -17,6 +16,15 @@ class Settings(QtGui.QDialog):
         SClass, _ = uic.loadUiType(uipath)
         self.ui = SClass()
         self.ui.setupUi(self)
+        self.setcurrent()
+
+    def setcurrent(self):
+        settings = QtCore.QSettings()
+        savesingle = settings.value('file/savesingle', True).toBool()
+        if savesingle:
+            self.ui.savesingle.setChecked(True)
+        else:
+            self.ui.savefolder.setChecked(True)
 
     def backupbrowse(self):
         filepath = QtGui.QFileDialog.getExistingDirectory(
@@ -29,7 +37,7 @@ class Settings(QtGui.QDialog):
         rel = self.ui.reloadexternal.isChecked()
         self.ui.autorun.setEnabled(rel)
 
-    def accept(self):
-        'Verify'
-        if False:
-            QtGui.QDialog.accept(self)
+    #def accept(self):
+        #'Verify'
+        #if False:
+            #QtGui.QDialog.accept(self)

@@ -31,7 +31,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QRadioButton" name="radioButton">
+           <widget class="QRadioButton" name="savesingle">
             <property name="text">
              <string>Single file (*.pyn)</string>
             </property>
@@ -41,7 +41,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_2">
+           <widget class="QRadioButton" name="savefolder">
             <property name="text">
              <string>Directory of files (*.pyn + *_pynd)</string>
             </property>

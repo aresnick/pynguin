@@ -372,7 +372,16 @@ class MainWindow(QtGui.QMainWindow):
         s = settings.Settings(self)
         r = s.exec_()
         if r:
-            pass
+            settings = QtCore.QSettings()
+            import conf
+            ui = s.ui
+            if ui.savesingle.isChecked():
+                savesingle = True
+            elif ui.savefolder.isChecked():
+                savesingle = False
+            else:
+                raise ValueError
+            settings.setValue('file/savesingle', savesingle)
 
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
@@ -545,7 +554,7 @@ class MainWindow(QtGui.QMainWindow):
 
         folder = backupfolder or self._fdir
         fp = os.path.join(backupfolder, backupfile % '')
-        if self.writeable(fp, use_pyn=True):
+        if self.writeable(fp, savesingle=True):
             self.editor.savecurrent()
             self._writefile01(fp, backup=True)
         else:
@@ -675,7 +684,7 @@ Check configuration!''')
     def _related_dir(self, fp=None):
         '''return the directory name related to path fp
         This is the directory that will be used for storing
-            the files when in conf.use_pyn=False mode.
+            the files when not in savesingle mode.
         '''
         if fp is None:
             fp = self._filepath
@@ -717,20 +726,25 @@ Check configuration!''')
         '''write out the files in the editor window, and keep the list
             of history entries.
 
-        if conf.use_pyn is True:
+        if configured to use a single file:
             All of this is packed up in to a zip
             file and given a .pyn filename ending.
 
-        if conf.use_pyn is False:
+        if configured for directory of files:
             The files will be saved in a separate directory.
             The directory will end in _pynd
+            A .pyn file will also be saved indexing the contents and
+                allowing the files to be easily re-loaded.
 
         '''
 
         self.editor.savecurrent()
 
+        settings = QtCore.QSettings()
+        savesingle = settings.value('file/savesingle', True).toBool()
+
         if self.writeable(self._filepath):
-            if conf.use_pyn:
+            if savesingle:
                 self._writefile01(self._filepath)
             else:
                 self._writedir(self._filepath)
@@ -748,7 +762,7 @@ Check configuration!''')
 
         self.addrecentfile(self._filepath)
 
-        if conf.use_pyn:
+        if savesingle:
             self._verify_saved(self._filepath)
 
         return True
@@ -794,9 +808,12 @@ Check configuration!''')
                         'Text files (*.pyn)'))
 
         if fp:
+            settings = QtCore.QSettings()
+            savesingle = settings.value('file/savesingle', True).toBool()
+
             fp = self._correct_filename(fp)
             dirname, fname = os.path.split(fp)
-            if not conf.use_pyn:
+            if not savesingle:
                 fpd = self._related_dir(fp)
                 if not os.path.exists(fpd):
                     os.mkdir(fpd)
@@ -840,7 +857,7 @@ Check configuration!''')
         elif ret == QtGui.QMessageBox.Cancel:
             return False
 
-    def writeable(self, fp, use_pyn=None):
+    def writeable(self, fp, savesingle=None):
         'try to write to the given path. return True if sucessful.'
         try:
             fd = open(fp, 'w')
@@ -852,12 +869,13 @@ Check configuration!''')
         else:
             return True
 
-        if use_pyn is not None and use_pyn:
-            use_pyn = True
+        if savesingle is not None and savesingle:
+            savesingle = True
         else:
-            use_pyn = conf.use_pyn
+            settings = QtCore.QSettings()
+            savesingle = settings.value('file/savesingle', True).toBool()
 
-        if not use_pyn:
+        if not savesingle:
             fpd = self._related_dir(fp)
             if not os.path.exists(fpd):
                 return False
@@ -869,11 +887,6 @@ Check configuration!''')
     def open(self):
         '''read in a previously written set of files,
             or a single python source file.
-
-        If conf.use_pyn is True:
-            tries to read a .pyn file (written by _writefile)
-        If conf.use_pyn is False:
-            tries to read files from a _pynd directory
 
         If the file is a lone python source file, no further processing
             will occur. However, if the file has been loaded in pynguin
