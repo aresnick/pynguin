@@ -375,13 +375,16 @@ class MainWindow(QtGui.QMainWindow):
             settings = QtCore.QSettings()
             import conf
             ui = s.ui
-            if ui.savesingle.isChecked():
-                savesingle = True
-            elif ui.savefolder.isChecked():
-                savesingle = False
-            else:
-                raise ValueError
+
+            savesingle = ui.savesingle.isChecked()
             settings.setValue('file/savesingle', savesingle)
+
+            reloadexternal = ui.reloadexternal.isChecked()
+            settings.setValue('file/reloadexternal', reloadexternal)
+
+            autorun = ui.autorun.isChecked()
+            settings.setValue('file/autorun', autorun)
+
 
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
@@ -992,12 +995,15 @@ Check configuration!''')
             # Ignore notification when saving the file
             return
 
-        if conf.auto_refresh_external:
+        settings = QtCore.QSettings()
+        autorefresh = settings.value('file/reloadexternal', True).toBool()
+        if autorefresh:
             doc = self._watchdocs[str(fp)]
             txt = open(fp).read()
             txt = txt.decode('utf-8')
             doc.setPlainText(txt)
-            if conf.auto_test_external:
+            autorun = settings.value('file/autorun', False).toBool()
+            if autorun:
                 self.interpreter.runcode(txt)
 
     def _loaddata(self, data):

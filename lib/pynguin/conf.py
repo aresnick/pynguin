@@ -10,11 +10,3 @@ backuprate = 3 # minutes between backups
 keepbackups = 5 # set to 0 to disable automatic backups
 
 KeyboardInterrupt_quiet = True
-
-# If you will be editing with an external editor, you
-#   may want pynguin to automatically monitor and reload
-#   those external files any time you make changes
-# You may also want to automatically have the Test/Run
-#   function run when an external file changes
-auto_refresh_external = True
-auto_test_external = True

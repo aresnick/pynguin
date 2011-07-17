@@ -20,11 +20,18 @@ class Settings(QtGui.QDialog):
 
     def setcurrent(self):
         settings = QtCore.QSettings()
+
         savesingle = settings.value('file/savesingle', True).toBool()
         if savesingle:
             self.ui.savesingle.setChecked(True)
         else:
             self.ui.savefolder.setChecked(True)
+
+        reloadexternal = settings.value('file/reloadexternal', True).toBool()
+        self.ui.reloadexternal.setChecked(reloadexternal)
+
+        autorun = settings.value('file/autorun', False).toBool()
+        self.ui.autorun.setChecked(autorun)
 
     def backupbrowse(self):
         filepath = QtGui.QFileDialog.getExistingDirectory(
