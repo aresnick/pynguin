@@ -38,7 +38,6 @@ from util import sign, get_datadir, get_docdir
 from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
-from conf import bug_url
 import conf
 
 datadir = get_datadir()
@@ -1671,7 +1670,7 @@ Check configuration!''')
         AboutDialog(self.app).exec_()
 
     def reportbug(self):
-        QtGui.QDesktopServices().openUrl(QtCore.QUrl(bug_url))
+        QtGui.QDesktopServices().openUrl(QtCore.QUrl(conf.bug_url))
 
 
 class Scene(QtGui.QGraphicsScene):
