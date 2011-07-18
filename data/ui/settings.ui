@@ -215,7 +215,7 @@
       <attribute name="title">
        <string>Console</string>
       </attribute>
-      <widget class="QCheckBox" name="checkBox_3">
+      <widget class="QCheckBox" name="quietinterrupt">
        <property name="geometry">
         <rect>
          <x>30</x>

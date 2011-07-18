@@ -37,8 +37,10 @@ class Console(code.InteractiveConsole):
 
     def showtraceback(self):
         logger.info('showtraceback')
+        settings = QtCore.QSettings()
+        quiet = settings.value('console/quietinterrupt', False).toBool()
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        if exc_type is KeyboardInterrupt and conf.KeyboardInterrupt_quiet:
+        if exc_type is KeyboardInterrupt and quiet:
             pass
         else:
             code.InteractiveConsole.showtraceback(self)
@@ -365,7 +367,10 @@ class Interpreter(HighlightedTextEdit):
                 pynguin.Pynguin.ControlC = False
                 self.cmdthread = None
                 logger.info('No thread running')
-                if not conf.KeyboardInterrupt_quiet:
+                settings = QtCore.QSettings()
+                quiet = settings.value('console/quietinterrupt', False).toBool()
+
+                if not quiet:
                     self.write('\nKeyboardInterrupt\n')
                 else:
                     self.write('\n')

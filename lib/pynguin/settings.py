@@ -33,6 +33,9 @@ class Settings(QtGui.QDialog):
         autorun = settings.value('file/autorun', False).toBool()
         self.ui.autorun.setChecked(autorun)
 
+        quietinterrupt = settings.value('console/quietinterrupt', False).toBool()
+        self.ui.quietinterrupt.setChecked(quietinterrupt)
+
     def backupbrowse(self):
         filepath = QtGui.QFileDialog.getExistingDirectory(
                             self,

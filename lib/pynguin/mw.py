@@ -386,6 +386,10 @@ class MainWindow(QtGui.QMainWindow):
             settings.setValue('file/autorun', autorun)
 
 
+            quiet = ui.quietinterrupt.isChecked()
+            settings.setValue('console/quietinterrupt', quiet)
+
+
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
         QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')
