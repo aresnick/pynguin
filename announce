@@ -21,6 +21,7 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.11:
     Session
+        - all settings now moved in to menus and settings dialogs
 
     Pynguin API
         - added .label() method to have a label attached to a pynguin

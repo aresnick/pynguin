@@ -39,7 +39,6 @@ from codearea import CodeArea
 from interpreter import Interpreter, CmdThread, Console
 from about import AboutDialog
 from conf import bug_url
-from conf import backupfolder, backupfile, backuprate
 import conf
 
 datadir = get_datadir()
@@ -373,7 +372,6 @@ class MainWindow(QtGui.QMainWindow):
         r = s.exec_()
         if r:
             settings = QtCore.QSettings()
-            import conf
             ui = s.ui
 
             savesingle = ui.savesingle.isChecked()
@@ -381,14 +379,27 @@ class MainWindow(QtGui.QMainWindow):
 
             reloadexternal = ui.reloadexternal.isChecked()
             settings.setValue('file/reloadexternal', reloadexternal)
-
             autorun = ui.autorun.isChecked()
             settings.setValue('file/autorun', autorun)
 
+            bfp = ui.backupfolderpath.text()
+            settings.setValue('file/backupfolderpath', bfp)
+            bfn = ui.backupfilename.text()
+            settings.setValue('file/backupfilename', bfn)
+            brate = ui.backuprate.value()
+            settings.setValue('file/backuprate', brate)
+            # hold on to the old backupkeep value. If it was zero
+            # need to start the autosave timer
+            bkeep0, ok = settings.value('file/backupkeep', 5).toInt()
+            if not ok:
+                bkeep0 = 5
+            bkeep = ui.backupkeep.value()
+            settings.setValue('file/backupkeep', bkeep)
+            if not bkeep0:
+                QtCore.QTimer.singleShot(brate*60000, self.autosave)
 
             quiet = ui.quietinterrupt.isChecked()
             settings.setValue('console/quietinterrupt', quiet)
-
 
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
@@ -556,11 +567,15 @@ class MainWindow(QtGui.QMainWindow):
         Also moves older backups up a number and deletes the
             oldest backup.
         '''
-        if not conf.keepbackups:
+        settings = QtCore.QSettings()
+        backupkeep, ok = settings.value('file/backupkeep', 5).toInt()
+        if not ok or not backupkeep:
             return
 
-        folder = backupfolder or self._fdir
-        fp = os.path.join(backupfolder, backupfile % '')
+        bfp = str(settings.value('file/backupfolderpath', '').toString())
+        bfp = bfp or self._fdir
+        bfn = str(settings.value('file/backupfilename', 'backup~%s.pyn').toString())
+        fp = os.path.join(bfp, bfn % '')
         if self.writeable(fp, savesingle=True):
             self.editor.savecurrent()
             self._writefile01(fp, backup=True)
@@ -570,18 +585,24 @@ class MainWindow(QtGui.QMainWindow):
                     '''Cannot complete autosave.
 Autosave disabled.
 Check configuration!''')
-            conf.keepbackups = False
+            settings.setValue('file/backupkeep', 0)
             return
 
-        for fn in range(conf.keepbackups, 1, -1):
-            fpsrc = os.path.join(backupfolder, backupfile % (fn-1))
-            fpdst = os.path.join(backupfolder, backupfile % fn)
-            if os.path.exists(fpsrc):
-                os.rename(fpsrc, fpdst)
+        if backupkeep > 1:
+            for fn in range(backupkeep, 1, -1):
+                fpsrc = os.path.join(bfp, bfn % (fn-1))
+                fpdst = os.path.join(bfp, bfn % fn)
+                if os.path.exists(fpsrc):
+                    os.rename(fpsrc, fpdst)
+        else:
+            fpsrc = os.path.join(bfp, bfn % 1)
 
         os.rename(fp, fpsrc)
 
-        QtCore.QTimer.singleShot(backuprate*60000, self.autosave)
+        brate, ok = settings.value('file/backuprate', 3).toInt()
+        if not ok:
+            brate = 3
+        QtCore.QTimer.singleShot(brate*60000, self.autosave)
 
     def _correct_filename(self, fp=None):
         'make sure file name ends with .pyn'

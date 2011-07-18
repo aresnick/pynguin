@@ -29,9 +29,21 @@ class Settings(QtGui.QDialog):
 
         reloadexternal = settings.value('file/reloadexternal', True).toBool()
         self.ui.reloadexternal.setChecked(reloadexternal)
-
         autorun = settings.value('file/autorun', False).toBool()
         self.ui.autorun.setChecked(autorun)
+
+
+        bfp = settings.value('file/backupfolderpath', '').toString()
+        self.ui.backupfolderpath.setText(bfp)
+        bfn = settings.value('file/backupfilename', 'backup~%s.pyn').toString()
+        self.ui.backupfilename.setText(bfn)
+        brate, ok = settings.value('file/backuprate', 3).toInt()
+        if ok:
+            self.ui.backuprate.setValue(brate)
+        bkeep, ok = settings.value('file/backupkeep', 5).toInt()
+        if ok:
+            self.ui.backupkeep.setValue(bkeep)
+
 
         quietinterrupt = settings.value('console/quietinterrupt', False).toBool()
         self.ui.quietinterrupt.setChecked(quietinterrupt)
@@ -41,11 +53,17 @@ class Settings(QtGui.QDialog):
                             self,
                             'Choose folder to store backups')
         if filepath:
-            self.ui.backupfilepath.setText(filepath)
+            self.ui.backupfolderpath.setText(filepath)
 
     def externaloption(self):
         rel = self.ui.reloadexternal.isChecked()
         self.ui.autorun.setEnabled(rel)
+
+    def backupoption(self, val):
+        backup = bool(val)
+        self.ui.backupfolderpath.setEnabled(backup)
+        self.ui.backupfilename.setEnabled(backup)
+        self.ui.backuprate.setEnabled(backup)
 
     #def accept(self):
         #'Verify'
