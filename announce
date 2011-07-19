@@ -37,6 +37,8 @@ Changes in pynguin-0.11:
     Integrated Console
 
     Examples
+        - make examples use new viewcoords() API
+        - fixed multi.pyn scatter example
 
     General
         - added support for custom avatars

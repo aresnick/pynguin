@@ -11,4 +11,4 @@ def scatter(n, m):
         pyn.color('random')
 
     for s in range(m):
-        cmdall('lineto', 'random')
+        acmd('lineto', 'random')
