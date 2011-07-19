@@ -27,7 +27,8 @@ Changes in pynguin-0.11:
         - added .label() method to have a label attached to a pynguin
             - also accessible as .name attribute
         - added .speed() method to change speed from user code
-        - added parameter for viewcoords(ints=True) to return integers
+        - viewcoords() now returns integers by default
+            - pass floats=True to get the float values instead
 
     Canvas
 
