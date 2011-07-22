@@ -44,3 +44,4 @@ Changes in pynguin-0.11:
         - added support for custom avatars
             - both svg and bitmap images supported
         - fixed motion when drawing slow circles with pen up
+        - fixed examples getting gzipped in .deb distribution file
