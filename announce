@@ -33,6 +33,7 @@ Changes in pynguin-0.11:
     Canvas
 
     Integrated Editor
+        - added "Test / Run all" button
 
     Integrated Console
 
