@@ -714,6 +714,17 @@ class Pynguin(object):
         strtxt = unicode(text)
         self.qmove(self._write, (strtxt,))
 
+    def dbg(self):
+        'test function for drawing on to the background plane'
+        scene = self.scene
+        bgp = scene.bgp
+        bgp.drawEllipse(QtCore.QRect(50,100,200,300))
+        view = scene.view
+
+        # scroll the scene to force an update
+        view.scrollContentsBy(0,1)
+        view.scrollContentsBy(0,-1)
+
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
         self._item_setangle(item, 0)

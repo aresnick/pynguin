@@ -1686,6 +1686,22 @@ class Scene(QtGui.QGraphicsScene):
         brush = QtGui.QBrush(color)
         self.setBackgroundBrush(brush)
 
-    #def drawBackground(self, painter, rect):
-        #QtGui.QGraphicsScene.drawBackground(self, painter, rect)
-        #painter.drawEllipse(rect)
+        self.bg = QtGui.QPixmap(width+1, height+1)
+        self.bg.fill(color)
+        self.bgp = QtGui.QPainter(self.bg)
+        self.bgp.drawEllipse(QtCore.QRect(0, 0, width, height))
+
+    def drawBackground2(self, painter, rect):
+        '''can be used in conjunction with background pixmap and
+            painter set up in __init__ to draw an image behind
+            the scene items.
+
+            Not currently used.
+        '''
+        QtGui.QGraphicsScene.drawBackground(self, painter, rect)
+        rt = QtCore.QRectF(rect)
+        rtl = rect.topLeft()
+        x, y = rtl.x(), rtl.y()
+        pt = QtCore.QPointF(x+300, y+300)
+        rt.moveTopLeft(pt)
+        painter.drawPixmap(rect, self.bg, rt)
