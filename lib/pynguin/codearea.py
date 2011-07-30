@@ -347,7 +347,7 @@ class CodeArea(HighlightedTextEdit):
         lineend = linestart + linelen
 
         curs = QtGui.QTextCursor(self._doc)
-        curs.setPosition(lineend, 0)
+        curs.setPosition(lineend-1, 0)
         curs.setPosition(linestart, 1)
         self.setTextCursor(curs)
 
