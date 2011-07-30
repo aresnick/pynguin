@@ -220,6 +220,7 @@
     <addaction name="actionToggle_Editor_Console"/>
     <addaction name="separator"/>
     <addaction name="actionTest_run"/>
+    <addaction name="actionTest_Run_all"/>
     <addaction name="separator"/>
     <addaction name="actionNext_document"/>
     <addaction name="actionPrevious_document"/>
@@ -615,6 +616,11 @@
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences...</string>
+   </property>
+  </action>
+  <action name="actionTest_Run_all">
+   <property name="text">
+    <string>Test / Run all</string>
    </property>
   </action>
  </widget>
@@ -1180,6 +1186,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTest_Run_all</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>testall()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1214,5 +1236,6 @@
   <slot>settrack()</slot>
   <slot>setcustomavatar()</slot>
   <slot>settings()</slot>
+  <slot>testall()</slot>
  </slots>
 </ui>

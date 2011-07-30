@@ -479,3 +479,7 @@ class Interpreter(HighlightedTextEdit):
         curs.setPosition(pos+4, 0)
         curs.setPosition(cpos, 1)
         curs.removeSelectedText()
+
+    def clearline(self):
+        self.movetoend()
+        self.erasetostart()

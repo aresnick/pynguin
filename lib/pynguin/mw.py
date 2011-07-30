@@ -1333,6 +1333,8 @@ Check configuration!''')
 
         code = self.cleancode(code)
 
+        error = None
+
         try:
             compile(code, 'current file', 'exec')
         except SyntaxError, e:
@@ -1340,6 +1342,7 @@ Check configuration!''')
             self.interpretereditor.write('Syntax Error in line %s\n' % e.lineno)
             self.interpretereditor.write('>>> ')
             self.editor.setFocus()
+            error = 1
         else:
             self.interpretereditor.setFocus()
             if self.interpretereditor.cmdthread is None:
@@ -1350,8 +1353,7 @@ Check configuration!''')
 
                 line0 = code.split('\n')[0]
                 if line0.startswith('def ') and line0.endswith(':'):
-                    self.interpretereditor.movetoend()
-                    self.interpretereditor.erasetostart()
+                    self.interpretereditor.clearline()
 
                     firstparen = line0.find('(')
                     lastparen = line0.rfind(')')
@@ -1365,8 +1367,7 @@ Check configuration!''')
                             self.interpretereditor.addcmd(tocall, force=True)
 
                 elif line0.startswith('class ') and line0.endswith(':'):
-                    self.interpretereditor.movetoend()
-                    self.interpretereditor.erasetostart()
+                    self.interpretereditor.clearline()
 
                     firstparen = line0.find('(')
                     lastparen = line0.rfind(')')
@@ -1388,6 +1389,33 @@ Check configuration!''')
                 self.interpretereditor.write('>>> ')
 
         self.interpretereditor.setFocus()
+        return error
+
+    def testall(self):
+        '''Test/Run each editor page in order.
+
+        If any page throws an error, progress stops, the editor
+        switches to that page and highlights the error.
+        '''
+
+        for idx in range(self.ui.mselect.count()):
+            docid = unicode(self.ui.mselect.itemData(idx).toString())
+            if docid in self.editor.documents:
+                self.editor.switchto(docid)
+                self.editor.setFocus()
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                while self.interpretereditor.cmdthread is not None:
+                    # wait...
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                    time.sleep(0.5)
+                self.interpretereditor.clearline()
+                if self.testcode():
+                    break
+                for i in range(5):
+                    time.sleep(.1)
+                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+        self.interpretereditor.clearline()
 
     def setPenColor(self):
         '''use a color selection dialog to set the pen line color
