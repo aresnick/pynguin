@@ -397,6 +397,13 @@ class MainWindow(QtGui.QMainWindow):
             if not bkeep0:
                 QtCore.QTimer.singleShot(brate*60000, self.autosave)
 
+            mainfirst = ui.editor_mainfirst.isChecked()
+            settings.setValue('editor/mainfirst', mainfirst)
+            rev = ui.testall_reverse.isChecked()
+            settings.setValue('editor/testall_reverse', rev)
+            autocall = ui.testall_autocall.isChecked()
+            settings.setValue('editor/testall_autocall', autocall)
+
             quiet = ui.quietinterrupt.isChecked()
             settings.setValue('console/quietinterrupt', quiet)
 
@@ -1398,7 +1405,16 @@ Check configuration!''')
         switches to that page and highlights the error.
         '''
 
-        for idx in range(self.ui.mselect.count()):
+        settings = QtCore.QSettings()
+        rev = settings.value('editor/testall_reverse', False).toBool()
+        autorun = settings.value('editor/testall_autocall', False).toBool()
+
+        count = self.ui.mselect.count()
+        for i in range(count):
+            if not rev:
+                idx = i
+            else:
+                idx = count - i - 1
             docid = unicode(self.ui.mselect.itemData(idx).toString())
             if docid in self.editor.documents:
                 self.editor.switchto(docid)
@@ -1407,13 +1423,19 @@ Check configuration!''')
                 while self.interpretereditor.cmdthread is not None:
                     # wait...
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                    time.sleep(0.5)
+                    time.sleep(0.01)
                 self.interpretereditor.clearline()
                 if self.testcode():
                     break
                 for i in range(5):
                     time.sleep(.1)
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+                if autorun:
+                    ev = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,
+                                            QtCore.Qt.Key_Enter,
+                                            QtCore.Qt.NoModifier, '\n')
+                    self.interpretereditor.keyPressEvent(ev)
 
         self.interpretereditor.clearline()
 
