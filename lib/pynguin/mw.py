@@ -1324,6 +1324,54 @@ Check configuration!''')
         code = '%s\n' % '\n'.join(rewrite)
         return code
 
+    def findmain(self, code):
+        '''returns information about the main function or class in
+            the given code.
+
+        "Main" will depend on the settings and will either be the first
+            function or class defined on the page, or the last one.
+
+        returns a dictionary of:
+            kind: 'function', 'class'
+            name: function or class name
+            params: string containing all parameters
+            nodefault: list of params that do not have a default value
+        '''
+
+        settings = QtCore.QSettings()
+        mainfirst = settings.value('editor/mainfirst').toBool()
+        lines = code.split('\n')
+        if not mainfirst:
+            lines.reverse()
+        for line in lines:
+            firstparen = line.find('(')
+            lastparen = line.rfind(')')
+            if line.startswith('def ') and line.endswith(':'):
+                kind = 'function'
+                name = line[4:firstparen]
+            elif line.startswith('class ') and line.endswith(':'):
+                kind = 'class'
+                name = line[6:firstparen]
+            else:
+                continue
+
+            if kind=='function' and firstparen > -1 and lastparen > -1:
+                params = line[firstparen+1:lastparen]
+                nodefault = []
+                if params:
+                    for param in params.split(','):
+                        param = param.strip()
+                        if '=' not in param and param not in nodefault:
+                            nodefault.append(param)
+                return (kind, name, params, nodefault)
+            elif kind == 'class':
+                # bare class Foo:
+                params = ''
+                nodefault = []
+                return (kind, name, params, nodefault)
+
+        return None, None, None, None
+
     def testcode(self):
         '''exec the code in the current editor window and load it in
             to the interpreter local namespace
@@ -1358,38 +1406,24 @@ Check configuration!''')
                 cmdthread.finished.connect(self.interpretereditor.testthreaddone)
                 cmdthread.start()
 
-                line0 = code.split('\n')[0]
-                if line0.startswith('def ') and line0.endswith(':'):
+                kind, name, params, nodefault = self.findmain(code)
+                if kind is not None:
                     self.interpretereditor.clearline()
-
-                    firstparen = line0.find('(')
-                    lastparen = line0.rfind(')')
-                    if firstparen > -1 and lastparen > -1:
-                        tocall = line0[4:lastparen+1]
-                        funcname = line0[4:firstparen]
-                        if funcname == 'onclick':
-                            self.interpretereditor.write('# set onclick handler\n')
+                    if kind == 'function':
+                        tocall = '%s(%s)' % (name, params)
+                    elif kind == 'class':
+                        varname = name.lower()
+                        if varname == name:
+                            self.interpretereditor.write('# Class names should be capitalized \n')
                             self.interpretereditor.write('>>> ')
-                        else:
-                            self.interpretereditor.addcmd(tocall, force=True)
+                            varname = varname[0]
+                        tocall = '%s = %s()' % (varname, name)
 
-                elif line0.startswith('class ') and line0.endswith(':'):
-                    self.interpretereditor.clearline()
-
-                    firstparen = line0.find('(')
-                    lastparen = line0.rfind(')')
-                    if firstparen > -1 and lastparen > -1:
-                        clsname = line0[6:firstparen]
-                    elif firstparen == lastparen == -1:
-                        clsname = line0[6:-1]
-                    varname = clsname.lower()
-                    if varname == clsname:
-                        self.interpretereditor.write('# Class names should be capitalized \n')
+                    if kind=='function' and name == 'onclick':
+                        self.interpretereditor.write('# set onclick handler\n')
                         self.interpretereditor.write('>>> ')
-                        varname = varname[0]
-                    call_line = '%s = %s()' % (varname, clsname)
-                    self.interpretereditor.addcmd(call_line, force=True)
-
+                    else:
+                        self.interpretereditor.addcmd(tocall, force=True)
             else:
                 self.interpretereditor.write('not starting...\n')
                 self.interpretereditor.write('code already running\n')
@@ -1432,10 +1466,26 @@ Check configuration!''')
                     QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
                 if autorun:
-                    ev = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,
+                    code = unicode(self.editor.documents[docid])
+                    code = self.cleancode(code)
+                    kind, name, params, nodefault = self.findmain(code)
+                    missing_vars = []
+                    if nodefault:
+                        for var in nodefault:
+                            if var not in self.interpreter_locals:
+                                missing_vars.append(var)
+
+                    if missing_vars:
+                        self.interpretereditor.write('\n>>> ')
+                        for var in missing_vars:
+                            self.interpretereditor.write('# missing %s \n' % var)
+                            self.interpretereditor.write('>>> ')
+
+                    else:
+                        ev = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,
                                             QtCore.Qt.Key_Enter,
                                             QtCore.Qt.NoModifier, '\n')
-                    self.interpretereditor.keyPressEvent(ev)
+                        self.interpretereditor.keyPressEvent(ev)
 
         self.interpretereditor.clearline()
 
