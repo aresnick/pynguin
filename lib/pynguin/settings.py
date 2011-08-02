@@ -46,7 +46,10 @@ class Settings(QtGui.QDialog):
 
 
         mainfirst = settings.value('editor/mainfirst', True).toBool()
-        self.ui.editor_mainfirst.setChecked(mainfirst)
+        if mainfirst:
+            self.ui.editor_mainfirst.setChecked(True)
+        else:
+            self.ui.editor_mainlast.setChecked(True)
         rev = settings.value('editor/testall_reverse', False).toBool()
         self.ui.testall_reverse.setChecked(rev)
         autocall = settings.value('editor/testall_autocall', False).toBool()
