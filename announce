@@ -40,6 +40,7 @@ Changes in pynguin-0.11:
     Examples
         - make examples use new viewcoords() API
         - fixed multi.pyn scatter example
+        - demonstrate labels in multi.pyn follow example
 
     General
         - added support for custom avatars

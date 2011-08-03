@@ -23,7 +23,8 @@ def follow(n):
     acolor('random')
     aturnto('random')
 
-    for pyn in pynguins:
+    for n, pyn in enumerate(pynguins):
+        pyn.name = 'P%s' % n
         pyn.tocenter = False
         following = pyn
         while following == pyn:
