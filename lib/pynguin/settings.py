@@ -45,6 +45,8 @@ class Settings(QtGui.QDialog):
             self.ui.backupkeep.setValue(bkeep)
 
 
+        reset = settings.value('editor/testrun_reset', True).toBool()
+        self.ui.testrun_reset.setChecked(reset)
         mainfirst = settings.value('editor/mainfirst', True).toBool()
         if mainfirst:
             self.ui.editor_mainfirst.setChecked(True)

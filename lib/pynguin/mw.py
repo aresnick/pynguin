@@ -397,6 +397,8 @@ class MainWindow(QtGui.QMainWindow):
             if not bkeep0:
                 QtCore.QTimer.singleShot(brate*60000, self.autosave)
 
+            reset = ui.testrun_reset.isChecked()
+            settings.setValue('editor/testrun_reset', reset)
             mainfirst = ui.editor_mainfirst.isChecked()
             settings.setValue('editor/mainfirst', mainfirst)
             rev = ui.testall_reverse.isChecked()
@@ -1439,9 +1441,11 @@ Check configuration!''')
         switches to that page and highlights the error.
         '''
 
+        ie = self.interpretereditor
         settings = QtCore.QSettings()
         rev = settings.value('editor/testall_reverse', False).toBool()
         autorun = settings.value('editor/testall_autocall', False).toBool()
+        reset = settings.value('editor/testrun_reset', True).toBool()
 
         count = self.ui.mselect.count()
         for i in range(count):
@@ -1451,19 +1455,19 @@ Check configuration!''')
                 idx = count - i - 1
             docid = unicode(self.ui.mselect.itemData(idx).toString())
             if docid in self.editor.documents:
+                ie.spin(0)
                 self.editor.switchto(docid)
                 self.editor.setFocus()
-                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                while self.interpretereditor.cmdthread is not None:
-                    # wait...
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                    time.sleep(0.01)
-                self.interpretereditor.clearline()
+                if reset:
+                    ie.clearline()
+                    ie.addcmd('reset()')
+                    ie.spin(5)
+                    self.interpretereditor.go()
+                ie.spin(0)
+                ie.clearline()
                 if self.testcode():
                     break
-                for i in range(5):
-                    time.sleep(.1)
-                    QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+                ie.spin(5, delay=0.1)
 
                 if autorun:
                     code = unicode(self.editor.documents[docid])
@@ -1476,18 +1480,16 @@ Check configuration!''')
                                 missing_vars.append(var)
 
                     if missing_vars:
-                        self.interpretereditor.write('\n>>> ')
+                        ie.write('\n>>> ')
                         for var in missing_vars:
-                            self.interpretereditor.write('# missing %s \n' % var)
-                            self.interpretereditor.write('>>> ')
+                            ie.write('# missing %s \n' % var)
+                            ie.write('>>> ')
+                        ie.spin(5)
 
                     else:
-                        ev = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,
-                                            QtCore.Qt.Key_Enter,
-                                            QtCore.Qt.NoModifier, '\n')
-                        self.interpretereditor.keyPressEvent(ev)
+                        ie.go()
 
-        self.interpretereditor.clearline()
+        ie.clearline()
 
     def setPenColor(self):
         '''use a color selection dialog to set the pen line color

@@ -186,6 +186,27 @@ class Interpreter(HighlightedTextEdit):
             self.write('... ')
 
 
+    def go(self):
+        'react as if the ENTER key has been pressed on the keyboard'
+        ev = QtGui.QKeyEvent(QtCore.QEvent.KeyPress,
+                                QtCore.Qt.Key_Enter,
+                                QtCore.Qt.NoModifier, '\n')
+        self.keyPressEvent(ev)
+
+    def spin(self, n, delay=0.01):
+        '''call processEvents n times.
+            If n is 0, continue until cmdthread is None
+        '''
+        if n:
+            for i in range(n):
+                time.sleep(delay)
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+        else:
+            self.spin(1)
+            while self.cmdthread is not None:
+                time.sleep(delay)
+                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
     def keyPressEvent(self, ev):
         k = ev.key()
         logger.debug('Key: %s' % k)
@@ -474,6 +495,9 @@ class Interpreter(HighlightedTextEdit):
         cpos = self.textCursor().position()
         cblk = self._doc.findBlock(cpos)
         pos = cblk.position()
+        if pos == cpos:
+            # line is already empty
+            return
 
         curs = self.textCursor()
         curs.setPosition(pos+4, 0)

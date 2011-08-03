@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>397</width>
-    <height>300</height>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -245,64 +245,77 @@
       <attribute name="title">
        <string>Editor</string>
       </attribute>
-      <widget class="QCheckBox" name="testall_autocall">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>190</y>
-         <width>321</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Auto call main function/ class for &quot;Test / run all&quot;</string>
-       </property>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_4">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>341</width>
-         <height>111</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Main function / class</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <widget class="QRadioButton" name="editor_mainfirst">
-          <property name="text">
-           <string>First function/ class on the page</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="editor_mainlast">
-          <property name="text">
-           <string>Last function/ class on the page</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QCheckBox" name="testall_reverse">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>150</y>
-         <width>341</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Test/ Run all in reverse order (last to first)</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Main function / class</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QRadioButton" name="editor_mainfirst">
+            <property name="text">
+             <string>First function/ class on the page</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="editor_mainlast">
+            <property name="text">
+             <string>Last function/ class on the page</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Test / Run all settings</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QCheckBox" name="testrun_reset">
+            <property name="text">
+             <string>reset() between pages</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="testall_reverse">
+            <property name="text">
+             <string>&quot;Test/ Run all&quot; in reverse order (last to first)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="testall_autocall">
+            <property name="text">
+             <string>Automatically call main function/ class</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
