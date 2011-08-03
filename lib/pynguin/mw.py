@@ -1368,9 +1368,25 @@ Check configuration!''')
                             if d is None:
                                 nodefault.append(param)
             elif kind == 'class':
-                # will take more work to figure out class call params
-                params = ''
+                c = self.interpreter_locals.get(name, None)
                 nodefault = []
+                params = ''
+                if c is not None:
+                    func = getattr(c, '__init__', None)
+                    if func is not None:
+                        defaults = self._pdict(func)
+                        if defaults:
+                            del defaults['self']
+                            count = len(defaults)
+                            for i, (param, d) in enumerate(defaults.items()):
+                                params += param
+                                if d is None:
+                                    nodefault.append(param)
+                                else:
+                                    params += '=%s' % d
+                                if i < count-1:
+                                    params += ', '
+
             return (kind, name, params, nodefault)
 
         return None, None, None, None
@@ -1379,7 +1395,8 @@ Check configuration!''')
         '''given function object,
             return a dict of {arg name: default value or None, ...}
         '''
-        parameter_defaults = {}
+        from collections import OrderedDict
+        parameter_defaults = OrderedDict()
         defaults = f.func_defaults
         if defaults is not None:
             defaultcount = len(defaults)
@@ -1416,6 +1433,7 @@ Check configuration!''')
             compile(code, 'current file', 'exec')
         except SyntaxError, e:
             self.editor.selectline(e.lineno)
+            self.interpretereditor.clearline()
             self.interpretereditor.write('Syntax Error in line %s\n' % e.lineno)
             self.interpretereditor.write('>>> ')
             self.editor.setFocus()
@@ -1439,7 +1457,7 @@ Check configuration!''')
                             self.interpretereditor.write('# Class names should be capitalized \n')
                             self.interpretereditor.write('>>> ')
                             varname = varname[0]
-                        tocall = '%s = %s()' % (varname, name)
+                        tocall = '%s = %s(%s)' % (varname, name, params)
 
                     if kind=='function' and name == 'onclick':
                         self.interpretereditor.write('# set onclick handler\n')
