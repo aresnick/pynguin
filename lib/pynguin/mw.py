@@ -1368,7 +1368,7 @@ Check configuration!''')
                             if d is None:
                                 nodefault.append(param)
             elif kind == 'class':
-                # bare class Foo:
+                # will take more work to figure out class call params
                 params = ''
                 nodefault = []
             return (kind, name, params, nodefault)
