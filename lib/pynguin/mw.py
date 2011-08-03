@@ -1359,20 +1359,40 @@ Check configuration!''')
 
             if kind=='function' and firstparen > -1 and lastparen > -1:
                 params = line[firstparen+1:lastparen]
+                func = self.interpreter_locals.get(name, None)
                 nodefault = []
-                if params:
-                    for param in params.split(','):
-                        param = param.strip()
-                        if '=' not in param and param not in nodefault:
-                            nodefault.append(param)
-                return (kind, name, params, nodefault)
+                if func is not None:
+                    defaults = self._pdict(func)
+                    if defaults:
+                        for param, d in defaults.items():
+                            if d is None:
+                                nodefault.append(param)
             elif kind == 'class':
                 # bare class Foo:
                 params = ''
                 nodefault = []
-                return (kind, name, params, nodefault)
+            return (kind, name, params, nodefault)
 
         return None, None, None, None
+
+    def _pdict(self, f):
+        '''given function object,
+            return a dict of {arg name: default value or None, ...}
+        '''
+        parameter_defaults = {}
+        defaults = f.func_defaults
+        if defaults is not None:
+            defaultcount = len(defaults)
+        else:
+            defaultcount = 0
+        argcount = f.func_code.co_argcount
+        for i in xrange(f.func_code.co_argcount):
+            name = f.func_code.co_varnames[i]
+            value = None
+            if i >= argcount - defaultcount:
+                value = defaults[i - (argcount - defaultcount)]
+            parameter_defaults[name] = value
+        return parameter_defaults
 
     def testcode(self):
         '''exec the code in the current editor window and load it in
