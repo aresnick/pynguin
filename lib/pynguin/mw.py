@@ -1362,9 +1362,9 @@ Check configuration!''')
                 func = self.interpreter_locals.get(name, None)
                 nodefault = []
                 if func is not None:
-                    defaults = self._pdict(func)
+                    defaults = self._plist(func)
                     if defaults:
-                        for param, d in defaults.items():
+                        for param, d in defaults:
                             if d is None:
                                 nodefault.append(param)
             elif kind == 'class':
@@ -1374,11 +1374,11 @@ Check configuration!''')
                 if c is not None:
                     func = getattr(c, '__init__', None)
                     if func is not None:
-                        defaults = self._pdict(func)
+                        defaults = self._plist(func)
                         if defaults:
-                            del defaults['self']
+                            del defaults[0] # self
                             count = len(defaults)
-                            for i, (param, d) in enumerate(defaults.items()):
+                            for i, (param, d) in enumerate(defaults):
                                 params += param
                                 if d is None:
                                     nodefault.append(param)
@@ -1391,12 +1391,11 @@ Check configuration!''')
 
         return None, None, None, None
 
-    def _pdict(self, f):
+    def _plist(self, f):
         '''given function object,
-            return a dict of {arg name: default value or None, ...}
+            return a list of [(arg name: default value or None), ...]
         '''
-        from collections import OrderedDict
-        parameter_defaults = OrderedDict()
+        parameter_defaults = []
         defaults = f.func_defaults
         if defaults is not None:
             defaultcount = len(defaults)
@@ -1408,7 +1407,7 @@ Check configuration!''')
             value = None
             if i >= argcount - defaultcount:
                 value = defaults[i - (argcount - defaultcount)]
-            parameter_defaults[name] = value
+            parameter_defaults.append((name, value))
         return parameter_defaults
 
     def testcode(self):
