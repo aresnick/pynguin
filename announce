@@ -39,6 +39,7 @@ Changes in pynguin-0.11:
         - added "Test / Run all" button
 
     Integrated Console
+        - now gives correct call syntax when using test/run on classes
 
     Examples
         - make examples use new viewcoords() API
