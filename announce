@@ -31,6 +31,9 @@ Changes in pynguin-0.11:
             - pass floats=True to get the float values instead
 
     Canvas
+        - added support for custom avatars
+            - both svg and bitmap images supported
+        - fixed motion when drawing slow circles with pen up
 
     Integrated Editor
         - added "Test / Run all" button
@@ -43,7 +46,4 @@ Changes in pynguin-0.11:
         - demonstrate labels in multi.pyn follow example
 
     General
-        - added support for custom avatars
-            - both svg and bitmap images supported
-        - fixed motion when drawing slow circles with pen up
         - fixed examples getting gzipped in .deb distribution file
