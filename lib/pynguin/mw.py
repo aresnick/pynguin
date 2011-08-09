@@ -973,7 +973,7 @@ Check configuration!''')
         if add_to_recent:
             self.addrecentfile(self._filepath)
 
-    def _openfile(self, fp, add_to_recent=True):
+    def _openfile(self, fp, add_to_recent=True, dump=False):
         '''Open the selected file.
 
         If the file is python source (.py) open the file and
@@ -985,6 +985,9 @@ Check configuration!''')
             First determine which file format version is used in
             the file, then dispatch to the correct function.
 
+        If dump=True, just prints out the various contents of the
+            file to stdout if that is possible.
+
         '''
         if fp.endswith('.pyn'):
             z = zipfile.ZipFile(fp, 'r')
@@ -994,10 +997,10 @@ Check configuration!''')
             logger.info('Opening file with version: "%s"' % info.comment)
 
             if not info.comment:
-                self._openfile00(fp)
+                self._openfile00(fp, dump)
             else:
                 if info.comment == 'pyn01':
-                    self._openfile01(fp)
+                    self._openfile01(fp, dump)
                 else:
                     QtGui.QMessageBox.information(self,
                             'Unknown Format',
@@ -1005,11 +1008,17 @@ Check configuration!''')
                     return
 
         if fp.endswith('.py'):
-            doc = self.editor.addexternal(fp)
-            self.addrecentfile(fp)
-            self._modified = True
-            self.setWindowModified(True)
-            self._addwatcher(fp, doc)
+            if not dump:
+                doc = self.editor.addexternal(fp)
+                self.addrecentfile(fp)
+                self._modified = True
+                self.setWindowModified(True)
+                self._addwatcher(fp, doc)
+            else:
+                txt = open(fp).read()
+                txt = txt.decode('utf-8')
+                print txt
+                print
         else:
             self._update_after_open(fp, add_to_recent)
 
@@ -1064,14 +1073,19 @@ Check configuration!''')
         '''
         return ename.startswith('##')
 
-    def _openfile00(self, fp):
+    def _openfile00(self, fp, dump=False):
         'Used to open files from version < 0.10'
         z = zipfile.ZipFile(fp, 'r')
         for ename in z.namelist():
             fo = z.open(ename, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
-            if self._shouldload00(ename):
+
+            if dump:
+                print ename
+                print data
+                print
+            elif self._shouldload00(ename):
                 self._loaddata(data)
             elif ename.startswith('@@history@@'):
                 self._loadhistory(data)
@@ -1083,25 +1097,36 @@ Check configuration!''')
                 ename[:5].isdigit() and \
                 ename.endswith('.py')
 
-    def _openfile01(self, fp):
+    def _openfile01(self, fp, dump=False):
         'used to open files in version 0.10 (file vers. pyn01)'
         fpd, _ = os.path.split(fp)
         z = zipfile.ZipFile(fp, 'r')
         namelist = z.namelist()
-        hasmanifest = False
-        for ename in namelist:
-            if '@@manifest@@' in ename:
-                fo = z.open(ename, 'rU')
-                data = fo.read()
-                data = data.decode('utf-8')
-                namelist = data.split('\n')
-                hasmanifest = True
 
-        if not hasmanifest:
+        hasmanifest = False
+        hashistory = False
+        for ename in namelist:
+            logger.info(ename)
+            if '@@manifest@@' in ename:
+                hasmanifest = True
+            elif '@@history@@' in ename:
+                hashistory = ename
+
+        if hasmanifest:
+            fo = z.open(ename, 'rU')
+            data = fo.read()
+            data = data.decode('utf-8')
+            namelist = data.split('\n')
+            if hashistory:
+                namelist.append(hashistory)
+        else:
             namelist.sort()
 
         for ename in namelist:
             logger.info('loading %s' % ename)
+            if dump:
+                print '============================================'
+
             if ename.startswith('_@@'):
                 n = ename[4:]
                 np = os.path.join(fpd, n)
@@ -1110,7 +1135,8 @@ Check configuration!''')
 
             elif os.path.isabs(ename):
                 try:
-                    self._openfile(ename)
+                    self._openfile(ename, dump=dump)
+                    continue
                 except IOError:
                     self.editor.add('Could not load:\n%s' % ename)
                     self.editor._doc._title = 'NOT LOADED'
@@ -1122,7 +1148,12 @@ Check configuration!''')
 
             data = fo.read()
             data = data.decode('utf-8')
-            if self._shouldload01(ename):
+            if dump:
+                if '@@history@@' in ename:
+                    print 'Command history'
+                print data
+                print
+            elif self._shouldload01(ename):
                 self._loaddata(data)
             elif '@@history@@' in ename:
                 self._loadhistory(data)

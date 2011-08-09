@@ -97,7 +97,9 @@ if main:
         print 'when installing.'
 
 
-if main:
+if main and 'DUMP' in sys.argv:
+    main.dumpfile()
+elif main:
     main.run()
 else:
     raw_input()

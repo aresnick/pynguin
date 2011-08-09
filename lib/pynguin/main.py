@@ -70,6 +70,14 @@ def run():
     win.show()
     app.exec_()
 
+def dumpfile():
+    fp = sys.argv[-1]
+    app = QtGui.QApplication(sys.argv)
+    win = MainWindow(app)
+    sys.stdout = win.interpretereditor.save_stdout
+    sys.stderr = win.interpretereditor.save_stderr
+    win._openfile(fp, add_to_recent=False, dump=True)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
