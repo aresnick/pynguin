@@ -1140,7 +1140,7 @@
   </connection>
   <connection>
    <sender>actionTrack</sender>
-   <signal>changed()</signal>
+   <signal>activated()</signal>
    <receiver>MainWindow</receiver>
    <slot>settrack()</slot>
    <hints>

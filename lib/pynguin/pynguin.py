@@ -41,7 +41,7 @@ pynguin_functions = [
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
     'avatar', 'remove', 'promote', 'reap',
-    'speed']
+    'speed', 'track', 'notrack']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
     'history', 'util',]
@@ -75,7 +75,7 @@ class Pynguin(object):
     mw = None # set by MainWindow before any Pynguin get instantiated
     rend = None # set by MainWindow before any Pynguin get instantiated
 
-    track_main_pynguin = None # set up by mw.setup_settings
+    _track_main_pynguin = None # set up by mw.setup_settings
 
     def __init__(self, pos=(0, 0), ang=0):
         self.scene = self.mw.scene
@@ -732,6 +732,16 @@ class Pynguin(object):
     def _gitem_home(self):
         self._item_home(self.gitem)
 
+    def _gitem_track(self, track):
+        Pynguin._track_main_pynguin = track
+        self.gitem._track()
+        self.mw._sync_track(track)
+
+    def track(self, track=True):
+        self.qmove(self._gitem_track, (track,))
+    def notrack(self):
+        self.track(False)
+
     def home(self):
         '''home()
 
@@ -1243,6 +1253,7 @@ class Pynguin(object):
         To get float values instead of integers, pass in the optional
             parameter floats=True
         '''
+        self.mw.interpretereditor.spin(5)
         coords = self._viewrect().getCoords()
         if not floats:
             coords = [int(c) for c in coords]
@@ -1393,7 +1404,7 @@ class PynguinGraphicsItem(GraphicsItem):
         GraphicsItem.setPos(self, pos)
         self.set_transform()
         self.expand(pos)
-        self.track()
+        self._track()
 
     def expand(self, pos=None):
         '''Check if the scene needs to expand for the drawn items.
@@ -1413,9 +1424,9 @@ class PynguinGraphicsItem(GraphicsItem):
                 newrect = itemrect.united(scenerect)
                 scene.setSceneRect(newrect)
 
-    def track(self):
+    def _track(self):
         'center the view on the pynguin'
-        if Pynguin.track_main_pynguin and not self._notrack:
+        if Pynguin._track_main_pynguin and not self._notrack:
             pynguin = self.pynguin
             mainpyn = pynguin.mw.pynguin
             scene = self.scene()

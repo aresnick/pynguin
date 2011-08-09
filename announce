@@ -29,6 +29,7 @@ Changes in pynguin-0.11:
         - added .speed() method to change speed from user code
         - viewcoords() now returns integers by default
             - pass floats=True to get the float values instead
+        - added .track() and .notrack() methods for user code
 
     Canvas
         - added support for custom avatars
