@@ -1112,7 +1112,7 @@ Check configuration!''')
                 try:
                     self._openfile(ename)
                 except IOError:
-                    self._loaddata('Could not load:\n%s' % ename)
+                    self.editor.add('Could not load:\n%s' % ename)
                     self.editor._doc._title = 'NOT LOADED'
                     self.editor._doc._filepath = ename
                     self.editor.settitle('NOT LOADED')
