@@ -989,6 +989,12 @@ Check configuration!''')
             file to stdout if that is possible.
 
         '''
+        if not os.path.exists(fp):
+            QtGui.QMessageBox.information(self,
+                    'File not found',
+                    'File not found:\n\n%s' % fp)
+            return
+
         if fp.endswith('.pyn'):
             z = zipfile.ZipFile(fp, 'r')
             infos = z.infolist()
