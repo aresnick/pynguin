@@ -315,6 +315,11 @@ class CodeArea(HighlightedTextEdit):
 
     def addexternal(self, fp):
         '''Add an external python source file.'''
+        for docid, doc in self.textdocuments.items():
+            if hasattr(doc, '_filepath') and doc._filepath == fp:
+                # this external file already added
+                self.switchto(docid)
+                return
         txt = open(fp).read()
         txt = txt.decode('utf-8')
         self.new()

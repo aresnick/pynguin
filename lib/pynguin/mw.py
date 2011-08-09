@@ -1016,10 +1016,11 @@ Check configuration!''')
         if fp.endswith('.py'):
             if not dump:
                 doc = self.editor.addexternal(fp)
-                self.addrecentfile(fp)
-                self._modified = True
-                self.setWindowModified(True)
-                self._addwatcher(fp, doc)
+                if doc is not None:
+                    self.addrecentfile(fp)
+                    self._modified = True
+                    self.setWindowModified(True)
+                    self._addwatcher(fp, doc)
             else:
                 txt = open(fp).read()
                 txt = txt.decode('utf-8')
