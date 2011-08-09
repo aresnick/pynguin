@@ -672,15 +672,21 @@ Check configuration!''')
                 efp = textdoc._filepath
                 manifest.append(efp)
 
+                logger.info('external: %s' % efp)
+                if not textdoc.isModified():
+                    logger.info('UNCHANGED')
+                    continue
+
                 if efp.startswith('_@@'):
                     dirname, _ = os.path.split(fp)
                     efp = efp.replace('_@@', dirname)
-                logger.info('external: %s' % efp)
-                self._writing_external = efp
+                self._remwatcher(efp)
                 f = open(efp, 'w')
                 f.write(code.encode('utf-8'))
                 f.close()
-                self._writing_external = None
+                self._addwatcher(efp, textdoc)
+
+                textdoc.setModified(False)
                 continue
 
             arcname = '%05d.py' % n
@@ -1040,17 +1046,20 @@ Check configuration!''')
         '''called when an external file has changed on disk.
         '''
         logger.info('_fc %s' % fp)
-        if str(fp) == str(self._writing_external):
-            # Ignore notification when saving the file
-            return
 
         settings = QtCore.QSettings()
         autorefresh = settings.value('file/reloadexternal', True).toBool()
         if autorefresh:
             doc = self._watchdocs[str(fp)]
+            if doc.isModified():
+                QtGui.QMessageBox.information(self,
+                    'Modified',
+                    'Local copy has modifications:\n\n%s\n\nNot loading external changes.' % fp)
+                return
             txt = open(fp).read()
             txt = txt.decode('utf-8')
             doc.setPlainText(txt)
+            doc.setModified(False)
             autorun = settings.value('file/autorun', False).toBool()
             if autorun:
                 self.interpreter.runcode(txt)
