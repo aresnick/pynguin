@@ -1,22 +1,43 @@
 class ZZ(Pynguin):
-    def __init__(self, csize):
+    '''A pynguin that draws in circles instead of straight lines
+    '''
+
+    def __init__(self, csize=12):
         Pynguin.__init__(self)
         self._csize = csize
 
     def cfd(self, d):
         r = self._csize / 2.0
+        pen = self.pen
         while d > 0:
-            self.pendown()
             Pynguin.circle(self, r, True)
             self.penup()
             Pynguin.fd(self, 2*r)
             d -= 2*r
+            if pen:
+                self.pendown()
 
     def forward(self, d):
         self.cfd(d)
     fd = forward
 
-    def circle(self, r):
+    def circle(self, r, center=False):
+        if center:
+            pen = self.pen
+            self.penup()
+            self.fd(r)
+            self.rt(90)
+            if pen:
+                self.pendown()
+            self.circle(r)
+            self.penup()
+            self.rt(90)
+            self.fd(r)
+            self.lt(180)
+            if pen:
+                self.pendown()
+            return
+
         ox, oy = self.xy()
         oa = self.ritem.ang
 
