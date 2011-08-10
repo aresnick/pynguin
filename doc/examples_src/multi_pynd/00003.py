@@ -1,20 +1,16 @@
-def follow_switch(n):
+def follow_switch(n, scramble=True):
     '''Like follow() but occasionally
     a pynguin will decide to follow a
     different pynguin.
     '''
 
     import random
-    p._fspeed = 1
-    p._tspeed = 3
-    for c in range(n):
-        pyn = Pynguin()
-        pyn._fspeed = 1 + random.randrange(1900)/1000.
-        pyn._tspeed = 3 + random.randrange(1900)/1000.
+    make(n)
 
-    agoto('random')
-    acolor('random')
-    aturnto('random')
+    if scramble:
+        agoto('random')
+        acolor('random')
+        aturnto('random')
 
     def follow_who(pyn, pyns):
         following = pyn
@@ -23,6 +19,8 @@ def follow_switch(n):
         pyn.following = following
 
     for pyn in pynguins:
+        pyn._fspeed = 1 + random.randrange(1900)/1000.
+        pyn._tspeed = 3 + random.randrange(1900)/1000.
         pyn.tocenter = False
         follow_who(pyn, pynguins)
 

@@ -1,4 +1,4 @@
-def follow_switch_all(n):
+def follow_switch_all(n, scramble=True):
     '''Like follow_switch() but
     occasionally all of the pynguins
     will decide to follow another
@@ -6,16 +6,12 @@ def follow_switch_all(n):
 
     '''
     import random
-    p._fspeed = 1
-    p._tspeed = 3
-    for c in range(n):
-        pyn = Pynguin()
-        pyn._fspeed = 1 + random.randrange(1900)/1000.
-        pyn._tspeed = 3 + random.randrange(1900)/1000.
+    make(n)
 
-    agoto('random')
-    acolor('random')
-    aturnto('random')
+    if scramble:
+        agoto('random')
+        acolor('random')
+        aturnto('random')
 
     def follow_who(pyns):
         for p in pyns:
@@ -25,6 +21,8 @@ def follow_switch_all(n):
             p.following = following
 
     for pyn in pynguins:
+        pyn._fspeed = 1 + random.randrange(1900)/1000.
+        pyn._tspeed = 3 + random.randrange(1900)/1000.
         pyn.tocenter = False
     follow_who(pynguins)
 

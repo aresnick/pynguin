@@ -1,4 +1,4 @@
-def follow(n):
+def follow(n, scramble=True):
     '''Create n new pynguins, each
     one following one of the others.
 
@@ -9,22 +9,25 @@ def follow(n):
     screen, it will head back to the center
     before resuming following its chosen
     other pynguin.
+
+    if scramble=True all pynguins will
+    be moved to random locations, turned
+    to random directions, and give random
+    drawing colors before starting.
     '''
 
     import random
-    p._fspeed = 1
-    p._tspeed = 3
-    for c in range(n):
-        pyn = Pynguin()
-        pyn._fspeed = 1 + random.randrange(1900)/1000.
-        pyn._tspeed = 3 + random.randrange(1900)/1000.
+    make(n)
 
-    agoto('random')
-    acolor('random')
-    aturnto('random')
+    if scramble:
+        agoto('random')
+        acolor('random')
+        aturnto('random')
 
     for n, pyn in enumerate(pynguins):
         pyn.name = 'P%s' % n
+        pyn._fspeed = 1 + random.randrange(1900)/1000.
+        pyn._tspeed = 3 + random.randrange(1900)/1000.
         pyn.tocenter = False
         following = pyn
         while following == pyn:
