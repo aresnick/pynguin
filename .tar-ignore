@@ -3,6 +3,8 @@
 *.pyc
 doc/screenshots
 doc/examples/test
+doc/testing
+doc/video
 *.log
 backup*
 wiki
