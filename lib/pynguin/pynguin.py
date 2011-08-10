@@ -1182,7 +1182,8 @@ class Pynguin(object):
         self._check_drawspeed_change()
         if self.drawspeed == 0:
             # instant circles
-            self.qmove(self._circle, (crect,))
+            if self.pen:
+                self.qmove(self._circle, (crect,))
         else:
             # animated circles
             self._slowcircle(crect, r, center)
