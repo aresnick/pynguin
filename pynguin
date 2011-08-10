@@ -97,7 +97,20 @@ if main:
         print 'when installing.'
 
 
-if main and 'DUMP' in sys.argv:
+def help():
+    from pynguin import conf
+    print conf.version
+    print
+    print 'options:'
+    print '  -h : this help text'
+    print '  -d : development mode. Run from local directory'
+    print '  -D : debug mode. Write debug info to log file'
+    print ' DUMP <filename> :'
+    print '       dump contents of pynguin file to standard output'
+
+if '-h' in sys.argv:
+    help()
+elif main and 'DUMP' in sys.argv:
     main.dumpfile()
 elif main:
     main.run()
