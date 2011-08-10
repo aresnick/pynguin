@@ -29,6 +29,27 @@ def sign(x):
     return cmp(x, 0)
 
 
+NODEFAULT = object()
+def _plist(f):
+    '''given function object,
+        return a list of [(arg name: default value or None), ...]
+    '''
+    parameter_defaults = []
+    defaults = f.func_defaults
+    if defaults is not None:
+        defaultcount = len(defaults)
+    else:
+        defaultcount = 0
+    argcount = f.func_code.co_argcount
+    for i in xrange(f.func_code.co_argcount):
+        name = f.func_code.co_varnames[i]
+        value = NODEFAULT
+        if i >= argcount - defaultcount:
+            value = defaults[i - (argcount - defaultcount)]
+        parameter_defaults.append((name, value))
+    return parameter_defaults
+
+
 class SvgRenderer(object):
     'factory for svg renderer objects'
 

@@ -1409,10 +1409,10 @@ Check configuration!''')
                 func = self.interpreter_locals.get(name, None)
                 nodefault = []
                 if func is not None:
-                    defaults = self._plist(func)
+                    defaults = util._plist(func)
                     if defaults:
                         for param, d in defaults:
-                            if d is None:
+                            if d is util.NODEFAULT:
                                 nodefault.append(param)
             elif kind == 'class':
                 c = self.interpreter_locals.get(name, None)
@@ -1421,13 +1421,13 @@ Check configuration!''')
                 if c is not None:
                     func = getattr(c, '__init__', None)
                     if func is not None:
-                        defaults = self._plist(func)
+                        defaults = util._plist(func)
                         if defaults:
                             del defaults[0] # self
                             count = len(defaults)
                             for i, (param, d) in enumerate(defaults):
                                 params += param
-                                if d is None:
+                                if d is util.NODEFAULT:
                                     nodefault.append(param)
                                 else:
                                     params += '=%s' % str(d)
@@ -1437,25 +1437,6 @@ Check configuration!''')
             return (kind, name, params, nodefault)
 
         return None, None, None, None
-
-    def _plist(self, f):
-        '''given function object,
-            return a list of [(arg name: default value or None), ...]
-        '''
-        parameter_defaults = []
-        defaults = f.func_defaults
-        if defaults is not None:
-            defaultcount = len(defaults)
-        else:
-            defaultcount = 0
-        argcount = f.func_code.co_argcount
-        for i in xrange(f.func_code.co_argcount):
-            name = f.func_code.co_varnames[i]
-            value = None
-            if i >= argcount - defaultcount:
-                value = defaults[i - (argcount - defaultcount)]
-            parameter_defaults.append((name, value))
-        return parameter_defaults
 
     def testcode(self):
         '''exec the code in the current editor window and load it in
