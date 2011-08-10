@@ -1430,7 +1430,7 @@ Check configuration!''')
                                 if d is None:
                                     nodefault.append(param)
                                 else:
-                                    params += '=%s' % d
+                                    params += '=%s' % str(d)
                                 if i < count-1:
                                     params += ', '
 
