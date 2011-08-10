@@ -1490,7 +1490,7 @@ class PynguinGraphicsItem(GraphicsItem):
                 self._notrack = False
 
     def mouseReleaseEvent(self, ev):
-        self.track()
+        self._track()
 
 
 class PynguinLabelItem(GraphicsItem):
