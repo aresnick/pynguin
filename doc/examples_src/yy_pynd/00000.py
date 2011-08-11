@@ -54,10 +54,11 @@ def yinyang(radius=None, position=None, yycolor=None):
     forward(diameter / 2.0)
     color(*yycolor)
     fill(color=yycolor)
+    pendown()
     circle(diameter / 20.0, center=True)
 
-    if pen:
-        pendown()
+    if not pen:
+        penup()
     color(*color_orig)
 
     goto(x0, y0)
