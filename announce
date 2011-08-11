@@ -36,6 +36,7 @@ Changes in pynguin-0.11:
             - both svg and bitmap images supported
         - fixed motion when drawing slow circles with pen up
         - don't draw circles when pen is up and speed is instant
+        - expand canvas when resizing window
 
     Integrated Editor
         - added "Test / Run all" button
