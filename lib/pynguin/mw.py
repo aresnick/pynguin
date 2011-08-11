@@ -1849,6 +1849,18 @@ Check configuration!''')
     def reportbug(self):
         QtGui.QDesktopServices().openUrl(QtCore.QUrl(conf.bug_url))
 
+    def resizeEvent(self, ev):
+        scene = self.scene
+        size = ev.size()
+        wnew, hnew = size.width(), size.height()
+        rect = scene.sceneRect()
+        wr, hr = rect.width(), rect.height()
+
+        if wnew > wr or hnew > hr:
+            w = max(wr, wnew)
+            h = max(hr, hnew)
+            w2, h2 = w/2, h/2
+            scene.setSceneRect(-w2, -h2, w, h)
 
 class Scene(QtGui.QGraphicsScene):
     def __init__(self):
