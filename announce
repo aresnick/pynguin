@@ -35,6 +35,7 @@ Changes in pynguin-0.11:
         - added support for custom avatars
             - both svg and bitmap images supported
         - fixed motion when drawing slow circles with pen up
+        - don't draw circles when pen is up and speed is instant
 
     Integrated Editor
         - added "Test / Run all" button
@@ -46,7 +47,10 @@ Changes in pynguin-0.11:
     Examples
         - make examples use new viewcoords() API
         - fixed multi.pyn scatter example
+        - make multi.pyn follow examples work with existing pynguins
         - demonstrate labels in multi.pyn follow example
+        - fix penup() in oo.pyn ZZ example
+        - add centered circle in oo.pyn ZZ example
 
     General
         - fixed examples getting gzipped in .deb distribution file
