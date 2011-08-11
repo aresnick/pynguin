@@ -41,13 +41,17 @@ def make_deb():
     if os.path.exists('deb_dist'):
         shutil.rmtree('deb_dist')
 
-    backups = glob.glob(conf.backupfile % '*')
+    backuppattern = 'backup~%s.pyn'
+    logfile = 'logfile.log'
+
+    backups = glob.glob(backuppattern % '*')
     for b in backups:
         os.remove(b)
-    os.remove(conf.LOG_FILENAME)
+    if os.path.exists(logfile):
+        os.remove(logfile)
 
     os.system('python setup.py bdist_deb')
-    os.chdir('deb_dist/pynguin-0.10/')
+    os.chdir('deb_dist/%s/' % conf.version)
     f = file('debian/rules', 'a')
     f.write('override_dh_compress:\n')
     f.write('\tdh_compress -X.pyn\n')
