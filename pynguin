@@ -107,6 +107,7 @@ def help():
     print '  -D : debug mode. Write debug info to log file'
     print ' DUMP <filename> :'
     print '       dump contents of pynguin file to standard output'
+    print '  -d MAKEDEB : create debian package'
 
 if '-h' in sys.argv:
     help()
