@@ -1513,6 +1513,7 @@ Check configuration!''')
         reset = settings.value('editor/testrun_reset', True).toBool()
 
         count = self.ui.mselect.count()
+        Pynguin._stop_testall = False
         for i in range(count):
             if not rev:
                 idx = i
@@ -1529,6 +1530,10 @@ Check configuration!''')
                     ie.spin(5)
                     self.interpretereditor.go()
                 ie.spin(0)
+
+                if Pynguin._stop_testall:
+                    break
+
                 ie.clearline()
                 if self.testcode():
                     break

@@ -376,6 +376,7 @@ class Interpreter(HighlightedTextEdit):
             if self.cmdthread is not None and self.cmdthread.isRunning():
                 logger.info('Thread running')
                 pynguin.Pynguin.ControlC = True
+                pynguin.Pynguin._stop_testall = True
                 #logging.debug('CCT')
                 self.mw.pynguin._empty_move_queue()
                 for pyn in self.mw.pynguins:
