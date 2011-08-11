@@ -528,6 +528,11 @@ class MainWindow(QtGui.QMainWindow):
             pass
 
     def _new(self, newdoc=False):
+        import threading
+        if hasattr(threading, 'threads'):
+            for pyn in threading.threads:
+                threading.threads[pyn] = 0
+
         self.pynguin.reset(True)
         del_later = []
         for name in self.interpreter_locals:
