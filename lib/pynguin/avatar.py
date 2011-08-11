@@ -6,7 +6,8 @@ from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 import util
 import conf
 
-uidir = 'data/ui'
+datadir = util.get_datadir()
+uidir = os.path.join(datadir, 'ui')
 
 class CustomAvatar(QtGui.QDialog):
     def __init__(self, parent):

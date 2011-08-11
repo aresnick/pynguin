@@ -5,7 +5,8 @@ from PyQt4 import QtCore, QtGui, uic
 import util
 import conf
 
-uidir = 'data/ui'
+datadir = util.get_datadir()
+uidir = os.path.join(datadir, 'ui')
 
 class Settings(QtGui.QDialog):
     def __init__(self, parent):
