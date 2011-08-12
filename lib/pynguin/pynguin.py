@@ -28,6 +28,7 @@ logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
+import util
 from util import sign, choose_color
 import conf
 
@@ -874,6 +875,39 @@ class Pynguin(object):
         self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b))
         return r, g, b
+
+    def _colorat(self):
+        items = self.scene.items(QtCore.QPointF(self.x, self.y))
+
+        gitem = self.gitem
+        item = gitem.item
+        current_line = gitem._current_line
+
+        if item in items:
+            items.remove(item)
+        if gitem in items:
+            items.remove(gitem)
+        if current_line in items:
+            items.remove(current_line)
+
+        if items:
+            self._colorat_return = items[0]
+        else:
+            self._colorat_return = util.NOTHING
+    def colorat(self):
+        self._colorat_return = None
+        self.qmove(self._colorat)
+        i = 0
+        while self._colorat_return is None:
+            if self.ControlC:
+                break
+            self.mw.interpretereditor.spin(1, 0.001)
+        rval = self._colorat_return
+        self._colorat_return = None
+        if rval is util.NOTHING:
+            return None
+        else:
+            return rval
 
     def _width(self, w):
         self.gitem.pen.setWidth(w)

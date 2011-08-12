@@ -24,6 +24,8 @@ from random import randrange
 from PyQt4 import QtCore, QtSvg, QtGui
 
 
+NOTHING = object()
+
 def sign(x):
     'return 1 if x is positive, -1 if negative, or zero'
     return cmp(x, 0)
