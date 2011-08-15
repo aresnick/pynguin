@@ -877,7 +877,9 @@ class Pynguin(object):
         return r, g, b
 
     def _colorat(self):
-        items = self.scene.items(QtCore.QPointF(self.x, self.y))
+        scene = self.scene
+        x, y = int(self.x), int(self.y)
+        items = scene.items(QtCore.QPointF(x, y))
 
         gitem = self.gitem
         item = gitem.item
@@ -891,7 +893,25 @@ class Pynguin(object):
             items.remove(current_line)
 
         if items:
-            self._colorat_return = items[0]
+            src = QtCore.QRectF(x, y, 1, 1)
+            sz = QtCore.QSize(1, 1)
+            self._i = i = QtGui.QImage(sz, QtGui.QImage.Format_RGB32)
+            p = QtGui.QPainter(i)
+            irf = QtCore.QRectF(0, 0, 1, 1)
+            for pynguin in self.mw.pynguins:
+                pynguin.gitem.hide()
+            if current_line is not None:
+                current_line.hide()
+            scene.render(p, irf, src)
+            for pynguin in self.mw.pynguins:
+                pynguin.gitem.show()
+            if current_line is not None:
+                current_line.show()
+            rgb = i.pixel(0, 0)
+            color = QtGui.QColor()
+            color.setRgb(rgb)
+
+            self._colorat_return = color.name()
         else:
             self._colorat_return = util.NOTHING
     def colorat(self):
