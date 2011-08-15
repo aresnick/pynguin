@@ -1496,6 +1496,8 @@ Check configuration!''')
                         self.interpretereditor.write('>>> ')
                     else:
                         self.interpretereditor.addcmd(tocall, force=True)
+                else:
+                    self.interpretereditor.write('\n')
             else:
                 self.interpretereditor.write('not starting...\n')
                 self.interpretereditor.write('code already running\n')
