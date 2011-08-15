@@ -908,10 +908,13 @@ class Pynguin(object):
             if current_line is not None:
                 current_line.show()
             rgb = i.pixel(0, 0)
-            color = QtGui.QColor()
-            color.setRgb(rgb)
+            color = QtGui.QColor(rgb)
 
-            self._colorat_return = color.name()
+            bgcolor = QtGui.QColor(130, 130, 160)
+            if color != bgcolor:
+                self._colorat_return = color.name()
+            else:
+                self._colorat_return = util.NOTHING
         else:
             self._colorat_return = util.NOTHING
     def colorat(self):
