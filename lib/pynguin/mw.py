@@ -417,6 +417,12 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings()
         self.settings = settings
 
+        default = '#8282a0'
+        c = settings.value('view/bgcolor', default)
+        bgcolor = QtGui.QColor(c)
+        brush = QtGui.QBrush(bgcolor)
+        self.scene.setBackgroundBrush(brush)
+
         fontsize, ok = settings.value('editor/fontsize', 16).toInt()
         if ok:
             self.editor.setfontsize(fontsize)
@@ -1582,6 +1588,19 @@ Check configuration!''')
             cmd = 'color(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
+    def set_background_color(self):
+        '''Use color selection dialog to set the background color.
+        '''
+
+        settings = QtCore.QSettings()
+        color = self.pynguin.bgcolor()
+        ncolor = QtGui.QColorDialog.getColor(color, self)
+        if ncolor.isValid():
+            r, g, b, a = ncolor.getRgb()
+            self.pynguin.bgcolor(r, g, b)
+            cmd = 'bgcolor(%s, %s, %s)\n' % (r, g, b)
+            self.interpretereditor.addcmd(cmd)
+
     def setPenWidth(self):
         '''open a dialog with a spin button to get a new pen line width
 
@@ -1873,14 +1892,11 @@ class Scene(QtGui.QGraphicsScene):
 
         QtGui.QGraphicsScene.__init__(self)
         self.setSceneRect(left, top, width, height)
-        color = QtGui.QColor(130, 130, 160)
-        brush = QtGui.QBrush(color)
-        self.setBackgroundBrush(brush)
 
-        self.bg = QtGui.QPixmap(width+1, height+1)
-        self.bg.fill(color)
-        self.bgp = QtGui.QPainter(self.bg)
-        self.bgp.drawEllipse(QtCore.QRect(0, 0, width, height))
+        #self.bg = QtGui.QPixmap(width+1, height+1)
+        #self.bg.fill(bgcolor)
+        #self.bgp = QtGui.QPainter(self.bg)
+        #self.bgp.drawEllipse(QtCore.QRect(0, 0, width, height))
 
     def drawBackground2(self, painter, rect):
         '''can be used in conjunction with background pixmap and

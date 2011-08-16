@@ -201,6 +201,8 @@
     <addaction name="actionHidden"/>
     <addaction name="menuCustom"/>
     <addaction name="separator"/>
+    <addaction name="actionBackground_color"/>
+    <addaction name="separator"/>
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
     <addaction name="actionZoom_to_100"/>
@@ -621,6 +623,11 @@
   <action name="actionTest_Run_all">
    <property name="text">
     <string>Test / Run all</string>
+   </property>
+  </action>
+  <action name="actionBackground_color">
+   <property name="text">
+    <string>Background color</string>
    </property>
   </action>
  </widget>
@@ -1202,6 +1209,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionBackground_color</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>set_background_color()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1237,5 +1260,6 @@
   <slot>setcustomavatar()</slot>
   <slot>settings()</slot>
   <slot>testall()</slot>
+  <slot>set_background_color()</slot>
  </slots>
 </ui>

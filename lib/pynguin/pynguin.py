@@ -876,6 +876,19 @@ class Pynguin(object):
         self.qmove(self._color, (r, g, b))
         return r, g, b
 
+    def bgcolor(self, r=None, g=None, b=None):
+        settings = QtCore.QSettings()
+        r, g, b = choose_color(r, g, b)
+        if r is g is b is None:
+            default = '#8282a0'
+            c = settings.value('view/bgcolor', default)
+            return QtGui.QColor(c)
+        else:
+            ncolor = QtGui.QColor(r, g, b)
+        brush = QtGui.QBrush(ncolor)
+        self.mw.scene.setBackgroundBrush(brush)
+        settings.setValue('view/bgcolor', ncolor.name())
+
     def _colorat(self):
         scene = self.scene
         x, y = int(self.x), int(self.y)
