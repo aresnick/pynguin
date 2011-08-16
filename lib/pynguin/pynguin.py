@@ -923,7 +923,8 @@ class Pynguin(object):
             rgb = i.pixel(0, 0)
             color = QtGui.QColor(rgb)
 
-            bgcolor = QtGui.QColor(130, 130, 160)
+            settings = QtCore.QSettings()
+            bgcolor = settings.value('view/bgcolor')
             if color != bgcolor:
                 self._colorat_return = color.name()
             else:
