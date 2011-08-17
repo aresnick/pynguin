@@ -1593,10 +1593,11 @@ Check configuration!''')
         '''
 
         settings = QtCore.QSettings()
-        color = self.pynguin.bgcolor()
-        ncolor = QtGui.QColorDialog.getColor(color, self)
+        r, g, b = color = self.pynguin.bgcolor()
+        c = QtGui.QColor(r, g, b)
+        ncolor = QtGui.QColorDialog.getColor(c, self)
         if ncolor.isValid():
-            r, g, b, a = ncolor.getRgb()
+            r,g,b,_ = ncolor.getRgb()
             self.pynguin.bgcolor(r, g, b)
             cmd = 'bgcolor(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)

@@ -42,7 +42,7 @@ pynguin_functions = [
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
     'avatar', 'remove', 'promote', 'reap',
-    'speed', 'track', 'notrack']
+    'speed', 'track', 'notrack', 'bgcolor']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
     'history', 'util',]
@@ -882,7 +882,9 @@ class Pynguin(object):
         if r is g is b is None:
             default = '#8282a0'
             c = settings.value('view/bgcolor', default)
-            return QtGui.QColor(c)
+            color = QtGui.QColor(c)
+            r,g,b,_ = color.getRgb()
+            return r,g,b
         else:
             ncolor = QtGui.QColor(r, g, b)
         brush = QtGui.QBrush(ncolor)
