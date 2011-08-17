@@ -79,6 +79,10 @@ class Settings(QtGui.QDialog):
         self.ui.backupfilename.setEnabled(backup)
         self.ui.backuprate.setEnabled(backup)
 
+    def defaultsettings(self):
+        self.parent.clear_settings()
+        self.setcurrent()
+
     #def accept(self):
         #'Verify'
         #if False:

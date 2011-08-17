@@ -335,6 +335,31 @@
        </property>
       </widget>
      </widget>
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>Other</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Reset all settings to defaults</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="defaultsettings">
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -431,10 +456,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>defaultsettings</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>defaultsettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>292</x>
+     <y>143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>198</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>backupbrowse()</slot>
   <slot>externaloption()</slot>
   <slot>backupoption()</slot>
+  <slot>defaultsettings()</slot>
  </slots>
 </ui>

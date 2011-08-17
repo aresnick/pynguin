@@ -410,6 +410,13 @@ class MainWindow(QtGui.QMainWindow):
             quiet = ui.quietinterrupt.isChecked()
             settings.setValue('console/quietinterrupt', quiet)
 
+    def clear_settings(self):
+        '''reset settings to default values.
+        '''
+        settings = QtCore.QSettings()
+        settings.clear()
+        self.setup_settings()
+
     def setup_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
         QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')
