@@ -24,6 +24,7 @@ Pynguin subclass (Turtle?) that uses turtle.py API
 Alpha values for colors?
 color(None) for transparent line?
 Allow tracking non-main pynguin
+Editor shortcut for comment lines
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
