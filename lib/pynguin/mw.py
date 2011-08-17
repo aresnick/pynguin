@@ -1872,6 +1872,12 @@ Check configuration!''')
     def zoomouteditor(self):
         self.editor.zoomout()
 
+    def comment(self):
+        self.editor.commentlines()
+
+    def uncomment(self):
+        self.editor.commentlines(un=True)
+
     def about(self):
         AboutDialog(self.app).exec_()
 

@@ -201,6 +201,12 @@ class CodeArea(HighlightedTextEdit):
         mdf = ev.modifiers()
 
         Return = QtCore.Qt.Key_Return
+        Control = QtCore.Qt.ControlModifier
+        Shift = QtCore.Qt.ShiftModifier
+        Slash = QtCore.Qt.Key_Slash
+        Question = QtCore.Qt.Key_Question
+
+        passthru = True
 
         lead = 0
         if k == Return:
@@ -222,7 +228,15 @@ class CodeArea(HighlightedTextEdit):
                     # auto indent
                     lead += 4
 
-        HighlightedTextEdit.keyPressEvent(self, ev)
+        elif mdf & Control and k==Slash:
+            self.commentlines()
+
+        elif mdf & Control and k==Question:
+            self.commentlines(un=True)
+            passthru = False
+
+        if passthru:
+            HighlightedTextEdit.keyPressEvent(self, ev)
         if lead:
             self.insertPlainText(' '*lead)
 
@@ -263,6 +277,54 @@ class CodeArea(HighlightedTextEdit):
                 break
 
         self.mselect.setCurrentIndex(idx)
+
+    def commentlines(self, un=False):
+        '''comment (add # to beginning) of all selected lines
+
+        if un=True uncomment the lines instead of commenting them
+        '''
+        curs = self.textCursor()
+        if curs.hasSelection():
+            start = curs.selectionStart()
+            end = curs.selectionEnd()
+            poss = range(start,end)
+        else:
+            start = curs.position()
+            poss = [start]
+            end = None
+
+        blks = []
+        for pos in poss:
+            blk = self._doc.findBlock(pos)
+            if blk not in blks:
+                blks.append(blk)
+
+        added = 0
+        for blk in blks:
+            blk0 = blk.position()
+            txt = blk.text()
+            firstnonspace = 0
+            firstchar = ''
+            for c in txt[self.col0:]:
+                if c != ' ':
+                    firstchar = c
+                    break
+                firstnonspace += 1
+            pos = blk0 + self.col0 + firstnonspace
+            curs.setPosition(pos, 0)
+            self.setTextCursor(curs)
+            if not un:
+                self.insertPlainText('#')
+                added += 1
+            else:
+                if firstchar == '#':
+                    curs.deleteChar()
+                    added -= 1
+
+        if end is not None:
+            curs.setPosition(start, 0)
+            curs.setPosition(end+added, 1)
+            self.setTextCursor(curs)
 
     def savecurrent(self):
         '''get the text of the current document and save it in the

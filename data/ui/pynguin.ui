@@ -232,6 +232,9 @@
     <addaction name="actionWordwrap"/>
     <addaction name="actionIncrease_font_size"/>
     <addaction name="actionDecrease_font_size"/>
+    <addaction name="separator"/>
+    <addaction name="actionComment"/>
+    <addaction name="actionUncomment"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -628,6 +631,16 @@
   <action name="actionBackground_color">
    <property name="text">
     <string>Background color</string>
+   </property>
+  </action>
+  <action name="actionComment">
+   <property name="text">
+    <string>Comment</string>
+   </property>
+  </action>
+  <action name="actionUncomment">
+   <property name="text">
+    <string>Uncomment</string>
    </property>
   </action>
  </widget>
@@ -1225,6 +1238,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionComment</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>comment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionUncomment</sender>
+   <signal>activated()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>uncomment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1261,5 +1306,7 @@
   <slot>settings()</slot>
   <slot>testall()</slot>
   <slot>set_background_color()</slot>
+  <slot>comment()</slot>
+  <slot>uncomment()</slot>
  </slots>
 </ui>
