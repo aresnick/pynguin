@@ -19,40 +19,18 @@ Pynguin is tested with Python 2.7.1 and PyQt 4.8.3 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.11:
+Changes in pynguin-0.12:
     Session
-        - all settings now moved in to menus and settings dialogs
 
     Pynguin API
-        - added .label() method to have a label attached to a pynguin
-            - also accessible as .name attribute
-        - added .speed() method to change speed from user code
-        - viewcoords() now returns integers by default
-            - pass floats=True to get the float values instead
-        - added .track() and .notrack() methods for user code
 
     Canvas
-        - added support for custom avatars
-            - both svg and bitmap images supported
-        - fixed motion when drawing slow circles with pen up
-        - don't draw circles when pen is up and speed is instant
-        - expand canvas when resizing window
+        - fix custom svg avatars to allow any size avatar
 
     Integrated Editor
-        - added "Test / Run all" button
-        - improved handling of external .py files
 
     Integrated Console
-        - now gives correct call syntax when using test/run on classes
 
     Examples
-        - make examples use new viewcoords() API
-        - fixed multi.pyn scatter example
-        - make multi.pyn follow examples work with existing pynguins
-        - demonstrate labels in multi.pyn follow example
-        - fix penup() in oo.pyn ZZ example
-        - add centered circle in oo.pyn ZZ example
 
     General
-        - fixed examples getting gzipped in .deb distribution file
-        - added a way to dump contents of .pyn from command line

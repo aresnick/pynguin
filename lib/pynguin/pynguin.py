@@ -1539,6 +1539,10 @@ class PynguinGraphicsItem(GraphicsItem):
             self.item = QtSvg.QGraphicsSvgItem(self)
             self.item.setSharedRenderer(self.rend)
             self.item.setElementId(imageid)
+            irect = self.rend.boundsOnElement(imageid)
+            w, h = irect.width(), irect.height()
+            ws, hs = w*self.scale, h*self.scale
+            self.cpt = QtCore.QPointF(ws/2, hs/2)
         else:
             # non-svg image
             self.item = QtGui.QGraphicsPixmapItem(self.rend, self)
