@@ -3,3 +3,4 @@ syntax:glob
 doc/examples/test/
 logfile.log
 backup~*
+doc/video
