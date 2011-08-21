@@ -86,6 +86,8 @@ def choose_color(r=None, g=None, b=None):
     elif r is g is b is None:
         return None, None, None
     elif g is not None and b is not None:
+        if not (0<=r<=255 and 0<=g<=255 and 0<=b<=255):
+            raise ValueError, 'Color components must be between 0 and 255'
         c = QtGui.QColor.fromRgb(r, g, b)
         r, g, b = c.red(), c.green(), c.blue()
     elif r is not None:
