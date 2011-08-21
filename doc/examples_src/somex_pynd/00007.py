@@ -21,6 +21,6 @@ def cfade(step=10, fade=0.1):
     while r > 0:
         circle(r, True)
         r -= step
-        c = nc(c, red=ns, green=ns, blue=ns)
+        c = nc(c, r=ns, g=ns, b=ns)
         color(c)
         fill(color=c)

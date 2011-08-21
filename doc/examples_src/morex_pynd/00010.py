@@ -9,7 +9,7 @@ def arcnudge(w=150, b=50, e=500, rstep=10):
     h = b
     while h < e:
         c = color()
-        color(nc(c, red='93%', green='93%', blue='98%'))
+        color(nc(c, r='93%', g='93%', b='98%'))
         r = sqrt(w**2 + h**2)
         pendown()
         circle(r, True)

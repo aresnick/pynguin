@@ -12,4 +12,4 @@ def nudge_circles():
         circle(r)
         circle(-r)
         r -= 10
-        c = nc(c, -5, -5, -5)
+        c = nc(c, r=-5, g=-5, b=-5)

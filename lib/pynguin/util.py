@@ -104,7 +104,7 @@ def choose_color(r=None, g=None, b=None):
 
     return r, g, b
 
-def nudge_color(color, red=None, blue=None, green=None):
+def nudge_color(color, r=None, g=None, b=None):
     """Change the pen color by given amounts.
 
     Amounts can be either integer numbers (to be added to the RGB
@@ -112,35 +112,35 @@ def nudge_color(color, red=None, blue=None, green=None):
     that component by given percent)
 
     >>> color==(100, 100, 100) then calling
-    >>> nudge_color(color, red=50, blue=-10, green="75%")
-    (150, 90, 75)
+    >>> nudge_color(color, r=50, g="75%", b=-10)
+    (150, 75, 90)
     """
 
-    r, g, b = color
-    if red is not None:
+    rc, gc, bc = color
+    if r is not None:
         try:
-            r += red
+            rc += r
         except TypeError:
-            r *= (float(red[:-1]) / 100.0)
-    if blue is not None:
+            rc *= (float(r[:-1]) / 100.0)
+    if g is not None:
         try:
-            b += blue
+            gc += g
         except TypeError:
-            b *= (float(blue[:-1]) / 100.0)
-    if green is not None:
+            gc *= (float(g[:-1]) / 100.0)
+    if b is not None:
         try:
-            g += green
+            bc += b
         except TypeError:
-            g *= (float(green[:-1]) / 100.0)
+            bc *= (float(b[:-1]) / 100.0)
 
-    r = min(r, 255)
-    g = min(g, 255)
-    b = min(b, 255)
-    r = max(r, 0)
-    g = max(g, 0)
-    b = max(b, 0)
+    rc = min(rc, 255)
+    gc = min(gc, 255)
+    bc = min(bc, 255)
+    rc = max(rc, 0)
+    gc = max(gc, 0)
+    bc = max(bc, 0)
 
-    return (r, g, b)
+    return (rc, gc, bc)
 
 
 def get_datadir():

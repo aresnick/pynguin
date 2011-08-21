@@ -5,6 +5,6 @@ def swirl2(skip=7):
     for s in range(600, 10, -skip):
         square(s, True)
         left(4)
-        c = nc(c, '99%', '99%', '99%')
+        c = nc(c, r='99%', g='99%', b='99%')
         color(c)
         fill(color=c)

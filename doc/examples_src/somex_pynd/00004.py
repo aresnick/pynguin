@@ -6,15 +6,15 @@ def testnudgecolor():
     for y in range(ymin, ymin/3):
         goto(xmin, y)
         lineto(xmax, y)
-        c = nc(c, red=.4)
+        c = nc(c, r=.4)
         color(c)
     for y in range(ymin/3, ymax/3):
         goto(xmin, y)
         lineto(xmax, y)
-        c = nc(c, blue=-1.4)
+        c = nc(c, b=-1.4)
         color(c)
     for y in range(ymax/3, ymax):
         goto(xmin, y)
         lineto(xmax, y)
-        c = nc(c, green='99.3%', blue=0.3)
+        c = nc(c, g='99.3%', b=0.3)
         color(c)
