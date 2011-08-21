@@ -1545,7 +1545,6 @@ Check configuration!''')
                 self.editor.switchto(docid)
                 self.editor.setFocus()
                 if reset:
-                    ie.clearline()
                     ie.addcmd('reset()')
                     ie.spin(5)
                     self.interpretereditor.go()

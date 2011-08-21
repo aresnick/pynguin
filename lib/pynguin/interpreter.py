@@ -102,12 +102,15 @@ class Interpreter(HighlightedTextEdit):
         self.write('>>> ')
 
     def addcmd(self, cmd, force=False):
+        '''clear the current line and write the given command to the interpreter'''
+
         if not force and self.cmdthread is not None:
             # Don't bother writing cmd if there is already
             #   a thread in progress...
             # force=True forces write even if cmd in progress.
             return
 
+        self.clearline()
         self.write(cmd)
         if cmd[-1] == '\n':
             self.write('>>> ')
