@@ -23,14 +23,20 @@ Changes in pynguin-0.12:
     Session
 
     Pynguin API
+        - bgcolor()
+        - raise exception if using color component outside of 0-255
+        - make util.nudge_color() API match util.choose_color()
 
     Canvas
+        - allow setting background color
         - fix custom svg avatars to allow any size avatar
 
     Integrated Editor
+        - comment / uncomment line / region
 
     Integrated Console
 
     Examples
 
     General
+        - clear line before writing commands selected in menu
