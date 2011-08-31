@@ -509,5 +509,6 @@ class Interpreter(HighlightedTextEdit):
         curs.removeSelectedText()
 
     def clearline(self):
+        self.scrolldown()
         self.movetoend()
         self.erasetostart()
