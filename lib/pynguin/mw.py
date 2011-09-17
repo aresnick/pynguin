@@ -19,6 +19,7 @@
 
 import os
 import sys
+import shutil
 import time
 from math import pi
 import glob
@@ -619,11 +620,11 @@ Check configuration!''')
                 fpsrc = os.path.join(bfp, bfn % (fn-1))
                 fpdst = os.path.join(bfp, bfn % fn)
                 if os.path.exists(fpsrc):
-                    os.rename(fpsrc, fpdst)
+                    shutil.move(fpsrc, fpdst)
         else:
             fpsrc = os.path.join(bfp, bfn % 1)
 
-        os.rename(fp, fpsrc)
+        shutil.move(fp, fpsrc)
 
         brate, ok = settings.value('file/backuprate', 3).toInt()
         if not ok:
