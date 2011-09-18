@@ -21,6 +21,7 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.12:
     Session
+        - Fixed error on Windows trying to write backup files
 
     Pynguin API
         - bgcolor()
