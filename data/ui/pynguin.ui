@@ -654,7 +654,7 @@
  <connections>
   <connection>
    <sender>actionQuit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
@@ -670,7 +670,7 @@
   </connection>
   <connection>
    <sender>actionNew</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>new()</slot>
    <hints>
@@ -686,7 +686,7 @@
   </connection>
   <connection>
    <sender>actionSave</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>save()</slot>
    <hints>
@@ -702,7 +702,7 @@
   </connection>
   <connection>
    <sender>actionColor</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>setPenColor()</slot>
    <hints>
@@ -718,7 +718,7 @@
   </connection>
   <connection>
    <sender>actionWidth</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>setPenWidth()</slot>
    <hints>
@@ -734,7 +734,7 @@
   </connection>
   <connection>
    <sender>actionOpen</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>open()</slot>
    <hints>
@@ -750,7 +750,7 @@
   </connection>
   <connection>
    <sender>actionSave_As</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>saveas()</slot>
    <hints>
@@ -766,7 +766,7 @@
   </connection>
   <connection>
    <sender>actionAbout</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>about()</slot>
    <hints>
@@ -830,7 +830,7 @@
   </connection>
   <connection>
    <sender>actionExport</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>export()</slot>
    <hints>
@@ -846,7 +846,7 @@
   </connection>
   <connection>
    <sender>actionFillColor</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>setFillColor()</slot>
    <hints>
@@ -862,7 +862,7 @@
   </connection>
   <connection>
    <sender>actionReportBug</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>reportbug()</slot>
    <hints>
@@ -878,7 +878,7 @@
   </connection>
   <connection>
    <sender>actionZoom_in</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomin()</slot>
    <hints>
@@ -894,7 +894,7 @@
   </connection>
   <connection>
    <sender>actionZoom_out</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomout()</slot>
    <hints>
@@ -910,7 +910,7 @@
   </connection>
   <connection>
    <sender>actionZoom_to_100</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoom100()</slot>
    <hints>
@@ -926,7 +926,7 @@
   </connection>
   <connection>
    <sender>actionWordwrap</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>wordwrap()</slot>
    <hints>
@@ -942,7 +942,7 @@
   </connection>
   <connection>
    <sender>actionIncrease_font_size</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomineditor()</slot>
    <hints>
@@ -958,7 +958,7 @@
   </connection>
   <connection>
    <sender>actionDecrease_font_size</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>zoomouteditor()</slot>
    <hints>
@@ -974,7 +974,7 @@
   </connection>
   <connection>
    <sender>actionPan_left</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>panleft()</slot>
    <hints>
@@ -990,7 +990,7 @@
   </connection>
   <connection>
    <sender>actionPan_right</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>panright()</slot>
    <hints>
@@ -1006,7 +1006,7 @@
   </connection>
   <connection>
    <sender>actionPan_up</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>panup()</slot>
    <hints>
@@ -1022,7 +1022,7 @@
   </connection>
   <connection>
    <sender>actionPan_down</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>pandown()</slot>
    <hints>
@@ -1038,7 +1038,7 @@
   </connection>
   <connection>
    <sender>actionNew_page</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>newdoc()</slot>
    <hints>
@@ -1054,7 +1054,7 @@
   </connection>
   <connection>
    <sender>actionRemove_current_page</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>removedoc()</slot>
    <hints>
@@ -1070,7 +1070,7 @@
   </connection>
   <connection>
    <sender>actionTest_run</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>testcode()</slot>
    <hints>
@@ -1086,7 +1086,7 @@
   </connection>
   <connection>
    <sender>actionNext_document</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>nextdoc()</slot>
    <hints>
@@ -1102,7 +1102,7 @@
   </connection>
   <connection>
    <sender>actionPrevious_document</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>prevdoc()</slot>
    <hints>
@@ -1118,7 +1118,7 @@
   </connection>
   <connection>
    <sender>actionMove_doc_up</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>promotedoc()</slot>
    <hints>
@@ -1134,7 +1134,7 @@
   </connection>
   <connection>
    <sender>actionMove_doc_down</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>demotedoc()</slot>
    <hints>
@@ -1150,7 +1150,7 @@
   </connection>
   <connection>
    <sender>actionToggle_Editor_Console</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>toggle_editor()</slot>
    <hints>
@@ -1166,7 +1166,7 @@
   </connection>
   <connection>
    <sender>actionTrack</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>settrack()</slot>
    <hints>
@@ -1182,7 +1182,7 @@
   </connection>
   <connection>
    <sender>actionAdd_new_avatar</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>setcustomavatar()</slot>
    <hints>
@@ -1198,7 +1198,7 @@
   </connection>
   <connection>
    <sender>actionPreferences</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>settings()</slot>
    <hints>
@@ -1214,7 +1214,7 @@
   </connection>
   <connection>
    <sender>actionTest_Run_all</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>testall()</slot>
    <hints>
@@ -1230,7 +1230,7 @@
   </connection>
   <connection>
    <sender>actionBackground_color</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>set_background_color()</slot>
    <hints>
@@ -1246,7 +1246,7 @@
   </connection>
   <connection>
    <sender>actionComment</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>comment()</slot>
    <hints>
@@ -1262,7 +1262,7 @@
   </connection>
   <connection>
    <sender>actionUncomment</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>uncomment()</slot>
    <hints>
