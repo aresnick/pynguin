@@ -20,7 +20,8 @@ Pynguin is released under GPLv3.
 
 
 Changes in pynguin-0.12:
-    Session
+    Important fixes
+        - Fixed menu items and dialogs not working on Windows
         - Fixed error on Windows trying to write backup files
 
     Pynguin API
@@ -34,8 +35,6 @@ Changes in pynguin-0.12:
 
     Integrated Editor
         - comment / uncomment line / region
-
-    Integrated Console
 
     Examples
 
