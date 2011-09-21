@@ -376,6 +376,15 @@ class MainWindow(QtGui.QMainWindow):
             ui = s.ui
 
             savesingle = ui.savesingle.isChecked()
+            oldsavesingle = settings.value('file/savesingle', True).toBool()
+            if savesingle != oldsavesingle:
+                # Need to mark all docs as modified to make sure
+                # they get written out in the new kind of save file
+                mselect = self.ui.mselect
+                for n in range(mselect.count()):
+                    docid = unicode(mselect.itemData(n).toString())
+                    textdoc = self.editor.textdocuments[docid]
+                    textdoc.setModified(True)
             settings.setValue('file/savesingle', savesingle)
 
             reloadexternal = ui.reloadexternal.isChecked()
@@ -757,7 +766,7 @@ Check configuration!''')
         return fpd
 
     def _writedir(self, fp):
-        'Write file list files and history file in to a directory'
+        'Write file list files in to a directory'
 
         fpd = self._related_dir(fp)
         _, dirname = os.path.split(fpd)
