@@ -40,15 +40,15 @@ INSTALLATION:
 DEPENDENCIES:
     python:
         http://python.org/
-            (tested with python-2.7.1)
+            (tested with python-2.7.2)
 
     pyqt4:
         http://www.riverbankcomputing.co.uk/software/pyqt/
-            (tested with pyqt-4.8.3)
+            (tested with pyqt-4.8.5)
 
     pygments (optional):
         http://pygments.org/
-            (tested with 1.3.1)
+            (tested with 1.4)
 
 
 RUNNING:
@@ -71,5 +71,5 @@ RUNNING:
 DEVELOPMENT:
     Pynguin is released under GPLv3.
 
-    please report any problems here:
+    Please report any problems here:
         http://code.google.com/p/pynguin/issues/list
