@@ -268,7 +268,7 @@ class Pynguin(object):
     @classmethod
     def _process_moves(cls):
         '''regular timer tick to make sure graphics are being updated'''
-        #logging.debug('_pm')
+        #logger.debug('_pm')
         cls._r_process_moves()
         if cls.drawspeed == 0:
             delay = cls.min_delay
@@ -278,7 +278,7 @@ class Pynguin(object):
     @classmethod
     def _empty_move_queue(cls):
         while 1:
-            #logging.debug('________________emq')
+            #logger.debug('________________emq')
             try:
                 #logging.debug('1')
                 #logging.debug('________________1emq %s' % cls._moves.qsize())
@@ -323,12 +323,12 @@ class Pynguin(object):
         if cls.ControlC:
             cls.ControlC += 1
             cls._empty_move_queue()
-            #logging.debug('CCnomove')
+            #logger.debug('CCnomove')
 
         elif not drawspeed or etime > delay:
             ied = cls.mw.interpretereditor
             while True:
-                #logging.debug('_____rpm')
+                #logger.debug('_____rpm')
                 try:
                     move, args = cls._moves.get(block=False)
                 except Queue.Empty:
