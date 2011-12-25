@@ -1511,10 +1511,6 @@ class PynguinGraphicsItem(GraphicsItem):
     def set_transform(self):
         cpt = self.cpt
         cx, cy = cpt.x(), cpt.y()
-        #pt = self.pos
-        pos = self.pos()
-        pt = pos - cpt
-        x, y = pt.x(), pt.y()
 
         ang = self.ang
 
