@@ -396,6 +396,7 @@ class Interpreter(HighlightedTextEdit):
                 settings = QtCore.QSettings()
                 quiet = settings.value('console/quietinterrupt', False).toBool()
 
+                self.movetoend()
                 if not quiet:
                     self.write('\nKeyboardInterrupt\n')
                 else:
