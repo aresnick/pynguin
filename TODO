@@ -25,7 +25,6 @@ Alpha values for colors?
 color(None) for transparent line?
 Allow tracking non-main pynguin
 Cut / Copy / Paste shortcuts are wrong in the interpreter
-while 1: pass freezes interpreter
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.

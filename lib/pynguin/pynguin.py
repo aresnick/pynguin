@@ -324,6 +324,8 @@ class Pynguin(object):
             cls.ControlC += 1
             cls._empty_move_queue()
             #logger.debug('CCnomove')
+            if cls.mw.interpretereditor.cmdthread is not None:
+                cls.mw.interpretereditor.cmdthread.terminate()
 
         elif not drawspeed or etime > delay:
             ied = cls.mw.interpretereditor
