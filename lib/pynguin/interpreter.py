@@ -63,7 +63,7 @@ class CmdThread(QtCore.QThread):
         else:
             ed.needmore = ed.interpreter.push(self.txt)
 
-        #logging.debug('THREAD DONE')
+        #logger.debug('THREAD DONE')
 
 class Interpreter(HighlightedTextEdit):
     def __init__(self, parent):
