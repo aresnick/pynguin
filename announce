@@ -19,26 +19,16 @@ Pynguin is tested with Python 2.7.2 and PyQt 4.8.5 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.12:
+Changes in pynguin-0.13:
     Important fixes
-        - Fixed menu items and dialogs not working on Windows
-        - Fixed error on Windows when trying to write backup files
+        - while 1: pass can now be interrupted
 
     Pynguin API
-        - bgcolor()
-        - raise exception if using color component outside of 0-255
-        - make util.nudge_color() API match util.choose_color()
 
     Canvas
-        - allow setting background color
-        - fix custom svg avatars to allow any size avatar
 
     Integrated Editor
-        - comment / uncomment line / region
 
     Integrated Console
-        - added command to clear history
-        - clears line before writing commands selected in menu
 
     Examples
-        - added fractals example file
