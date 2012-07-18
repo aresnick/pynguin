@@ -105,28 +105,62 @@ def choose_color(r=None, g=None, b=None):
     return r, g, b
 
 def nudge_color(color, r=None, g=None, b=None):
-    """Change the pen color by given amounts.
+    """Change the color (a 3-element tuple) by given amounts,
+        return the new RGB tuple.
 
-    Amounts can be either integer numbers (to be added to the RGB
-    tuple components), or percentages (to increase or decrease
-    that component by given percent)
+    Clamps the RGB return values such that 0 <= RGB <= 255
+        but does not necessarily return only integer values.
 
-    >>> color==(100, 100, 100) then calling
-    >>> nudge_color(color, r=50, g="75%", b=-10)
-    (150, 75, 90)
+        Not returning strictly integers allows for smoother color
+        variations, but note that when the values are passed
+        to the pynguin color() function the values will be
+        converted to integers. So in order to take advantage
+        of the more precise values you will need to keep those
+        separately from the actual pynguin color values.
+
+    The function's r, g, b parameters can be either:
+
+    numbers to be added to or subtracted from the RGB tuple
+        components, or
+
+    percentages (as strings) that will be multiplied by the component
+        to increase or decrease that component by given the given
+        percent.
+
+    >>> color = (100, 100, 100)
+    >>> nudge_color(color, g=15)
+    (100, 115, 100)
+
+    >>> color = (100, 100, 100)
+    >>> nudge_color(color, r=-12.5)
+    (87.5, 100, 100)
+
+    >>> color = (100, 100, 100)
+    >>> color = nudge_color(color, b='75%')
+    >>> color
+    (100, 100, 75.0)
+    >>> nudge_color(color, b='75%')
+    (100, 100, 57.25)
+
+    >>> color = (100, 100, 100)
+    >>> nudge_color(color, r=50, g='105%', b=-10)
+    (150, 105, 90)
     """
 
     rc, gc, bc = color
+
     if r is not None:
         try:
             rc += r
         except TypeError:
             rc *= (float(r[:-1]) / 100.0)
+
     if g is not None:
         try:
             gc += g
         except TypeError:
             gc *= (float(g[:-1]) / 100.0)
+
     if b is not None:
         try:
             bc += b
