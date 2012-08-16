@@ -222,8 +222,7 @@ class Pynguin(object):
         if x is None and y is None:
             return self.x, self.y
         elif x is not None and y is not None:
-            self.x = x
-            self.y = y
+            self.goto(x, y)
         else:
             raise ValueError
 
