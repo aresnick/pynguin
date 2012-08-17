@@ -6,5 +6,5 @@ def manyyy(n):
         color('random')
         c2 = color()
         goto('random')
-        r = random.randrange(20,100)
+        r = random.randrange(20, 100)
         yyc(r, c1, c2)

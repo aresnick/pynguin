@@ -25,9 +25,9 @@ logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui
 
-from editor import HighlightedTextEdit
-import pynguin
-import conf
+from .editor import HighlightedTextEdit
+from . import pynguin
+from . import conf
 
 
 class Console(code.InteractiveConsole):
@@ -38,7 +38,7 @@ class Console(code.InteractiveConsole):
     def showtraceback(self):
         logger.info('showtraceback')
         settings = QtCore.QSettings()
-        quiet = settings.value('console/quietinterrupt', False).toBool()
+        quiet = settings.value('console/quietinterrupt', False, bool)
         exc_type, exc_value, exc_traceback = sys.exc_info()
         if exc_type is KeyboardInterrupt and quiet:
             pass
@@ -257,7 +257,7 @@ class Interpreter(HighlightedTextEdit):
             if not blk.text():
                 blk = self._doc.firstBlock()
 
-            txt = unicode(blk.text()[4:]).rstrip()
+            txt = str(blk.text()[4:]).rstrip()
             if txt:
                 if self.history and not self.history[-1]:
                     del self.history[-1]
@@ -316,7 +316,7 @@ class Interpreter(HighlightedTextEdit):
             cblk = self._doc.findBlock(cpos)
             pos = cblk.position()
 
-            txt = unicode(cblk.text()[4:]).strip()
+            txt = str(cblk.text()[4:]).strip()
 
             if self.cmdthread is not None:
                 pass
@@ -394,7 +394,7 @@ class Interpreter(HighlightedTextEdit):
                 self.cmdthread = None
                 logger.info('No thread running')
                 settings = QtCore.QSettings()
-                quiet = settings.value('console/quietinterrupt', False).toBool()
+                quiet = settings.value('console/quietinterrupt', False, bool)
 
                 self.movetoend()
                 if not quiet:
@@ -452,7 +452,7 @@ class Interpreter(HighlightedTextEdit):
         cpos = curs.position()
         blk = curs.block()
         #blklen = blk.length()
-        blktext = unicode(blk.text())
+        blktext = str(blk.text())
         promptblk = blktext.startswith('>>>') or blktext.startswith('...')
         if not hassel and promptblk and col < 4:
             curs.setPosition(cpos + 4-col)

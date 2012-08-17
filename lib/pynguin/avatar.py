@@ -3,8 +3,8 @@ import os
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 
-import util
-import conf
+from . import util
+from . import conf
 
 datadir = util.get_datadir()
 uidir = os.path.join(datadir, 'ui')

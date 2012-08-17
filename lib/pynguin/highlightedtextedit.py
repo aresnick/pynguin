@@ -95,7 +95,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
 
         self.setCurrentBlockState(0)
 
-        if text.trimmed().isEmpty():
+        if not text.strip():
             self.setFormat(0, len(text), self.empty_format)
             return
 
@@ -103,7 +103,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
 
         startIndex = 0
         if self.previousBlockState() != 1:
-            startIndex = text.indexOf(self.multiLineStringBegin)
+            startIndex = text.find(self.multiLineStringBegin)
 
         if startIndex > -1:
             self.highlightRules(text, 0, startIndex)
@@ -112,7 +112,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
 
         while startIndex >= 0:
 
-            endIndex = text.indexOf(self.multiLineStringEnd,
+            endIndex = text.find(self.multiLineStringEnd,
                 startIndex + len(self.multiLineStringBegin.pattern()))
             if endIndex == -1:
                 self.setCurrentBlockState(1)
@@ -123,7 +123,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
                 self.highlightRules(text, endIndex, len(text))
 
             self.setFormat(startIndex, commentLength, self.multiLineStringFormat)
-            startIndex = text.indexOf(self.multiLineStringBegin,
+            startIndex = text.find(self.multiLineStringBegin,
                                       startIndex + commentLength)
 
     def highlightRules(self, text, start, finish):
@@ -148,7 +148,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
         self.callableFormat = QtGui.QTextCharFormat(self.base_format)
         self.callableFormat.setForeground(QtCore.Qt.darkBlue)
         self.magicFormat = QtGui.QTextCharFormat(self.base_format)
-        self.magicFormat.setForeground(QtGui.QColor(224,128,0))
+        self.magicFormat.setForeground(QtGui.QColor(224, 128, 0))
         self.qtFormat = QtGui.QTextCharFormat(self.base_format)
         self.qtFormat.setForeground(QtCore.Qt.blue)
         self.qtFormat.setFontWeight(QtGui.QFont.Bold)
@@ -159,7 +159,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
         self.singleLineCommentFormat.setForeground(QtCore.Qt.darkGreen)
         self.multiLineStringFormat = QtGui.QTextCharFormat(self.base_format)
         self.multiLineStringFormat.setBackground(
-            QtGui.QBrush(QtGui.QColor(127,127,255)))
+            QtGui.QBrush(QtGui.QColor(127, 127, 255)))
         self.quotationFormat1 = QtGui.QTextCharFormat(self.base_format)
         self.quotationFormat1.setForeground(QtCore.Qt.blue)
         self.quotationFormat2 = QtGui.QTextCharFormat(self.base_format)
@@ -168,8 +168,8 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
     def updateRules(self):
 
         self.rules = []
-        self.rules += map(lambda s: (QtCore.QRegExp(r"\b"+s+r"\b"),
-                          self.keywordFormat), self.keywords)
+        self.rules += [(QtCore.QRegExp(r"\b"+s+r"\b"),
+                          self.keywordFormat) for s in self.keywords]
 
         self.rules.append((QtCore.QRegExp(r"\b[A-Za-z_]+\(.*\)"), self.callableFormat))
         self.rules.append((QtCore.QRegExp(r"\b__[a-z]+__\b"), self.magicFormat))

@@ -7,7 +7,7 @@ def tri(eq, x1, scale=20):
     x = xmins
     y = eq(x)
     if y is not None:
-        raise ValueError, 'screen too narrow'
+        raise ValueError('screen too narrow')
     x0 = None
     x2 = None
     for x in domain(xmins, xmaxs, step):

@@ -1,6 +1,6 @@
 def label(f):
     xmin, ymin, xmax, ymax = viewcoords()
-    goto(xmin+20,ymin+20)
+    goto(xmin+20, ymin+20)
     turnto(0)
     color('white')
     doc = f.__doc__
@@ -11,5 +11,5 @@ def label(f):
         line2 = lines[1].strip()
         if line2.startswith('thmax'):
             thmaxstr = line2[7:].replace('*', ' ')
-            goto(xmin+20,ymin+60)
+            goto(xmin+20, ymin+60)
             write('0 < th < %s' % thmaxstr)

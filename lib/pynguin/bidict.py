@@ -195,7 +195,7 @@ class inverted(object):
     def __next__(self):
         data = self._data
         try:
-            for k, v in data.items():
+            for k, v in list(data.items()):
                 yield v, k
         except AttributeError:
             for k, v in data:
@@ -410,9 +410,9 @@ class bidict(object):
 
     def __inverted__(self):
         try:
-            return self._bwd.iteritems()
+            return iter(self._bwd.items())
         except AttributeError: # python 3
-            return self._bwd.items()
+            return list(self._bwd.items())
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self._fwd)

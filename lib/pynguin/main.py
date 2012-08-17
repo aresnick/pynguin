@@ -28,7 +28,7 @@ from PyQt4 import QtGui
 def setup_logging(level='debug'):
     import logging
     import logging.handlers
-    from conf import LOG_FILENAME
+    from .conf import LOG_FILENAME
 
     levels = {'debug': logging.DEBUG,
                 'info': logging.INFO,
@@ -55,8 +55,8 @@ def setup_logging(level='debug'):
     logger.critical('Logging started at level "%s".' % level)
 
 
-from mw import MainWindow
-from splash import Splash
+from .mw import MainWindow
+from .splash import Splash
 
 
 def run():

@@ -8,8 +8,8 @@ def setup():
     # finish drawing ...
     import time
     for count in range(3, 0, -1):
-        print count
+        print(count)
         time.sleep(1)
-    print 'go!'
+    print('go!')
 
     return horses

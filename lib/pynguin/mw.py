@@ -27,19 +27,19 @@ import zipfile
 import logging
 logger = logging.getLogger('PynguinLogger')
 
-from bidict import bidict
+from .bidict import bidict
 
 
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
-from pynguin import Pynguin, pynguin_functions, interpreter_protect
-import util
-from util import sign, get_datadir, get_docdir
-from codearea import CodeArea
-from interpreter import Interpreter, CmdThread, Console
-from about import AboutDialog
-import conf
+from .pynguin import Pynguin, pynguin_functions, interpreter_protect
+from . import util
+from .util import sign, get_datadir, get_docdir
+from .codearea import CodeArea
+from .interpreter import Interpreter, CmdThread, Console
+from .about import AboutDialog
+from . import conf
 
 datadir = get_datadir()
 uidir = os.path.join(datadir, 'ui')
@@ -368,7 +368,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def settings(self):
         'open the settings dialog'
-        import settings
+        from . import settings
         s = settings.Settings(self)
         r = s.exec_()
         if r:
@@ -376,13 +376,13 @@ class MainWindow(QtGui.QMainWindow):
             ui = s.ui
 
             savesingle = ui.savesingle.isChecked()
-            oldsavesingle = settings.value('file/savesingle', True).toBool()
+            oldsavesingle = settings.value('file/savesingle', True, bool)
             if savesingle != oldsavesingle:
                 # Need to mark all docs as modified to make sure
                 # they get written out in the new kind of save file
                 mselect = self.ui.mselect
                 for n in range(mselect.count()):
-                    docid = unicode(mselect.itemData(n).toString())
+                    docid = str(mselect.itemData(n))
                     textdoc = self.editor.textdocuments[docid]
                     textdoc.setModified(True)
             settings.setValue('file/savesingle', savesingle)
@@ -400,9 +400,7 @@ class MainWindow(QtGui.QMainWindow):
             settings.setValue('file/backuprate', brate)
             # hold on to the old backupkeep value. If it was zero
             # need to start the autosave timer
-            bkeep0, ok = settings.value('file/backupkeep', 5).toInt()
-            if not ok:
-                bkeep0 = 5
+            bkeep0 = settings.value('file/backupkeep', 5, int)
             bkeep = ui.backupkeep.value()
             settings.setValue('file/backupkeep', bkeep)
             if not bkeep0:
@@ -440,27 +438,25 @@ class MainWindow(QtGui.QMainWindow):
         brush = QtGui.QBrush(bgcolor)
         self.scene.setBackgroundBrush(brush)
 
-        fontsize, ok = settings.value('editor/fontsize', 16).toInt()
-        if ok:
-            self.editor.setfontsize(fontsize)
-        wrap = settings.value('editor/wordwrap', False).toBool()
+        fontsize = settings.value('editor/fontsize', 16, int)
+        self.editor.setfontsize(fontsize)
+        wrap = settings.value('editor/wordwrap', False, bool)
         if wrap:
             self.ui.actionWordwrap.setChecked(True)
             self.wordwrap()
 
-        speed, ok = settings.value('pynguin/speed', 10).toInt()
-        if ok:
-            self.set_speed(speed)
-            self.sync_speed_menu(speed)
+        speed = settings.value('pynguin/speed', 10, int)
+        self.set_speed(speed)
+        self.sync_speed_menu(speed)
 
         # remember the saved avatar
-        imageid = settings.value('pynguin/avatar', 'pynguin').toString()
+        imageid = settings.value('pynguin/avatar', 'pynguin')
 
         # set up any custom avatars
         n = settings.beginReadArray('pynguin/custom_avatars')
         for i in range(n):
             settings.setArrayIndex(i)
-            idp = settings.value('idpath').toString()
+            idp = settings.value('idpath')
             self.set_pynguin_avatar(idp)
         settings.endArray()
 
@@ -468,7 +464,7 @@ class MainWindow(QtGui.QMainWindow):
         self.set_pynguin_avatar(imageid)
         self._sync_avatar_menu(imageid)
 
-        track = settings.value('pynguin/track', False).toBool()
+        track = settings.value('pynguin/track', False, bool)
         Pynguin._track_main_pynguin = track
         self._sync_track(track)
 
@@ -478,8 +474,8 @@ class MainWindow(QtGui.QMainWindow):
         recent = []
         for n in range(settings.beginReadArray('recent')):
             settings.setArrayIndex(n)
-            fname = settings.value('fname').toString()
-            recent.append(unicode(fname))
+            fname = settings.value('fname')
+            recent.append(str(fname))
         settings.endArray()
 
         filemenu = self.ui.filemenu
@@ -577,7 +573,7 @@ class MainWindow(QtGui.QMainWindow):
         if self._modified:
             return True
         else:
-            for tdoc in self.editor.textdocuments.values():
+            for tdoc in list(self.editor.textdocuments.values()):
                 if tdoc.isModified():
                     return True
 
@@ -604,13 +600,13 @@ class MainWindow(QtGui.QMainWindow):
             oldest backup.
         '''
         settings = QtCore.QSettings()
-        backupkeep, ok = settings.value('file/backupkeep', 5).toInt()
-        if not ok or not backupkeep:
+        backupkeep = settings.value('file/backupkeep', 5, int)
+        if not backupkeep:
             return
 
-        bfp = str(settings.value('file/backupfolderpath', '').toString())
+        bfp = settings.value('file/backupfolderpath', '')
         bfp = bfp or self._fdir
-        bfn = str(settings.value('file/backupfilename', 'backup~%s.pyn').toString())
+        bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
         fp = os.path.join(bfp, bfn % '')
         if self.writeable(fp, savesingle=True):
             self.editor.savecurrent()
@@ -635,9 +631,7 @@ Check configuration!''')
 
         shutil.move(fp, fpsrc)
 
-        brate, ok = settings.value('file/backuprate', 3).toInt()
-        if not ok:
-            brate = 3
+        brate = settings.value('file/backuprate', 3, int)
         QtCore.QTimer.singleShot(brate*60000, self.autosave)
 
     def _correct_filename(self, fp=None):
@@ -655,8 +649,8 @@ Check configuration!''')
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
-            docid = unicode(mselect.itemData(n).toString())
-            code = unicode(self.editor.documents[docid])
+            docid = str(mselect.itemData(n))
+            code = str(self.editor.documents[docid])
             arcname = '##%05d##__%s' % (n, docid)
             code = self.cleancode(code)
             self.editor.documents[docid] = code
@@ -677,7 +671,7 @@ Check configuration!''')
         method better.
 
         '''
-        VERSION = 'pyn01'
+        VERSION = b'pyn01'
 
         _, fn = os.path.split(fp)
         fbase, _ = os.path.splitext(fn)
@@ -690,9 +684,9 @@ Check configuration!''')
 
         mselect = self.ui.mselect
         for n in range(mselect.count()):
-            docid = unicode(mselect.itemData(n).toString())
+            docid = str(mselect.itemData(n))
             textdoc = self.editor.textdocuments[docid]
-            code = unicode(self.editor.documents[docid])
+            code = str(self.editor.documents[docid])
             code = self.cleancode(code)
             self.editor.documents[docid] = code
 
@@ -710,7 +704,7 @@ Check configuration!''')
                     efp = efp.replace('_@@', dirname)
                 self._remwatcher(efp)
                 f = open(efp, 'w')
-                f.write(code.encode('utf-8'))
+                f.write(code)
                 f.close()
                 self._addwatcher(efp, textdoc)
 
@@ -724,7 +718,7 @@ Check configuration!''')
             manifest.append(zipi.filename)
             zipi.compress_type = zipfile.ZIP_DEFLATED
             zipi.date_time = time.localtime()
-            zipi.external_attr = 0644 << 16
+            zipi.external_attr = 0o644 << 16
             zipi.comment = VERSION
             z.writestr(zipi, code.encode('utf-8'))
 
@@ -735,7 +729,7 @@ Check configuration!''')
         zipi.filename = os.path.join(fbase, historyname)
         zipi.compress_type = zipfile.ZIP_DEFLATED
         zipi.date_time = time.localtime()
-        zipi.external_attr = 0644 << 16
+        zipi.external_attr = 0o644 << 16
         zipi.comment = VERSION
         z.writestr(zipi, history.encode('utf-8'))
 
@@ -744,7 +738,7 @@ Check configuration!''')
         zipi.filename = os.path.join(fbase, manifestname)
         zipi.compress_type = zipfile.ZIP_DEFLATED
         zipi.date_time = time.localtime()
-        zipi.external_attr = 0644 << 16
+        zipi.external_attr = 0o644 << 16
         zipi.comment = VERSION
         manifeststr = '\n'.join(manifest)
         z.writestr(zipi, manifeststr.encode('utf-8'))
@@ -774,11 +768,12 @@ Check configuration!''')
         mselect = self.ui.mselect
         count = mselect.count()
         for n in range(count):
-            docid = unicode(mselect.itemData(n).toString())
+            docid = str(mselect.itemData(n))
             textdoc = self.editor.textdocuments[docid]
             if not hasattr(textdoc, '_filepath'):
                 arcname = '%05d.py' % n
                 textdoc._filepath = os.path.join('_@@', dirname, arcname)
+                textdoc.setModified(True)
                 logger.info('dfp %s' % textdoc._filepath)
             else:
                 logger.info('DFP %s' % textdoc._filepath)
@@ -786,7 +781,7 @@ Check configuration!''')
         self._writefile01(fp)
 
         for n in range(count):
-            docid = unicode(mselect.itemData(n).toString())
+            docid = str(mselect.itemData(n))
             textdoc = self.editor.textdocuments[docid]
             if hasattr(textdoc, '_filepath'):
                 if textdoc._filepath.startswith('_@@'):
@@ -811,7 +806,7 @@ Check configuration!''')
         self.editor.savecurrent()
 
         settings = QtCore.QSettings()
-        savesingle = settings.value('file/savesingle', True).toBool()
+        savesingle = settings.value('file/savesingle', True, bool)
 
         if self.writeable(self._filepath):
             if savesingle:
@@ -826,7 +821,7 @@ Check configuration!''')
             return False
 
         self._modified = False
-        for tdoc in self.editor.textdocuments.values():
+        for tdoc in list(self.editor.textdocuments.values()):
             tdoc.setModified(False)
         self.setWindowModified(False)
 
@@ -843,7 +838,7 @@ Check configuration!''')
         recent = [fp]
         for n in range(settings.beginReadArray('recent')):
             settings.setArrayIndex(n)
-            fname = settings.value('fname').toString()
+            fname = settings.value('fname')
             if fname and fname not in recent:
                 recent.append(fname)
         settings.endArray()
@@ -869,17 +864,17 @@ Check configuration!''')
 
     def saveas(self):
         if self._fdir is None:
-            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+            fdir = os.path.abspath(os.path.curdir)
         else:
             fdir = self._fdir
 
-        fp = unicode(QtGui.QFileDialog.getSaveFileName(self,
+        fp = str(QtGui.QFileDialog.getSaveFileName(self,
                         'Save As', fdir,
                         'Text files (*.pyn)'))
 
         if fp:
             settings = QtCore.QSettings()
-            savesingle = settings.value('file/savesingle', True).toBool()
+            savesingle = settings.value('file/savesingle', True, bool)
 
             fp = self._correct_filename(fp)
             dirname, fname = os.path.split(fp)
@@ -943,7 +938,7 @@ Check configuration!''')
             savesingle = True
         else:
             settings = QtCore.QSettings()
-            savesingle = settings.value('file/savesingle', True).toBool()
+            savesingle = settings.value('file/savesingle', True, bool)
 
         if not savesingle:
             fpd = self._related_dir(fp)
@@ -971,13 +966,13 @@ Check configuration!''')
             return
 
         if self._fdir is None:
-            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+            fdir = os.path.abspath(os.path.curdir)
         else:
             fdir = self._fdir
 
         logger.info('open at %s' % fdir)
 
-        fp = unicode(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn *.py)'))
+        fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn *.py)'))
 
         if fp:
             if not os.path.exists(fp):
@@ -1039,7 +1034,7 @@ Check configuration!''')
             if not info.comment:
                 self._openfile00(fp, dump)
             else:
-                if info.comment == 'pyn01':
+                if info.comment == b'pyn01':
                     self._openfile01(fp, dump)
                 else:
                     QtGui.QMessageBox.information(self,
@@ -1058,8 +1053,8 @@ Check configuration!''')
             else:
                 txt = open(fp).read()
                 txt = txt.decode('utf-8')
-                print txt
-                print
+                print(txt)
+                print()
         else:
             self._update_after_open(fp, add_to_recent)
 
@@ -1076,7 +1071,7 @@ Check configuration!''')
         logger.info('_fc %s' % fp)
 
         settings = QtCore.QSettings()
-        autorefresh = settings.value('file/reloadexternal', True).toBool()
+        autorefresh = settings.value('file/reloadexternal', True, bool)
         if autorefresh:
             doc = self._watchdocs[str(fp)]
             if doc.isModified():
@@ -1088,7 +1083,7 @@ Check configuration!''')
             txt = txt.decode('utf-8')
             doc.setPlainText(txt)
             doc.setModified(False)
-            autorun = settings.value('file/autorun', False).toBool()
+            autorun = settings.value('file/autorun', False, bool)
             if autorun:
                 self.interpreter.runcode(txt)
 
@@ -1100,12 +1095,12 @@ Check configuration!''')
                 pass
             else:
                 try:
-                    exec data in self.interpreter_locals
-                except Exception, e:
-                    print 'problem', e
-                    print 'in...'
+                    exec(data, self.interpreter_locals)
+                except Exception as e:
+                    print('problem', e)
+                    print('in...')
                     line1 = data.split('\n')[0]
-                    print unicode(line1)
+                    print(str(line1))
 
     def _loadhistory(self, data):
         history = data.split('\n')
@@ -1126,9 +1121,9 @@ Check configuration!''')
             data = data.decode('utf-8')
 
             if dump:
-                print ename
-                print data
-                print
+                print(ename)
+                print(data)
+                print()
             elif self._shouldload00(ename):
                 self._loaddata(data)
             elif ename.startswith('@@history@@'):
@@ -1169,7 +1164,7 @@ Check configuration!''')
         for ename in namelist:
             logger.info('loading %s' % ename)
             if dump:
-                print '============================================'
+                print('============================================')
 
             if ename.startswith('_@@'):
                 n = ename[4:]
@@ -1194,9 +1189,9 @@ Check configuration!''')
             data = data.decode('utf-8')
             if dump:
                 if '@@history@@' in ename:
-                    print 'Command history'
-                print data
-                print
+                    print('Command history')
+                print(data)
+                print()
             elif self._shouldload01(ename):
                 self._loaddata(data)
             elif '@@history@@' in ename:
@@ -1246,11 +1241,11 @@ Check configuration!''')
     def export(self):
         '''save the current drawing'''
         if self._fdir is None:
-            fdir = QtCore.QString(os.path.abspath(os.path.curdir))
+            fdir = os.path.abspath(os.path.curdir)
         else:
             fdir = self._fdir
 
-        fp = unicode(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
+        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
         if fp:
             root, ext = os.path.splitext(fp)
             if not ext:
@@ -1315,7 +1310,7 @@ Check configuration!''')
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
-        docid = unicode(self.ui.mselect.itemData(idx).toString())
+        docid = str(self.ui.mselect.itemData(idx))
         if docid in self.editor.documents:
             self.editor.switchto(docid)
             self.editor.setFocus()
@@ -1343,7 +1338,7 @@ Check configuration!''')
         elif external or ret == QtGui.QMessageBox.Yes:
             mselect = self.ui.mselect
             idx = mselect.currentIndex()
-            docname = unicode(mselect.itemText(idx))
+            docname = str(mselect.itemText(idx))
             mselect.removeItem(idx)
             if mselect.count():
                 self.changedoc(0)
@@ -1416,7 +1411,7 @@ Check configuration!''')
         '''
 
         settings = QtCore.QSettings()
-        mainfirst = settings.value('editor/mainfirst').toBool()
+        mainfirst = settings.value('editor/mainfirst', True, bool)
         lines = code.split('\n')
         if not mainfirst:
             lines.reverse()
@@ -1475,10 +1470,10 @@ Check configuration!''')
             function.
         '''
         self.editor.savecurrent()
-        docname = unicode(self.ui.mselect.currentText())
+        docname = str(self.ui.mselect.currentText())
         idx = self.ui.mselect.currentIndex()
-        docid = unicode(self.ui.mselect.itemData(idx).toString())
-        code = unicode(self.editor.documents[docid])
+        docid = str(self.ui.mselect.itemData(idx))
+        code = str(self.editor.documents[docid])
 
         code = self.cleancode(code)
 
@@ -1486,7 +1481,7 @@ Check configuration!''')
 
         try:
             compile(code, 'current file', 'exec')
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.editor.selectline(e.lineno)
             self.interpretereditor.clearline()
             self.interpretereditor.write('Syntax Error in line %s\n' % e.lineno)
@@ -1538,9 +1533,9 @@ Check configuration!''')
 
         ie = self.interpretereditor
         settings = QtCore.QSettings()
-        rev = settings.value('editor/testall_reverse', False).toBool()
-        autorun = settings.value('editor/testall_autocall', False).toBool()
-        reset = settings.value('editor/testrun_reset', True).toBool()
+        rev = settings.value('editor/testall_reverse', False, bool)
+        autorun = settings.value('editor/testall_autocall', False, bool)
+        reset = settings.value('editor/testrun_reset', True, bool)
 
         count = self.ui.mselect.count()
         Pynguin._stop_testall = False
@@ -1549,7 +1544,7 @@ Check configuration!''')
                 idx = i
             else:
                 idx = count - i - 1
-            docid = unicode(self.ui.mselect.itemData(idx).toString())
+            docid = str(self.ui.mselect.itemData(idx))
             if docid in self.editor.documents:
                 ie.spin(0)
                 self.editor.switchto(docid)
@@ -1569,7 +1564,7 @@ Check configuration!''')
                 ie.spin(5, delay=0.1)
 
                 if autorun:
-                    code = unicode(self.editor.documents[docid])
+                    code = str(self.editor.documents[docid])
                     code = self.cleancode(code)
                     kind, name, params, nodefault = self.findmain(code)
                     missing_vars = []
@@ -1613,7 +1608,7 @@ Check configuration!''')
         c = QtGui.QColor(r, g, b)
         ncolor = QtGui.QColorDialog.getColor(c, self)
         if ncolor.isValid():
-            r,g,b,_ = ncolor.getRgb()
+            r, g, b, _ = ncolor.getRgb()
             self.pynguin.bgcolor(r, g, b)
             cmd = 'bgcolor(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
@@ -1746,7 +1741,7 @@ Check configuration!''')
         n = settings.beginReadArray('pynguin/custom_avatars')
         for i in range(n):
             settings.setArrayIndex(i)
-            cavs.append(settings.value('idpath').toString())
+            cavs.append(settings.value('idpath'))
         settings.endArray()
         if not remove and idpath not in cavs:
             cavs.append(idpath)
@@ -1759,7 +1754,7 @@ Check configuration!''')
         settings.endArray()
 
         if remove:
-            currid = settings.value('pynguin/avatar', 'pynguin').toString()
+            currid = settings.value('pynguin/avatar', 'pynguin')
             if currid == idpath:
                 # Removed the current avatar
                 self.set_pynguin_avatar('pynguin')
@@ -1816,7 +1811,7 @@ Check configuration!''')
         self.interpretereditor.addcmd(cmd)
 
     def setcustomavatar(self):
-        import avatar
+        from . import avatar
         ad = avatar.CustomAvatar(self)
         r = ad.exec_()
         if r:

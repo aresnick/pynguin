@@ -2,8 +2,8 @@ import os
 
 from PyQt4 import QtCore, QtGui, uic
 
-import util
-import conf
+from . import util
+from . import conf
 
 datadir = util.get_datadir()
 uidir = os.path.join(datadir, 'ui')
@@ -22,44 +22,42 @@ class Settings(QtGui.QDialog):
     def setcurrent(self):
         settings = QtCore.QSettings()
 
-        savesingle = settings.value('file/savesingle', True).toBool()
+        savesingle = settings.value('file/savesingle', True, bool)
         if savesingle:
             self.ui.savesingle.setChecked(True)
         else:
             self.ui.savefolder.setChecked(True)
 
-        reloadexternal = settings.value('file/reloadexternal', True).toBool()
+        reloadexternal = settings.value('file/reloadexternal', True, bool)
         self.ui.reloadexternal.setChecked(reloadexternal)
-        autorun = settings.value('file/autorun', False).toBool()
+        autorun = settings.value('file/autorun', False, bool)
         self.ui.autorun.setChecked(autorun)
 
 
-        bfp = settings.value('file/backupfolderpath', '').toString()
+        bfp = settings.value('file/backupfolderpath', '')
         self.ui.backupfolderpath.setText(bfp)
-        bfn = settings.value('file/backupfilename', 'backup~%s.pyn').toString()
+        bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
         self.ui.backupfilename.setText(bfn)
-        brate, ok = settings.value('file/backuprate', 3).toInt()
-        if ok:
-            self.ui.backuprate.setValue(brate)
-        bkeep, ok = settings.value('file/backupkeep', 5).toInt()
-        if ok:
-            self.ui.backupkeep.setValue(bkeep)
+        brate = settings.value('file/backuprate', 3, int)
+        self.ui.backuprate.setValue(brate)
+        bkeep = settings.value('file/backupkeep', 5, int)
+        self.ui.backupkeep.setValue(bkeep)
 
 
-        reset = settings.value('editor/testrun_reset', True).toBool()
+        reset = settings.value('editor/testrun_reset', True, bool)
         self.ui.testrun_reset.setChecked(reset)
-        mainfirst = settings.value('editor/mainfirst', True).toBool()
+        mainfirst = settings.value('editor/mainfirst', True, bool)
         if mainfirst:
             self.ui.editor_mainfirst.setChecked(True)
         else:
             self.ui.editor_mainlast.setChecked(True)
-        rev = settings.value('editor/testall_reverse', False).toBool()
+        rev = settings.value('editor/testall_reverse', False, bool)
         self.ui.testall_reverse.setChecked(rev)
-        autocall = settings.value('editor/testall_autocall', False).toBool()
+        autocall = settings.value('editor/testall_autocall', False, bool)
         self.ui.testall_autocall.setChecked(autocall)
 
 
-        quietinterrupt = settings.value('console/quietinterrupt', False).toBool()
+        quietinterrupt = settings.value('console/quietinterrupt', False, bool)
         self.ui.quietinterrupt.setChecked(quietinterrupt)
 
     def backupbrowse(self):

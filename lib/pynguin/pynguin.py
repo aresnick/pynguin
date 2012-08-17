@@ -18,7 +18,7 @@
 
 
 import os
-import Queue
+import queue
 from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
@@ -28,9 +28,9 @@ logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui, QtSvg
 
-import util
-from util import sign, choose_color
-import conf
+from . import util
+from .util import sign, choose_color
+from . import conf
 
 
 pynguin_functions = [
@@ -56,7 +56,7 @@ class Pynguin(object):
     min_delay = 1
     delay = 50
 
-    _moves = Queue.Queue(50) # max number of items in queue
+    _moves = queue.Queue(50) # max number of items in queue
     _checktime = QtCore.QTime()
     _checktime.start()
 
@@ -84,6 +84,9 @@ class Pynguin(object):
         self.gitem = None # Gets set up later in the main thread
         self.drawn_items = []
         self._setup()
+
+    def __lt__(self, other):
+        return self._zvalue < other._zvalue
 
     def _setup(self):
         self.mw.pynguins.append(self)
@@ -276,7 +279,7 @@ class Pynguin(object):
 
     @classmethod
     def _empty_move_queue(cls):
-        while 1:
+        while True:
             #logger.debug('________________emq')
             try:
                 #logging.debug('1')
@@ -285,7 +288,7 @@ class Pynguin(object):
                 #logging.debug('2')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
                 #logging.debug('________________2emq %s' % cls._moves.qsize())
-            except Queue.Empty:
+            except queue.Empty:
                 #logging.debug('EMPTY')
                 break
 
@@ -332,14 +335,14 @@ class Pynguin(object):
                 #logger.debug('_____rpm')
                 try:
                     move, args = cls._moves.get(block=False)
-                except Queue.Empty:
+                except queue.Empty:
                     break
                 else:
 
                     try:
                         move(*args)
-                    except Exception, e:
-                        ied.write(unicode(e))
+                    except Exception as e:
+                        ied.write(str(e))
                         ied.write('\n')
                         if ied.cmdthread is not None:
                             ied.cmdthread.terminate()
@@ -472,12 +475,12 @@ class Pynguin(object):
             func(*args)
             return
 
-        while 1:
+        while True:
             try:
                 #logging.debug('qb')
                 self._moves.put_nowait((func, args))
                 #logging.debug('qp')
-            except Queue.Full:
+            except queue.Full:
                 #logging.debug('Full')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             else:
@@ -595,7 +598,7 @@ class Pynguin(object):
         elif y != None:
             # passed in 'random' plus something else...
             # That can't be right
-            raise ValueError, "'random' must be passed alone."
+            raise ValueError("'random' must be passed alone.")
         else:
             xmin, ymin, xmax, ymax = self.viewcoords()
             x = random.randrange(int(xmin), int(xmax))
@@ -689,7 +692,7 @@ class Pynguin(object):
         elif y != None:
             # passed in 'random' plus something else...
             # That can't be right
-            raise ValueError, "'random' must be passed alone."
+            raise ValueError("'random' must be passed alone.")
         else:
             xmin, ymin, xmax, ymax = self.viewcoords()
             x = random.randrange(int(xmin), int(xmax))
@@ -713,19 +716,19 @@ class Pynguin(object):
 
         Draw a text message at the current location.
         '''
-        strtxt = unicode(text)
+        strtxt = str(text)
         self.qmove(self._write, (strtxt,))
 
     def dbg(self):
         'test function for drawing on to the background plane'
         scene = self.scene
         bgp = scene.bgp
-        bgp.drawEllipse(QtCore.QRect(50,100,200,300))
+        bgp.drawEllipse(QtCore.QRect(50, 100, 200, 300))
         view = scene.view
 
         # scroll the scene to force an update
-        view.scrollContentsBy(0,1)
-        view.scrollContentsBy(0,-1)
+        view.scrollContentsBy(0, 1)
+        view.scrollContentsBy(0, -1)
 
     def _item_home(self, item):
         self._item_goto(item, QtCore.QPointF(0, 0))
@@ -884,8 +887,8 @@ class Pynguin(object):
             default = '#8282a0'
             c = settings.value('view/bgcolor', default)
             color = QtGui.QColor(c)
-            r,g,b,_ = color.getRgb()
-            return r,g,b
+            r, g, b, _ = color.getRgb()
+            return r, g, b
         else:
             ncolor = QtGui.QColor(r, g, b)
         brush = QtGui.QBrush(ncolor)
@@ -1127,12 +1130,12 @@ class Pynguin(object):
             self._imageid = imageid
             self.qmove(self._setImageid, (imageid, filepath))
         elif imageid is not None:
-            avatars = self.mw.avatars.values()
+            avatars = list(self.mw.avatars.values())
             if imageid in avatars:
                 self.setImageid(imageid)
             else:
                 msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(avatars))
-                raise ValueError, msg
+                raise ValueError(msg)
         else:
             return self._imageid
 
@@ -1150,7 +1153,7 @@ class Pynguin(object):
                     'instant': 0}
         choice = choices.get(s)
         if choice is None:
-            raise ValueError, "Speed choices are %s" % choices.keys()
+            raise ValueError("Speed choices are %s" % list(choices.keys()))
         else:
             self.qmove(self._speed, (choice,))
 

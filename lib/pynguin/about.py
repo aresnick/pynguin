@@ -21,9 +21,9 @@ import os
 
 from PyQt4 import QtGui, QtCore, uic
 
-import util
-from util import get_datadir
-from conf import version
+from . import util
+from .util import get_datadir
+from .conf import version
 
 datadir = get_datadir()
 uidir = os.path.join(datadir, 'ui')

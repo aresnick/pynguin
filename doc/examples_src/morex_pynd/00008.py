@@ -1,5 +1,5 @@
 def iffercolor(n):
-    colors = [(255,0,0), (0,255,0), (0,0,255), (255,255,0)]
+    colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
     for c in range(n):
         goto('random')
         x, y = xy()

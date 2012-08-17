@@ -34,7 +34,7 @@ def follow(n, scramble=True):
             following = random.choice(pynguins)
         pyn.following = following
 
-    while 1:
+    while True:
         for pyn in pynguins:
             if not pyn.onscreen():
                 pyn.tocenter = True

@@ -44,10 +44,10 @@ def angs(n=10, quiet=False):
 
         if s01 == s12nr:
             if not quiet:
-                print '%.3f == %.3f (%s)' % (s01, s12nr, s01==s12nr)
+                print('%.3f == %.3f (%s)' % (s01, s12nr, s01==s12nr))
         else:
             # this should never happen!
-            print '**** ** **** *****'
-            print '%.3f != %.3f' % (s01, s12nr)
-            print '**** ** **** *****'
-            print
+            print('**** ** **** *****')
+            print('%.3f != %.3f' % (s01, s12nr))
+            print('**** ** **** *****')
+            print()

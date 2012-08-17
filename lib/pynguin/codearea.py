@@ -24,11 +24,11 @@ import time
 
 from PyQt4 import QtCore, QtGui
 
-from editor import HighlightedTextEdit
+from .editor import HighlightedTextEdit
 
 try:
-    from highlighter import Highlighter, QFormatter, Formatter
-    from highlighter import get_lexer_by_name, hex2QColor
+    from .highlighter import Highlighter, QFormatter, Formatter
+    from .highlighter import get_lexer_by_name, hex2QColor
     from pygments.style import Style
     from pygments.token import Keyword, Name, Comment, String, Error
     from pygments.token import  Number, Operator, Generic, Literal
@@ -73,23 +73,22 @@ try:
                     qtf.setFontItalic(True)
                 if style['underline']:
                     qtf.setFontUnderline(True)
-                self.styles[unicode(token)]=qtf
+                self.styles[str(token)]=qtf
 
         def setfontsize(self, pt):
-            for nm, qtf in self.styles.items():
+            for nm, qtf in list(self.styles.items()):
                 qtf.setFontPointSize(pt)
 
         def show_all_styles(self):
-            z = self.style._styles.keys()
-            z.sort()
+            z = sorted(list(self.style._styles.keys()))
             for a in z:
-                print a, self.style._styles[a]
+                print(a, self.style._styles[a])
 
         def custom_color(self, style, color):
             self.style._styles[style][0] = color
 
         def customize(self):
-            for style, color in self.custom_colors.items():
+            for style, color in list(self.custom_colors.items()):
                 self.custom_color(style, color)
 
     class CodeHighlighter(Highlighter):
@@ -111,7 +110,7 @@ try:
 
 except ImportError:
     # probably caused by missing pygments library
-    from editor import PythonHighlighter
+    from .editor import PythonHighlighter
     class CodeHighlighter(PythonHighlighter):
         def __init__(self, document, mode, fontsize):
             char_format = QtGui.QTextCharFormat()
@@ -177,7 +176,7 @@ class CodeArea(HighlightedTextEdit):
 
         while b != last:
             self._rehibump(b, c)
-            b = b.next()
+            b = next(b)
         self._rehibump(last, c)
 
         c.setPosition(p0)
@@ -217,13 +216,13 @@ class CodeArea(HighlightedTextEdit):
             if atstart:
                 lead = 0
             else:
-                cblktxt = unicode(cblk.text())
+                cblktxt = str(cblk.text())
                 ts = cblktxt.split()
                 if ts:
                     lead = cblktxt.find(ts[0])
 
                 char = self._doc.characterAt(cpos-1)
-                colon = QtCore.QChar(':')
+                colon = ':'
                 if char == colon:
                     # auto indent
                     lead += 4
@@ -244,7 +243,7 @@ class CodeArea(HighlightedTextEdit):
             title = self._doc._title
         else:
             fblk = self._doc.firstBlock()
-            title = unicode(fblk.text())
+            title = str(fblk.text())
         self.settitle(title)
         if self.mw._modified or self._doc.isModified():
             self.mw.setWindowModified(True)
@@ -287,7 +286,7 @@ class CodeArea(HighlightedTextEdit):
         if curs.hasSelection():
             start = curs.selectionStart()
             end = curs.selectionEnd()
-            poss = range(start,end)
+            poss = list(range(start, end))
         else:
             start = curs.position()
             poss = [start]
@@ -332,7 +331,7 @@ class CodeArea(HighlightedTextEdit):
         '''
         if self.docid is not None:
             self.textdocuments[self.docid] = self.document()
-            self.documents[self.docid] = unicode(self._doc.toPlainText())
+            self.documents[self.docid] = str(self._doc.toPlainText())
 
     def new(self):
         '''save the current document and start a new blank document'''
@@ -363,7 +362,7 @@ class CodeArea(HighlightedTextEdit):
         if hasattr(self._doc, '_title'):
             title = self._doc._title
         else:
-            title = unicode(doctxt.split('\n')[0])
+            title = str(doctxt.split('\n')[0])
         self.settitle(title)
 
     def add(self, txt):
@@ -377,7 +376,7 @@ class CodeArea(HighlightedTextEdit):
 
     def addexternal(self, fp):
         '''Add an external python source file.'''
-        for docid, doc in self.textdocuments.items():
+        for docid, doc in list(self.textdocuments.items()):
             if hasattr(doc, '_filepath') and doc._filepath == fp:
                 # this external file already added
                 self.switchto(docid)
@@ -403,7 +402,7 @@ class CodeArea(HighlightedTextEdit):
         blk = self._doc.begin()
         end = self._doc.end()
         while docline < n:
-            blk = blk.next()
+            blk = next(blk)
             if blk == end:
                 blk = self._doc.lastBlock()
                 break
@@ -438,7 +437,7 @@ class CodeArea(HighlightedTextEdit):
         idx = mselect.currentIndex()
         if idx < count-1:
             mselect.setCurrentIndex(idx+1)
-            docid = unicode(mselect.itemData(idx+1).toString())
+            docid = str(mselect.itemData(idx+1).toString())
             if docid in self.documents:
                 self.switchto(docid)
                 self.setFocus()
@@ -464,7 +463,7 @@ class CodeArea(HighlightedTextEdit):
         idx = mselect.currentIndex()
         if idx > 0:
             mselect.setCurrentIndex(idx-1)
-            docid = unicode(mselect.itemData(idx-1).toString())
+            docid = str(mselect.itemData(idx-1).toString())
             if docid in self.documents:
                 self.switchto(docid)
                 self.setFocus()
@@ -473,7 +472,7 @@ class CodeArea(HighlightedTextEdit):
         txt = data.data('text/plain')
         newtxt = []
         for line in txt.split('\n'):
-            line = unicode(line)
+            line = str(line)
             if line.startswith('>>> ') or line.startswith('... '):
                 line = line[4:]
             newtxt.append(line)

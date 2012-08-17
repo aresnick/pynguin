@@ -26,10 +26,10 @@ def follow_switch_all(n, scramble=True):
         pyn.tocenter = False
     follow_who(pynguins)
 
-    while 1:
+    while True:
         if not random.randrange(300):
             follow_who(pynguins)
-            print 'switch!'
+            print('switch!')
 
         for pyn in pynguins:
 

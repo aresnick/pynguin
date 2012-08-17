@@ -14,10 +14,10 @@ import time
 #
 
 def hex2QColor(c):
-    r=int(c[0:2],16)
-    g=int(c[2:4],16)
-    b=int(c[4:6],16)
-    return QtGui.QColor(r,g,b)
+    r=int(c[0:2], 16)
+    g=int(c[2:4], 16)
+    b=int(c[4:6], 16)
+    return QtGui.QColor(r, g, b)
     
 
 
@@ -88,19 +88,19 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         # The \n is not really needed, but sometimes  
         # you are in an empty last block, so your position is
         # **after** the end of the document.
-        text=unicode(self.document().toPlainText())+'\n'
+        text=str(self.document().toPlainText())+'\n'
         
         # Yes, re-highlight the whole document.
         # There **must** be some optimizacion possibilities
         # but it seems fast enough.
-        highlight(text,self.lexer,self.formatter)
+        highlight(text, self.lexer, self.formatter)
         
         # Just apply the formatting to this block.
         # For titles, it may be necessary to backtrack
         # and format a couple of blocks **earlier**.
-        for i in range(len(unicode(text))):
+        for i in range(len(str(text))):
             try:
-                self.setFormat(i,1,self.formatter.data[p+i])
+                self.setFormat(i, 1, self.formatter.data[p+i])
             except IndexError:
                 pass
         
@@ -114,12 +114,12 @@ if __name__ == "__main__":
     
     rst = QtGui.QPlainTextEdit()
     rst.setWindowTitle('reSt')
-    hl=Highlighter(rst.document(),"rest")
+    hl=Highlighter(rst.document(), "rest")
     rst.show()
 
     python = QtGui.QPlainTextEdit()
     python.setWindowTitle('python')
-    hl=Highlighter(python.document(),"python")
+    hl=Highlighter(python.document(), "python")
     python.show()
 
     sys.exit(app.exec_())

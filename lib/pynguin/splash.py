@@ -19,7 +19,7 @@
 
 from PyQt4 import QtGui, QtCore
 
-import util
+from . import util
 
 
 class Splash(QtGui.QSplashScreen):

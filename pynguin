@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2010 Lee Harr
 #
 # This file is part of pynguin.
@@ -78,8 +78,8 @@ except ImportError:
     try:
         from pynguin import main
     except ImportError:
-        print 'Unable to locate the pynguin libraries.'
-        print 'Check your installation.'
+        print('Unable to locate the pynguin libraries.')
+        print('Check your installation.')
         main = False
 
 
@@ -89,29 +89,29 @@ if main:
 
     from pynguin import util
     if not util.check_data_doc_dir():
-        print 'Unable to locate pynguin data.'
-        print 'Check your installation.'
+        print('Unable to locate pynguin data.')
+        print('Check your installation.')
         main = False
 
     if util.__file__.startswith('/usr/local') and sys.prefix == '/usr':
-        print
-        print 'If this is a Debian or Ubuntu system,'
-        print 'You may have forgotten to pass'
-        print '--install-layout=deb'
-        print 'when installing.'
+        print()
+        print('If this is a Debian or Ubuntu system,')
+        print('You may have forgotten to pass')
+        print('--install-layout=deb')
+        print('when installing.')
 
 
 def help():
     from pynguin import conf
-    print conf.version
-    print
-    print 'options:'
-    print '  -h : this help text'
-    print '  -d : development mode. Run from local directory'
-    print '  -D : debug mode. Write debug info to log file'
-    print ' DUMP <filename> :'
-    print '       dump contents of pynguin file to standard output'
-    print '  -d MAKEDEB : create debian package'
+    print(conf.version)
+    print()
+    print('options:')
+    print('  -h : this help text')
+    print('  -d : development mode. Run from local directory')
+    print('  -D : debug mode. Write debug info to log file')
+    print(' DUMP <filename> :')
+    print('       dump contents of pynguin file to standard output')
+    print('  -d MAKEDEB : create debian package')
 
 if '-h' in sys.argv:
     help()
@@ -120,4 +120,4 @@ elif main and 'DUMP' in sys.argv:
 elif main:
     main.run()
 else:
-    raw_input()
+    input()

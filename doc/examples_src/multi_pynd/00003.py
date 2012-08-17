@@ -24,11 +24,11 @@ def follow_switch(n, scramble=True):
         pyn.tocenter = False
         follow_who(pyn, pynguins)
 
-    while 1:
+    while True:
         for pyn in pynguins:
             if not random.randrange(300):
                 follow_who(pyn, pynguins)
-                print 'switch!'
+                print('switch!')
 
             if not pyn.onscreen():
                 pyn.tocenter = True

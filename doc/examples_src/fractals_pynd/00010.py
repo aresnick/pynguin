@@ -9,7 +9,7 @@ def stage(l, f, depth=0, rems=None):
 
     else:
         nrems = []
-        for x,y,h in rems:
+        for x, y, h in rems:
             pp.goto(x, y)
             pp.turnto(h)
             #pp.color(x%255,y%255,h%255)

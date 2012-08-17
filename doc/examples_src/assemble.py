@@ -3,37 +3,37 @@ import zipfile
 import time
 
 def zip_pyn(ex, zfp, files, d):
-    VERSION = 'pyn01'
+    VERSION = b'pyn01'
 
     z = zipfile.ZipFile(zfp, 'w')
     for f in files:
         exp = os.path.join(ex, f)
         if '@@history@@' in f:
             data = open(exp).read()
-            history = data.decode('utf-8')
+            #history = data.decode('utf-8')
 
             zipi = zipfile.ZipInfo()
             zipi.filename = os.path.join(d, f)
             zipi.compress_type = zipfile.ZIP_DEFLATED
             zipi.date_time = time.localtime()
-            zipi.external_attr = 0644 << 16
+            zipi.external_attr = 0o644 << 16
             zipi.comment = VERSION
-            z.writestr(zipi, history.encode('utf-8'))
+            z.writestr(zipi, data) #history.encode('utf-8'))
 
         elif f.endswith('.py'):
             data = open(exp).read()
-            code = data.decode('utf-8')
+            #code = data.decode('utf-8')
 
             zipi = zipfile.ZipInfo()
             zipi.filename = os.path.join(d, f)
             zipi.compress_type = zipfile.ZIP_DEFLATED
             zipi.date_time = time.localtime()
-            zipi.external_attr = 0644 << 16
+            zipi.external_attr = 0o644 << 16
             zipi.comment = VERSION
-            z.writestr(zipi, code.encode('utf-8'))
+            z.writestr(zipi, data) #code.encode('utf-8'))
 
         else:
-            print 'ERROR. Unknown file: %s' % f
+            print('ERROR. Unknown file: %s' % f)
 
 
 def make_pyn(ex):
@@ -58,8 +58,8 @@ def make_pyn(ex):
     fp = os.path.join('..', 'examples', exfile)
     files = os.listdir(ex)
 
-    print fp
-    print files
+    print(fp)
+    print(files)
     zip_pyn(ex, fp, files, d)
 
 def make_all():

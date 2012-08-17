@@ -7,7 +7,7 @@ def mandelbrotcolor(s=150):
             i = inMandelbrot(xs, ys)
             if i > 0:
                 pass
-                color(0,0,0)
+                color(0, 0, 0)
                 point(x, y)
             elif i > -13:
                 color(255+13*i, 0, 0)

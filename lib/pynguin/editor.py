@@ -23,8 +23,8 @@ import sys
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 
-import highlightedtextedit
-import numberedtextedit
+from . import highlightedtextedit
+from . import numberedtextedit
 
 uidir = 'data/ui'
 
@@ -63,7 +63,7 @@ class TextEditor(QtGui.QMainWindow):
         if filepath is None or filepath==conf.template:
             title = 'Untitled'
         else:
-            fdir, title = os.path.split(unicode(filepath))
+            fdir, title = os.path.split(str(filepath))
             self._fdir = fdir
         self.setWindowTitle(title)
 
@@ -99,13 +99,13 @@ class TextEditor(QtGui.QMainWindow):
 
     def savecheck(self):
         filepath = self._filepath
-        fdir, fname = os.path.split(unicode(filepath))
+        fdir, fname = os.path.split(str(filepath))
         if fname.endswith('.py'):
             fmodname = fname[:-3]
         else:
-            title = QtCore.QString('File Name Error')
-            msg = QtCore.QString('Unable to import module. File name must end in .py')
-            print 'ERR', title, msg
+            title = 'File Name Error'
+            msg = 'Unable to import module. File name must end in .py'
+            print('ERR', title, msg)
             msgbox = QtGui.QMessageBox.information(self, title, msg)
             return
 
@@ -120,21 +120,21 @@ class TextEditor(QtGui.QMainWindow):
                 mod = sys.modules[fmodname]
                 reload(mod)
 
-        except SyntaxError, e:
-            title = QtCore.QString('Syntax Error')
-            msg = QtCore.QString(unicode(e))
+        except SyntaxError as e:
+            title = 'Syntax Error'
+            msg = str(e)
             msgbox = QtGui.QMessageBox.information(self, title, msg)
             self.selectline(e.lineno)
 
-        except Exception, e:
+        except Exception as e:
             import traceback
             tb = traceback.format_exc()
-            title = QtCore.QString('Error')
-            msg = QtCore.QString('Other non-syntax exception: ' + tb)
+            title = 'Error'
+            msg = 'Other non-syntax exception: ' + tb
             msgbox = QtGui.QMessageBox.information(self, title, msg)
 
     def saveAs(self):
-        fdir = QtCore.QString(os.path.abspath(conf.robot_dirs[0]))
+        fdir = os.path.abspath(conf.robot_dirs[0])
         filepath = QtGui.QFileDialog.getSaveFileName(self, 'Save Robot As', fdir)
         if filepath:
             self._filepath = filepath
@@ -153,7 +153,7 @@ class TextEditor(QtGui.QMainWindow):
             return False
         else:
             self.editor.edit._doc.setModified(False)
-            _, title = os.path.split(unicode(self._filepath))
+            _, title = os.path.split(str(self._filepath))
             self.setWindowTitle(title)
             return True
 
@@ -179,7 +179,7 @@ class TextEditor(QtGui.QMainWindow):
             txt = blk.text()
             lentxt = len(txt)+1
             doccharstart += lentxt
-            blk = blk.next()
+            blk = next(blk)
             docline += 1
         txt = blk.text()
         lentxt = len(txt)
@@ -237,7 +237,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         txt = blk.text()
         firstnonspace = 0
         hasselection = curs.hasSelection()
-        spaces4 = QtCore.QString('    ')
+        spaces4 = '    '
         for c in txt[self.col0:]:
             if c != ' ':
                 break
@@ -271,7 +271,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                             curs.deleteChar()
                 if blk == endblk:
                     break
-                blk = blk.next()
+                blk = next(blk)
             endpos = blk.position() + blk.length() - 1
             curs.setPosition(startpos, 0)
             curs.setPosition(endpos, 1)
@@ -293,7 +293,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
         elif col == firstnonspace:
             if k == Tab:
                 nexttabstop = 4-(col%4)
-                spaces = QtCore.QString(' '*nexttabstop)
+                spaces = ' ' * nexttabstop
                 self.insertPlainText(spaces)
             elif k in (Backtab, Backspace):
                 prevtabstop = col%4
@@ -335,20 +335,20 @@ class PythonHighlighter(highlightedtextedit.PythonHighlighter):
         self.empty_format = QtGui.QTextCharFormat(self.base_format)
 
         self.keywordFormat = QtGui.QTextCharFormat(self.base_format)
-        self.keywordFormat.setForeground(QtGui.QBrush(QtGui.QColor(116,167,255)))
+        self.keywordFormat.setForeground(QtGui.QBrush(QtGui.QColor(116, 167, 255)))
         self.keywordFormat.setFontWeight(QtGui.QFont.Bold)
         self.callableFormat = QtGui.QTextCharFormat(self.base_format)
-        self.callableFormat.setForeground(QtGui.QBrush(QtGui.QColor(116,255,87)))
+        self.callableFormat.setForeground(QtGui.QBrush(QtGui.QColor(116, 255, 87)))
         self.magicFormat = QtGui.QTextCharFormat(self.base_format)
-        self.magicFormat.setForeground(QtGui.QColor(224,128,0))
+        self.magicFormat.setForeground(QtGui.QColor(224, 128, 0))
         self.selfFormat = QtGui.QTextCharFormat(self.base_format)
-        self.selfFormat.setForeground(QtGui.QBrush(QtGui.QColor(255,127,127)))
+        self.selfFormat.setForeground(QtGui.QBrush(QtGui.QColor(255, 127, 127)))
         #self.selfFormat.setFontItalic(True)
         self.singleLineCommentFormat = QtGui.QTextCharFormat(self.base_format)
-        self.singleLineCommentFormat.setForeground(QtGui.QBrush(QtGui.QColor(187,87,255)))
+        self.singleLineCommentFormat.setForeground(QtGui.QBrush(QtGui.QColor(187, 87, 255)))
         self.multiLineStringFormat = QtGui.QTextCharFormat(self.base_format)
         self.multiLineStringFormat.setBackground(
-            QtGui.QBrush(QtGui.QColor(127,127,255)))
+            QtGui.QBrush(QtGui.QColor(127, 127, 255)))
         self.quotationFormat1 = QtGui.QTextCharFormat(self.base_format)
         self.quotationFormat1.setForeground(QtCore.Qt.yellow)
         self.quotationFormat2 = QtGui.QTextCharFormat(self.base_format)
@@ -357,15 +357,15 @@ class PythonHighlighter(highlightedtextedit.PythonHighlighter):
     def updateRules(self):
 
         self.rules = []
-        self.rules += map(lambda s: (QtCore.QRegExp(r"\b"+s+r"\b"),
-                          self.keywordFormat), self.keywords)
+        self.rules += [(QtCore.QRegExp(r"\b"+s+r"\b"),
+                          self.keywordFormat) for s in self.keywords]
 
         self.rules.append((QtCore.QRegExp(r"\b[A-Za-z_]+\(.*\)"), self.callableFormat))
         self.rules.append((QtCore.QRegExp(r"\b__[a-z]+__\b"), self.magicFormat))
         self.rules.append((QtCore.QRegExp(r"\bself\b"), self.selfFormat))
 
-        self.multiLineStringBegin = QtCore.QRegExp(r'\"\"\"')
-        self.multiLineStringEnd = QtCore.QRegExp(r'\"\"\"')
+        self.multiLineStringBegin = '"""'
+        self.multiLineStringEnd = '"""'
 
         self.rules.append((QtCore.QRegExp(r"#[^\n]*"), self.singleLineCommentFormat))
 
@@ -379,7 +379,7 @@ class NumberBar(numberedtextedit.NumberBar):
         self.setFont(QtGui.QFont('Serif', 14))
 
     def update(self, *args):
-        width = self.fontMetrics().width(unicode(self.highest_line)) + 25
+        width = self.fontMetrics().width(str(self.highest_line)) + 25
         if self.width() != width:
             self.setFixedWidth(width)
         QWidget.update(self, *args)
@@ -419,9 +419,9 @@ class NumberBar(numberedtextedit.NumberBar):
 
             # Draw the line number right justified at the y position of the
             # line. 3 is a magic padding number. drawText(x, y, text).
-            painter.drawText(self.width() - font_metrics.width(unicode(line_count)) - 8, round(position.y()) - contents_y + font_metrics.ascent(), unicode(line_count))
+            painter.drawText(self.width() - font_metrics.width(str(line_count)) - 8, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
 
-            block = block.next()
+            block = next(block)
 
         self.highest_line = line_count
         painter.end()
@@ -444,7 +444,7 @@ class NumberBar(numberedtextedit.NumberBar):
             bottom = rect.bottomLeft().y()
             if top <= realy <= bottom:
                 break
-            block = block.next()
+            block = next(block)
 
         textpos = block.position()
         curs = QtGui.QTextCursor(doc)

@@ -17,12 +17,12 @@ def bugs():
     p4 = Pynguin()
     p4.avatar('turtle')
 
-    xn,yn,xx,yx = viewcoords()
+    xn, yn, xx, yx = viewcoords()
 
-    p1.goto(xn,yn)
-    p2.goto(xn,-yn)
-    p3.goto(-xn,-yn)
-    p4.goto(-xn,yn)
+    p1.goto(xn, yn)
+    p2.goto(xn, -yn)
+    p3.goto(-xn, -yn)
+    p4.goto(-xn, yn)
 
 
     def gotowards(p, pp):

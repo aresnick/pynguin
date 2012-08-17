@@ -1,8 +1,7 @@
 def show_all():
     import time
     xmin, ymin, xmax, ymax = viewcoords()
-    funcs = globals().keys()
-    funcs.sort()
+    funcs = sorted(list(globals().keys()))
     for fname in funcs:
         if fname.startswith('eq'):
             clear()

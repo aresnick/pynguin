@@ -20,6 +20,7 @@
 import os
 import sys
 from random import randrange
+from math import copysign
 
 from PyQt4 import QtCore, QtSvg, QtGui
 
@@ -28,7 +29,7 @@ NOTHING = object()
 
 def sign(x):
     'return 1 if x is positive, -1 if negative, or zero'
-    return cmp(x, 0)
+    return copysign(1, x)
 
 
 NODEFAULT = object()
@@ -37,14 +38,14 @@ def _plist(f):
         return a list of [(arg name: default value or None), ...]
     '''
     parameter_defaults = []
-    defaults = f.func_defaults
+    defaults = f.__defaults__
     if defaults is not None:
         defaultcount = len(defaults)
     else:
         defaultcount = 0
-    argcount = f.func_code.co_argcount
-    for i in xrange(f.func_code.co_argcount):
-        name = f.func_code.co_varnames[i]
+    argcount = f.__code__.co_argcount
+    for i in range(f.__code__.co_argcount):
+        name = f.__code__.co_varnames[i]
         value = NODEFAULT
         if i >= argcount - defaultcount:
             value = defaults[i - (argcount - defaultcount)]
@@ -69,7 +70,7 @@ class SvgRenderer(object):
         if filepath is None:
             filename = 'pynguin.svg'
             filepath = os.path.join(datadir, 'images', filename)
-        fp = QtCore.QString(filepath)
+        fp = filepath
         rend = QtSvg.QSvgRenderer(fp, self.app)
         return rend
 
@@ -87,7 +88,7 @@ def choose_color(r=None, g=None, b=None):
         return None, None, None
     elif g is not None and b is not None:
         if not (0<=r<=255 and 0<=g<=255 and 0<=b<=255):
-            raise ValueError, 'Color components must be between 0 and 255'
+            raise ValueError('Color components must be between 0 and 255')
         c = QtGui.QColor.fromRgb(r, g, b)
         r, g, b = c.red(), c.green(), c.blue()
     elif r is not None:
