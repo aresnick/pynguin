@@ -235,7 +235,9 @@ class Pynguin(object):
             Or provide x, y, and h to set: xyh(150, 200, 180)
         '''
         if x is None and y is None and h is None:
-            return self.x, self.y, self.heading
+            x, y = self.xy()
+            h = self.h()
+            return x, y, h
         elif x is not None and y is not None and h is not None:
             self.xy(x, y)
             self.h(h)
