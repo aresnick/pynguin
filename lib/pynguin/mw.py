@@ -438,6 +438,10 @@ class MainWindow(QtGui.QMainWindow):
         brush = QtGui.QBrush(bgcolor)
         self.scene.setBackgroundBrush(brush)
 
+        default = '#ffffff'
+        c = settings.value('pynguin/color', default)
+        self.pynguin.color(c)
+
         fontsize = settings.value('editor/fontsize', 16, int)
         self.editor.setfontsize(fontsize)
         wrap = settings.value('editor/wordwrap', False, bool)

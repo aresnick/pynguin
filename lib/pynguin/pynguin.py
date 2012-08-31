@@ -880,6 +880,12 @@ class Pynguin(object):
         self.ritem.color = (r, g, b)
         self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b))
+
+        if self is self.mw.pynguin:
+            settings = QtCore.QSettings()
+            ncolor = QtGui.QColor(r, g, b)
+            settings.setValue('pynguin/color', ncolor.name())
+        
         return r, g, b
 
     def bgcolor(self, r=None, g=None, b=None):
