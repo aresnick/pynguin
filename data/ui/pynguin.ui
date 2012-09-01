@@ -188,19 +188,6 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuCustom">
-     <property name="title">
-      <string>Custom</string>
-     </property>
-     <addaction name="actionAdd_new_avatar"/>
-    </widget>
-    <addaction name="actionPynguin"/>
-    <addaction name="actionArrow"/>
-    <addaction name="actionRobot"/>
-    <addaction name="actionTurtle"/>
-    <addaction name="actionHidden"/>
-    <addaction name="menuCustom"/>
-    <addaction name="separator"/>
     <addaction name="actionBackground_color"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_in"/>
@@ -242,8 +229,32 @@
     </property>
     <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuPynguin">
+    <property name="title">
+     <string>Pynguin</string>
+    </property>
+    <widget class="QMenu" name="menuAvatar">
+     <property name="title">
+      <string>Avatar</string>
+     </property>
+     <widget class="QMenu" name="menuCustom">
+      <property name="title">
+       <string>Custom</string>
+      </property>
+      <addaction name="actionAdd_new_avatar"/>
+     </widget>
+     <addaction name="actionPynguin"/>
+     <addaction name="actionArrow"/>
+     <addaction name="actionRobot"/>
+     <addaction name="actionTurtle"/>
+     <addaction name="actionHidden"/>
+     <addaction name="menuCustom"/>
+    </widget>
+    <addaction name="menuAvatar"/>
+   </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
+   <addaction name="menuPynguin"/>
    <addaction name="penmenu"/>
    <addaction name="speedmenu"/>
    <addaction name="editormenu"/>
@@ -301,33 +312,6 @@
     <string>Down (on)</string>
    </property>
   </action>
-  <action name="actionPynguin">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Pynguin</string>
-   </property>
-  </action>
-  <action name="actionArrow">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Arrow</string>
-   </property>
-  </action>
-  <action name="actionHidden">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Hidden</string>
-   </property>
-  </action>
   <action name="actionSlow">
    <property name="checkable">
     <bool>true</bool>
@@ -363,14 +347,6 @@
     <string>Instant</string>
    </property>
   </action>
-  <action name="actionRobot">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Robot</string>
-   </property>
-  </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
@@ -395,14 +371,6 @@
   <action name="actionExport">
    <property name="text">
     <string>Export Image</string>
-   </property>
-  </action>
-  <action name="actionTurtle">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Turtle</string>
    </property>
   </action>
   <action name="actionExamples">
@@ -613,11 +581,6 @@
     <string>Track main pynguin</string>
    </property>
   </action>
-  <action name="actionAdd_new_avatar">
-   <property name="text">
-    <string>Add new avatar</string>
-   </property>
-  </action>
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences...</string>
@@ -647,6 +610,54 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+?</string>
+   </property>
+  </action>
+  <action name="actionPynguin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Pynguin</string>
+   </property>
+  </action>
+  <action name="actionArrow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Arrow</string>
+   </property>
+  </action>
+  <action name="actionRobot">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Robot</string>
+   </property>
+  </action>
+  <action name="actionTurtle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Turtle</string>
+   </property>
+  </action>
+  <action name="actionHidden">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden</string>
+   </property>
+  </action>
+  <action name="actionAdd_new_avatar">
+   <property name="text">
+    <string>Add new avatar</string>
    </property>
   </action>
  </widget>
@@ -1181,22 +1192,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionAdd_new_avatar</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setcustomavatar()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>449</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionPreferences</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -1265,6 +1260,22 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>uncomment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_new_avatar</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setcustomavatar()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
