@@ -250,6 +250,7 @@
      <addaction name="actionHidden"/>
      <addaction name="menuCustom"/>
     </widget>
+    <addaction name="actionNewPynguin"/>
     <addaction name="menuAvatar"/>
    </widget>
    <addaction name="filemenu"/>
@@ -658,6 +659,11 @@
   <action name="actionAdd_new_avatar">
    <property name="text">
     <string>Add new avatar</string>
+   </property>
+  </action>
+  <action name="actionNewPynguin">
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>
@@ -1287,6 +1293,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionNewPynguin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>new_pynguin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1325,5 +1347,6 @@
   <slot>set_background_color()</slot>
   <slot>comment()</slot>
   <slot>uncomment()</slot>
+  <slot>new_pynguin()</slot>
  </slots>
 </ui>

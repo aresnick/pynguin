@@ -525,6 +525,19 @@ class MainWindow(QtGui.QMainWindow):
 
     def new_pynguin(self):
         p = Pynguin()
+        ilocals = self.interpreter_locals
+        if 'p' not in ilocals:
+            ilocals['p'] = p
+        else:
+            pn = 2
+            while True:
+                pns = 'p%s' % pn
+                if pns not in ilocals:
+                    break
+                pn += 1
+            ilocals[pns] = p
+            cmd = '%s = Pynguin()\n' % pns
+            self.interpretereditor.addcmd(cmd)
         return p
 
     def timerEvent(self, ev):
