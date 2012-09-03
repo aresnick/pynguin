@@ -523,8 +523,8 @@ class MainWindow(QtGui.QMainWindow):
                             'Open failed',
                             'Unable to open file:\n\n%s' % fp)
 
-    def new_pynguin(self):
-        p = Pynguin()
+    def new_pynguin(self, _cls=Pynguin):
+        p = _cls()
         ilocals = self.interpreter_locals
         if 'p' not in ilocals:
             ilocals['p'] = p
@@ -539,6 +539,10 @@ class MainWindow(QtGui.QMainWindow):
             cmd = '%s = Pynguin()\n' % pns
             self.interpretereditor.addcmd(cmd)
         return p
+
+    def set_mode_logo(self):
+        from . import mode
+        self.new_pynguin(mode.ModeLogo)
 
     def timerEvent(self, ev):
         Pynguin._process_moves()

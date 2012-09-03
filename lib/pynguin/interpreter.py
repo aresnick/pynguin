@@ -212,7 +212,7 @@ class Interpreter(HighlightedTextEdit):
 
     def keyPressEvent(self, ev):
         k = ev.key()
-        logger.debug('Key: %s' % k)
+        #logger.debug('Key: %s' % k)
         mdf = ev.modifiers()
 
         if self.reading and self.pt is None:

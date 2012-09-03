@@ -103,7 +103,9 @@ class Pynguin(object):
 
         else:
             self.qmove(self._gitem_setup)
+
             while self.gitem is None or not self.gitem.ready:
+                self.wait(0.01)
                 if self.ControlC:
                     raise KeyboardInterrupt
 
@@ -374,6 +376,12 @@ class Pynguin(object):
             cls._checktime.restart()
 
         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+    def wait(self, s):
+        import time
+        for ms in range(int(s*1000)):
+            time.sleep(0.001)
+            QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def _gitem_new_line(self):
         self.gitem._current_line = None

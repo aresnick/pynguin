@@ -250,8 +250,15 @@
      <addaction name="actionHidden"/>
      <addaction name="menuCustom"/>
     </widget>
+    <widget class="QMenu" name="menuMode">
+     <property name="title">
+      <string>Mode</string>
+     </property>
+     <addaction name="actionModeLogo"/>
+    </widget>
     <addaction name="actionNewPynguin"/>
     <addaction name="menuAvatar"/>
+    <addaction name="menuMode"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="viewmenu"/>
@@ -664,6 +671,11 @@
   <action name="actionNewPynguin">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionModeLogo">
+   <property name="text">
+    <string>Logo</string>
    </property>
   </action>
  </widget>
@@ -1309,6 +1321,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionModeLogo</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>set_mode_logo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1348,5 +1376,6 @@
   <slot>comment()</slot>
   <slot>uncomment()</slot>
   <slot>new_pynguin()</slot>
+  <slot>set_mode_logo()</slot>
  </slots>
 </ui>
