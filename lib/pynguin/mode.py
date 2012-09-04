@@ -95,6 +95,10 @@ class ModeLogo(Pynguin):
         else:
             self.turnto(h)
 
+    def xyforward(self, d):
+        x, y = Pynguin.xyforward(self, d)
+        return self._xy_lfs(x, y)
+
     def forward(self, d):
         logger.info('ML3forward %s' % self)
         Pynguin.forward(self, d)
