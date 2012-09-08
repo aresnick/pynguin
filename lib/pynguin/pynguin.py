@@ -78,6 +78,11 @@ class Pynguin(object):
 
     _track_main_pynguin = None # set up by mw.setup_settings
 
+    def _log(self, *args):
+        argstrings = [str(a) for a in args]
+        strargs = ' '.join(argstrings)
+        logger.info(strargs)
+
     def __init__(self, pos=(0, 0), ang=0):
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
