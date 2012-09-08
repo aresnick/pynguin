@@ -84,6 +84,7 @@ class Pynguin(object):
         self.gitem = None # Gets set up later in the main thread
         self.drawn_items = []
         self._setup()
+        self._init_move(pos, ang)
 
     def __lt__(self, other):
         return self._zvalue < other._zvalue
@@ -108,6 +109,11 @@ class Pynguin(object):
                 self.wait(0.01)
                 if self.ControlC:
                     raise KeyboardInterrupt
+
+    def _init_move(self, pos, ang):
+        x, y = pos
+        self.goto(x, y)
+        self.turnto(ang)
 
     def _remove(self, pyn):
         if pyn is self:
