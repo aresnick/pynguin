@@ -34,6 +34,7 @@ from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
 from .pynguin import Pynguin, pynguin_functions, interpreter_protect
+from .mode import ModeLogo
 from . import util
 from .util import sign, get_datadir, get_docdir
 from .codearea import CodeArea
@@ -175,6 +176,7 @@ class MainWindow(QtGui.QMainWindow):
         ilocals = self.interpreter_locals
         ilocals.update(PI=pi,
                         Pynguin=Pynguin,
+                        ModeLogo=ModeLogo,
                         pynguin=self.pynguin,
                         p=self.pynguin,
                         pynguins=self.pynguins,
@@ -523,26 +525,27 @@ class MainWindow(QtGui.QMainWindow):
                             'Open failed',
                             'Unable to open file:\n\n%s' % fp)
 
-    def new_pynguin(self, _cls=Pynguin):
-        p = _cls()
+    def new_pynguin(self, class_name='Pynguin'):
+        cls = globals()[class_name]
+        p = cls()
         ilocals = self.interpreter_locals
-        if 'p' not in ilocals:
-            ilocals['p'] = p
+        l = class_name[0].lower()
+        if l=='p' and 'p' not in ilocals:
+            ilocals[l] = p
         else:
             pn = 2
             while True:
-                pns = 'p%s' % pn
+                pns = '%s%s' % (l, pn)
                 if pns not in ilocals:
                     break
                 pn += 1
             ilocals[pns] = p
-            cmd = '%s = Pynguin()\n' % pns
+            cmd = '%s = %s()\n' % (pns, class_name)
             self.interpretereditor.addcmd(cmd)
         return p
 
     def set_mode_logo(self):
-        from . import mode
-        self.new_pynguin(mode.ModeLogo)
+        self.new_pynguin('ModeLogo')
 
     def timerEvent(self, ev):
         Pynguin._process_moves()
