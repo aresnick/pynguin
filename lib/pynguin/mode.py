@@ -32,7 +32,7 @@ class ModeLogo(Pynguin):
         self.gitem.ready = True
 
     def _pyn_setup(self):
-        self._pyn = Pynguin(self.pos, self.ang)
+        self._pyn = Pynguin(0, 0)
         #self._pyn_reset_helper()
 
     def _pyn_setup2(self):
@@ -40,6 +40,30 @@ class ModeLogo(Pynguin):
         Pynguin.penup(self)
         self.gitem.setZValue(0)
         #self.turnto(0)
+
+    def _setx(self, x):
+        _, y = self.xy()
+        self.goto(x, y)
+    def _getx(self):
+        x, y = self.xy()
+        return x
+    x = property(_getx, _setx)
+
+    def _sety(self, y):
+        x, _ = self.xy()
+        self.goto(x, y)
+    def _gety(self):
+        x, y = self.xy()
+        return y
+    y = property(_gety, _sety)
+
+    def _setang(self, ang):
+        self.turnto(ang)
+    def _getang(self):
+        h = self.h()
+        return h
+    ang = property(_getang, _setang)
+    heading = ang
 
     def reset(self, full=False):
         Pynguin.reset(self, full)
