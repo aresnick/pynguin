@@ -32,7 +32,7 @@ class ModeLogo(Pynguin):
         self.gitem.ready = True
 
     def _pyn_setup(self):
-        self._pyn = Pynguin(0, 0)
+        self._pyn = Pynguin()
         #self._pyn_reset_helper()
 
     def _pyn_setup2(self):
@@ -67,14 +67,31 @@ class ModeLogo(Pynguin):
 
     def reset(self, full=False):
         Pynguin.reset(self, full)
-        if not full:
-            self.remove(self._pyn)
+        if full:
             self._pyn_setup()
-            self.turnto(0)
+        else:
+            self._pyn.reset()
+        self._init_move((0,0),0)
 
     def reap(self):
-        Pynguin.reap(self)
-        self._pyn_setup()
+        x, y, h = self.xyh()
+        self.qmove(self._remove, (self._pyn,))
+        self.promote(self)
+        for pyn in self.mw.pynguins:
+            if pyn is not self and pyn is not self._pyn:
+                self.qmove(self._remove, (pyn,))
+        self.qmove(self._pyn_setup)
+        self.qmove(self._init_move, ((x, y), h))
+        self.qmove(self._reap_helper)
+
+    def _reap_helper(self):
+        self._pyn.drawn_items.extend(self.drawn_items)
+        self.drawn_items = []
+
+    def remove(self, pyn=None):
+        if pyn is None:
+            self.remove(self._pyn)
+        Pynguin.remove(self._pyn, pyn)
 
     def _xy_fsl(self, x, y):
         # from faked standard to logo coords
