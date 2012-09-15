@@ -95,6 +95,11 @@ class Interpreter(HighlightedTextEdit):
 
         self.col0 = 4
 
+    def flush(self):
+        # to suppress AttributeError ...
+        # Not sure why that is happening and why it is not crashing, but...
+        pass
+
     def clear(self):
         self.history = []
         self._outputq = []
