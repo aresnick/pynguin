@@ -530,17 +530,22 @@ class MainWindow(QtGui.QMainWindow):
                             'Open failed',
                             'Unable to open file:\n\n%s' % fp)
 
-    def new_pynguin(self, class_name=None, show_cmd=True):
+    def new_pynguin(self, mname=None, show_cmd=True):
         settings = QtCore.QSettings()
-        if class_name is None:
+        if mname is None:
             # remember the saved mode
-            class_name = settings.value('pynguin/mode', 'Pynguin')
+            mname = settings.value('pynguin/mode', 'pynguin')
+            
+        from . import mode
+        class_name = mode.modes[mname]
 
         cls = globals()[class_name]
         p = cls()
         ilocals = self.interpreter_locals
         if 'p' not in ilocals:
             ilocals['p'] = p
+            p._modename = mname
+
         elif show_cmd:
             pn = 2
             while True:
@@ -554,8 +559,6 @@ class MainWindow(QtGui.QMainWindow):
 
         imageid = settings.value('pynguin/avatar', 'pynguin')
         self.set_pynguin_avatar(imageid, p)
-
-        settings.setValue('pynguin/mode', class_name)
 
         return p
 

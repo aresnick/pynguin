@@ -26,6 +26,7 @@ color(None) for transparent line?
 Allow tracking non-main pynguin
 Cut / Copy / Paste shortcuts are wrong in the interpreter
 Make labels survive change of mode
+Make sure mode change works in scripts...
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.

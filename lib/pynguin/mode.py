@@ -6,6 +6,11 @@ import logging
 logger = logging.getLogger('PynguinLogger')
 
 
+modes = {'pynguin': 'Pynguin',
+            'logo': 'ModeLogo',
+            'turtle': 'ModeTurtle'}
+
+
 class ModeBase(Pynguin):
     '''Uses 2 pynguins to simulate a "logo-style" mode,
         that is: angle 0 is straight up, angles are positive

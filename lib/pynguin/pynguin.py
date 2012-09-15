@@ -1452,7 +1452,7 @@ class Pynguin(object):
     def label(self, name):
         self.name = name
 
-    def mode(self, mname):
+    def mode(self, mname=None):
         '''Convert this pynguin to a different coordinate/angle modes.
 
         Does not convert in place. Returns a new object of the new type.
@@ -1472,24 +1472,29 @@ class Pynguin(object):
             (python turtle           |                    |       |
                 default)
         '''
-        
+
+        if mname is None:
+            return self._modename
+
         if mname not in ('pynguin', 'logo', 'turtle'):
             raise TypeError('Mode "%s" unknown' % mname)
 
-        clsname = {'pynguin': 'Pynguin',
-                    'logo': 'ModeLogo',
-                    'turtle': 'ModeTurtle'}[mname]
-
         av = self.avatar()
         is_main_pynguin = self is self.mw.pynguin
-        p = self.mw.new_pynguin(clsname, show_cmd=False)
+
+        p = self.mw.new_pynguin(mname, show_cmd=False)
         self._set_mode_replace(self, p)
         p.remove(self)
         p.avatar(av)
+
         if is_main_pynguin:
             p.promote(p)
+            settings = QtCore.QSettings()
+            settings.setValue('pynguin/mode', mname)
 
-        return p
+        p._modename = mname
+        if not is_main_pynguin:
+            return p
 
     def _set_mode_replace(self, opyn, npyn):
         '''After changing mode, put the newly created pynguin
