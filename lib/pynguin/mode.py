@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger('PynguinLogger')
 
 
-class ModeLogo(Pynguin):
+class ModeBase(Pynguin):
     '''Uses 2 pynguins to simulate a "logo-style" mode,
         that is: angle 0 is straight up, angles are positive
                     in the clockwise direction, positive X
@@ -36,7 +36,7 @@ class ModeLogo(Pynguin):
         #self._pyn_reset_helper()
 
     def _pyn_setup2(self):
-        Pynguin.avatar(self, 'hidden')
+        Pynguin.avatar(self, 'hidden', sync=False)
         Pynguin.penup(self)
         self.gitem.setZValue(0)
         #self.turnto(0)
@@ -87,36 +87,6 @@ class ModeLogo(Pynguin):
     def _reap_helper(self):
         self._pyn.drawn_items.extend(self.drawn_items)
         self.drawn_items = []
-
-    def remove(self, pyn=None):
-        if pyn is None:
-            self.remove(self._pyn)
-        Pynguin.remove(self._pyn, pyn)
-
-    def _xy_fsl(self, x, y):
-        # from faked standard to logo coords
-        return y, x
-    def _xy_rsl(self, x, y):
-        # from real standard to logo coords
-        return x, -y
-    def _xy_lfs(self, x, y):
-        # from logo coords to fake standard coords
-        return y, x
-    def _xy_lrs(self, x, y):
-        # from logo coords to real standard coords
-        return x, -y
-    def _ang_fsl(self, a):
-        # from fake standard angle to logo angle
-        return a
-    def _ang_rsl(self, a):
-        # from real standard angle to logo angle
-        return a + 90
-    def _ang_lfs(self, a):
-        # from logo angle to fake standard angle
-        return a
-    def _ang_lrs(self, a):
-        # from logo angle to real standard angle
-        return a - 90
 
     def xy(self, x=None, y=None):
         if x is None and y is None:
@@ -243,7 +213,7 @@ class ModeLogo(Pynguin):
         self._pyn.square(side, center)
 
     def avatar(self, imageid=None, filepath=None):
-        return self._pyn.avatar(imageid, filepath)
+        return self._pyn.avatar(imageid, filepath, sync=True)
 
     def onscreen(self):
         return self._pyn.onscreen()
@@ -260,3 +230,56 @@ class ModeLogo(Pynguin):
 
     def label(self, name):
         self._pyn.label(name)
+
+class ModeLogo(ModeBase):
+    def _xy_fsl(self, x, y):
+        # from faked standard to logo coords
+        return y, x
+    def _xy_rsl(self, x, y):
+        # from real standard to logo coords
+        return x, -y
+    def _xy_lfs(self, x, y):
+        # from logo coords to fake standard coords
+        return y, x
+    def _xy_lrs(self, x, y):
+        # from logo coords to real standard coords
+        return x, -y
+    def _ang_fsl(self, a):
+        # from fake standard angle to logo angle
+        return a
+    def _ang_rsl(self, a):
+        # from real standard angle to logo angle
+        return a + 90
+    def _ang_lfs(self, a):
+        # from logo angle to fake standard angle
+        return a
+    def _ang_lrs(self, a):
+        # from logo angle to real standard angle
+        return a - 90
+
+
+class ModeTurtle(ModeBase):
+    def _xy_fsl(self, x, y):
+        # from faked standard to logo coords
+        return x, -y
+    def _xy_rsl(self, x, y):
+        # from real standard to logo coords
+        return x, -y
+    def _xy_lfs(self, x, y):
+        # from logo coords to fake standard coords
+        return x, -y
+    def _xy_lrs(self, x, y):
+        # from logo coords to real standard coords
+        return x, -y
+    def _ang_fsl(self, a):
+        # from fake standard angle to logo angle
+        return -a
+    def _ang_rsl(self, a):
+        # from real standard angle to logo angle
+        return -a
+    def _ang_lfs(self, a):
+        # from logo angle to fake standard angle
+        return -a
+    def _ang_lrs(self, a):
+        # from logo angle to real standard angle
+        return -a

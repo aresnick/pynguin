@@ -233,6 +233,14 @@
     <property name="title">
      <string>Pynguin</string>
     </property>
+    <widget class="QMenu" name="menuMode">
+     <property name="title">
+      <string>Mode</string>
+     </property>
+     <addaction name="actionModeLogo"/>
+     <addaction name="actionModeTurtle"/>
+     <addaction name="actionModePynguin"/>
+    </widget>
     <widget class="QMenu" name="menuAvatar">
      <property name="title">
       <string>Avatar</string>
@@ -249,12 +257,6 @@
      <addaction name="actionTurtle"/>
      <addaction name="actionHidden"/>
      <addaction name="menuCustom"/>
-    </widget>
-    <widget class="QMenu" name="menuMode">
-     <property name="title">
-      <string>Mode</string>
-     </property>
-     <addaction name="actionModeLogo"/>
     </widget>
     <addaction name="actionNewPynguin"/>
     <addaction name="menuAvatar"/>
@@ -668,14 +670,24 @@
     <string>Add new avatar</string>
    </property>
   </action>
-  <action name="actionNewPynguin">
-   <property name="text">
-    <string>New</string>
-   </property>
-  </action>
   <action name="actionModeLogo">
    <property name="text">
     <string>Logo</string>
+   </property>
+  </action>
+  <action name="actionModeTurtle">
+   <property name="text">
+    <string>Turtle</string>
+   </property>
+  </action>
+  <action name="actionModePynguin">
+   <property name="text">
+    <string>Pynguin</string>
+   </property>
+  </action>
+  <action name="actionNewPynguin">
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>
@@ -1306,10 +1318,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionNewPynguin</sender>
+   <sender>actionModeLogo</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>new_pynguin()</slot>
+   <slot>set_mode_logo()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1322,10 +1334,42 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionModeLogo</sender>
+   <sender>actionModeTurtle</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>set_mode_logo()</slot>
+   <slot>set_mode_turtle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionModePynguin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>set_mode_pynguin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNewPynguin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>new_pynguin()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1377,5 +1421,7 @@
   <slot>uncomment()</slot>
   <slot>new_pynguin()</slot>
   <slot>set_mode_logo()</slot>
+  <slot>set_mode_turtle()</slot>
+  <slot>set_mode_pynguin()</slot>
  </slots>
 </ui>

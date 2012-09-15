@@ -34,7 +34,7 @@ from PyQt4 import QtGui, QtCore, uic
 from PyQt4.Qt import QHBoxLayout
 
 from .pynguin import Pynguin, pynguin_functions, interpreter_protect
-from .mode import ModeLogo
+from .mode import ModeLogo, ModeTurtle
 from . import util
 from .util import sign, get_datadir, get_docdir
 from .codearea import CodeArea
@@ -67,6 +67,9 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui = MWClass()
         self.ui.setupUi(self)
+
+        self.initialize_settings()
+        self.setup_avatar_choices()
 
         self.scene = Scene()
         view = self.ui.view
@@ -134,7 +137,6 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.wsplitter.setSizes([550, 350])
         self.ui.wsplitter.splitterMoved.connect(self.recenter)
 
-        self.setup_avatar_choices()
         self.viewgroup = QtGui.QActionGroup(self)
         self.viewgroup.addAction(self.ui.actionPynguin)
         self.viewgroup.addAction(self.ui.actionArrow)
@@ -427,10 +429,12 @@ class MainWindow(QtGui.QMainWindow):
         settings.clear()
         self.setup_settings()
 
-    def setup_settings(self):
+    def initialize_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')
         QtCore.QCoreApplication.setOrganizationDomain('pynguin.googlecode.com')
         QtCore.QCoreApplication.setApplicationName('pynguin')
+
+    def setup_settings(self):
         settings = QtCore.QSettings()
         self.settings = settings
 
@@ -525,27 +529,49 @@ class MainWindow(QtGui.QMainWindow):
                             'Open failed',
                             'Unable to open file:\n\n%s' % fp)
 
-    def new_pynguin(self, class_name='Pynguin'):
+    def new_pynguin(self, class_name=None, pos=None, ang=None):
+        settings = QtCore.QSettings()
+        if class_name is None:
+            # remember the saved mode
+            class_name = settings.value('pynguin/mode', 'Pynguin')
+
         cls = globals()[class_name]
-        p = cls()
+        p = cls(pos, ang)
         ilocals = self.interpreter_locals
-        l = class_name[0].lower()
-        if l=='p' and 'p' not in ilocals:
-            ilocals[l] = p
+        if 'p' not in ilocals:
+            ilocals['p'] = p
         else:
             pn = 2
             while True:
-                pns = '%s%s' % (l, pn)
+                pns = 'p%s' % pn
                 if pns not in ilocals:
                     break
                 pn += 1
             ilocals[pns] = p
             cmd = '%s = %s()\n' % (pns, class_name)
             self.interpretereditor.addcmd(cmd)
+
+            imageid = settings.value('pynguin/avatar', 'pynguin')
+            self.set_pynguin_avatar(imageid, p)
+
+        settings.setValue('pynguin/mode', class_name)
+
         return p
 
     def set_mode_logo(self):
-        self.new_pynguin('ModeLogo')
+        p = self.new_pynguin('ModeLogo', pos, ang)
+        p.remove(self.pynguin)
+        p.promote(p)
+
+    def set_mode_turtle(self):
+        p = self.new_pynguin('ModeTurtle')
+        p.remove(self.pynguin)
+        p.promote(p)
+
+    def set_mode_pynguin(self):
+        p = self.new_pynguin('Pynguin')
+        p.remove(self.pynguin)
+        p.promote(p)
 
     def timerEvent(self, ev):
         Pynguin._process_moves()
@@ -1796,12 +1822,19 @@ Check configuration!''')
             popup.exec_(custommenu.mapToGlobal(pt))
         return deleteaction
 
-    def set_pynguin_avatar(self, imageid):
+    def set_pynguin_avatar(self, imageid, pyn=None):
         '''select which image to show
 
         sets the image for the primary pynguin only. For other later
             added pynguins, use p.avatar()
         '''
+
+        if pyn is None:
+            pyn = self.pynguin
+            sync = None
+        else:
+            sync = False
+        
         idpath = str(imageid)
         if idpath.startswith('@@_'):
             # custom svg
@@ -1814,8 +1847,9 @@ Check configuration!''')
         else:
             imid = imageid
             filepath = None
-        self.pynguin.avatar(imid, filepath)
-        self._sync_avatar_menu(imageid, filepath)
+        pyn.avatar(imid, filepath)
+        if sync:
+            self._sync_avatar_menu(imageid, filepath)
 
         if not imid:
             imid = None

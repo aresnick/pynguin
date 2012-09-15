@@ -83,7 +83,12 @@ class Pynguin(object):
         strargs = ' '.join(argstrings)
         logger.info(strargs)
 
-    def __init__(self, pos=(0, 0), ang=0):
+    def __init__(self, pos=None, ang=None):
+        if pos is None:
+            pos = (0, 0)
+        if ang is None:
+            ang = 0
+        
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
         self.gitem = None # Gets set up later in the main thread
@@ -127,7 +132,7 @@ class Pynguin(object):
             self.drawn_items.extend(pyn.drawn_items)
             pyn.drawn_items = []
 
-        pyn._setImageid('hidden')
+        pyn._setImageid('hidden', sync=False)
         self.scene.removeItem(pyn.gitem)
         if pyn.gitem.litem is not None:
             self.scene.removeItem(pyn.gitem.litem)
@@ -160,6 +165,8 @@ class Pynguin(object):
 
         if pyn is None:
             pyn = self
+        if hasattr(pyn, '_pyn'):
+            self.remove(pyn._pyn)
         self.qmove(self._remove, (pyn,))
 
     def reap(self):
@@ -1086,10 +1093,17 @@ class Pynguin(object):
         self.ritem._fillrule = fr
         self.qmove(self._gitem_fillrule, (fr,))
 
-    def _setImageid(self, imageid, filepath=None):
+    def _setImageid(self, imageid, filepath=None, sync=None):
         ogitem = self.gitem
         pos = ogitem.pos()
         ang = ogitem.ang
+
+        if self is self.mw.pynguin and sync is None:
+            do_sync = True
+        elif sync:
+            do_sync = True
+        else:
+            do_sync = False
 
         if filepath is None:
             # one of the built-in avatars
@@ -1140,26 +1154,48 @@ class Pynguin(object):
         scene.addItem(gitem)
         self.gitem = gitem
         gitem.set_transform()
-        if self is self.mw.pynguin:
+        if do_sync:
             if imageid is None:
                 _, imageid = os.path.split(filepath)
             self.mw._sync_avatar_menu(imageid, filepath)
-    def setImageid(self, imageid):
+    def setImageid(self, imageid, sync):
         '''change the visible (avatar) image'''
         self._imageid = imageid
-        self.qmove(self._setImageid, (imageid,))
-    def avatar(self, imageid=None, filepath=None):
+        self.qmove(self._setImageid, (imageid, None, sync))
+    def avatar(self, imageid=None, filepath=None, sync=None):
+        '''set or return the pynguin's avatar image
+
+            Some avatars are built in and can be selected by passing
+                imageid only. Choices are 'pynguin', 'turtle', 'arrow',
+                'robot', and 'hidden'
+
+            An avatar can be set using an svg or png image also.
+
+            For a png, pass the path to the file only.
+
+            For an svg, pass the file path, and the svg id both.
+
+            Normally, when the pynguin being modified is the main
+            pynguin, you want the window menu to be synced with the
+            selected avatar, however, for the special modes (ModeLogo
+            and ModeTurtle) which are composed to 2 pynguins, the
+            sync=False option is available so that only the visible
+            pynguin avatar will be synced with the menu. Also, sync=True
+            is available to force sync when updating the visible
+            pynguin even though it is not actually the primary.
+        '''
+
         if filepath is not None and imageid is not None:
             self._imageid = imageid
-            self.qmove(self._setImageid, (imageid, filepath))
+            self.qmove(self._setImageid, (imageid, filepath, sync))
         elif filepath is not None and imageid is None:
             # load from non-svg image
             self._imageid = imageid
-            self.qmove(self._setImageid, (imageid, filepath))
+            self.qmove(self._setImageid, (imageid, filepath, sync))
         elif imageid is not None:
             avatars = list(self.mw.avatars.values())
             if imageid in avatars:
-                self.setImageid(imageid)
+                self.setImageid(imageid, sync)
             else:
                 msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(avatars))
                 raise ValueError(msg)
