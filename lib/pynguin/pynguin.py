@@ -1491,6 +1491,7 @@ class Pynguin(object):
             p.promote(p)
             settings = QtCore.QSettings()
             settings.setValue('pynguin/mode', mname)
+            self.mw._sync_mode_menu(mname)
 
         p._modename = mname
         if not is_main_pynguin:

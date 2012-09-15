@@ -146,6 +146,12 @@ class MainWindow(QtGui.QMainWindow):
         self.viewgroup.setExclusive(True)
         self.viewgroup.triggered.connect(self.setImageEvent)
 
+        self.modegroup = QtGui.QActionGroup(self)
+        self.modegroup.addAction(self.ui.actionModePynguin)
+        self.modegroup.addAction(self.ui.actionModeLogo)
+        self.modegroup.addAction(self.ui.actionModeTurtle)
+        self.modegroup.setExclusive(True)
+
         self._setup_pendown_choices()
         self.pengroup = QtGui.QActionGroup(self)
         self.pengroup.addAction(self.ui.actionPenUp)
@@ -545,6 +551,7 @@ class MainWindow(QtGui.QMainWindow):
         if 'p' not in ilocals:
             ilocals['p'] = p
             p._modename = mname
+            self._sync_mode_menu(mname)
 
         elif show_cmd:
             pn = 2
@@ -579,6 +586,16 @@ class MainWindow(QtGui.QMainWindow):
 
         cmd = "mode('pynguin')\n"
         self.interpretereditor.addcmd(cmd)
+
+    def _sync_mode_menu(self, mname):
+        logger.info('MN %s' % mname)
+        choices = {
+            'pynguin': self.ui.actionModePynguin,
+            'logo': self.ui.actionModeLogo,
+            'turtle': self.ui.actionModeTurtle}
+
+        action = choices[mname]
+        action.setChecked(True)
 
     def timerEvent(self, ev):
         Pynguin._process_moves()
