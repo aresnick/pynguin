@@ -42,7 +42,7 @@ pynguin_functions = [
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
     'avatar', 'remove', 'promote', 'reap',
-    'speed', 'track', 'notrack', 'bgcolor']
+    'speed', 'track', 'notrack', 'bgcolor', 'mode']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
     'history', 'util',]
@@ -1451,6 +1451,44 @@ class Pynguin(object):
 
     def label(self, name):
         self.name = name
+
+    def mode(self, mname):
+        if mname not in ('pynguin', 'logo', 'turtle'):
+            raise TypeError('Mode "%s" unknown' % mname)
+
+        clsname = {'pynguin': 'Pynguin',
+                    'logo': 'ModeLogo',
+                    'turtle': 'ModeTurtle'}[mname]
+
+        av = self.avatar()
+        is_main_pynguin = self is self.mw.pynguin
+        p = self.mw.new_pynguin(clsname, show_cmd=False)
+        self._set_mode_replace(self, p)
+        p.remove(self)
+        p.avatar(av)
+        if is_main_pynguin:
+            p.promote(p)
+
+        return p
+
+    def _set_mode_replace(self, opyn, npyn):
+        '''After changing mode, put the newly created pynguin
+            back where the original pynguin was.
+        '''
+        if hasattr(opyn, '_pyn'):
+            x, y = opyn._pyn.xy()
+            ang = opyn._pyn.h()
+        else:
+            x, y = opyn.xy()
+            ang = opyn.h()
+
+        if hasattr(npyn, '_pyn'):
+            x, y = npyn._xy_rsl(x, y)
+            ang = npyn._ang_rsl(ang)
+
+        npyn.goto(x, y)
+        npyn.turnto(ang)
+
 
 
 class RItem(object):

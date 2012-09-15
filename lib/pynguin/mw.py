@@ -179,6 +179,7 @@ class MainWindow(QtGui.QMainWindow):
         ilocals.update(PI=pi,
                         Pynguin=Pynguin,
                         ModeLogo=ModeLogo,
+                        ModeTurtle=ModeTurtle,
                         pynguin=self.pynguin,
                         p=self.pynguin,
                         pynguins=self.pynguins,
@@ -559,51 +560,19 @@ class MainWindow(QtGui.QMainWindow):
         return p
 
     def set_mode_logo(self):
-        p = self.new_pynguin('ModeLogo', show_cmd=False)
-        self._set_mode_replace(p)
-        p.remove(self.pynguin)
-        p.promote(p)
+        self.pynguin.mode('logo')
 
         cmd = "mode('logo')\n"
         self.interpretereditor.addcmd(cmd)
 
-    def _set_mode_replace(self, p):
-        '''After changing mode, put the newly created pynguin
-            back where the original pynguin was.
-        '''
-        if hasattr(self, 'pynguin'):
-            opyn = self.pynguin
-            if hasattr(opyn, '_pyn'):
-                x, y = opyn._pyn.xy()
-                ang = opyn._pyn.h()
-            else:
-                x, y = opyn.xy()
-                ang = opyn.h()
-        else:
-            pos = None
-            ang = None
-
-        if hasattr(p, '_pyn'):
-            x, y = p._xy_rsl(x, y)
-            ang = p._ang_rsl(ang)
-
-        p.goto(x, y)
-        p.turnto(ang)
-
     def set_mode_turtle(self):
-        p = self.new_pynguin('ModeTurtle', show_cmd=False)
-        self._set_mode_replace(p)
-        p.remove(self.pynguin)
-        p.promote(p)
+        self.pynguin.mode('turtle')
 
         cmd = "mode('turtle')\n"
         self.interpretereditor.addcmd(cmd)
 
     def set_mode_pynguin(self):
-        p = self.new_pynguin('Pynguin', show_cmd=False)
-        self._set_mode_replace(p)
-        p.remove(self.pynguin)
-        p.promote(p)
+        self.pynguin.mode('pynguin')
 
         cmd = "mode('pynguin')\n"
         self.interpretereditor.addcmd(cmd)

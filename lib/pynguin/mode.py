@@ -213,7 +213,8 @@ class ModeBase(Pynguin):
         self._pyn.square(side, center)
 
     def avatar(self, imageid=None, filepath=None):
-        return self._pyn.avatar(imageid, filepath, sync=True)
+        sync = self is self.mw.pynguin
+        return self._pyn.avatar(imageid, filepath, sync=sync)
 
     def onscreen(self):
         return self._pyn.onscreen()
