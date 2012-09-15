@@ -529,18 +529,18 @@ class MainWindow(QtGui.QMainWindow):
                             'Open failed',
                             'Unable to open file:\n\n%s' % fp)
 
-    def new_pynguin(self, class_name=None, pos=None, ang=None):
+    def new_pynguin(self, class_name=None, show_cmd=True):
         settings = QtCore.QSettings()
         if class_name is None:
             # remember the saved mode
             class_name = settings.value('pynguin/mode', 'Pynguin')
 
         cls = globals()[class_name]
-        p = cls(pos, ang)
+        p = cls()
         ilocals = self.interpreter_locals
         if 'p' not in ilocals:
             ilocals['p'] = p
-        else:
+        elif show_cmd:
             pn = 2
             while True:
                 pns = 'p%s' % pn
@@ -551,27 +551,62 @@ class MainWindow(QtGui.QMainWindow):
             cmd = '%s = %s()\n' % (pns, class_name)
             self.interpretereditor.addcmd(cmd)
 
-            imageid = settings.value('pynguin/avatar', 'pynguin')
-            self.set_pynguin_avatar(imageid, p)
+        imageid = settings.value('pynguin/avatar', 'pynguin')
+        self.set_pynguin_avatar(imageid, p)
 
         settings.setValue('pynguin/mode', class_name)
 
         return p
 
     def set_mode_logo(self):
-        p = self.new_pynguin('ModeLogo', pos, ang)
+        p = self.new_pynguin('ModeLogo', show_cmd=False)
+        self._set_mode_replace(p)
         p.remove(self.pynguin)
         p.promote(p)
+
+        cmd = "mode('logo')\n"
+        self.interpretereditor.addcmd(cmd)
+
+    def _set_mode_replace(self, p):
+        '''After changing mode, put the newly created pynguin
+            back where the original pynguin was.
+        '''
+        if hasattr(self, 'pynguin'):
+            opyn = self.pynguin
+            if hasattr(opyn, '_pyn'):
+                x, y = opyn._pyn.xy()
+                ang = opyn._pyn.h()
+            else:
+                x, y = opyn.xy()
+                ang = opyn.h()
+        else:
+            pos = None
+            ang = None
+
+        if hasattr(p, '_pyn'):
+            x, y = p._xy_rsl(x, y)
+            ang = p._ang_rsl(ang)
+
+        p.goto(x, y)
+        p.turnto(ang)
 
     def set_mode_turtle(self):
-        p = self.new_pynguin('ModeTurtle')
+        p = self.new_pynguin('ModeTurtle', show_cmd=False)
+        self._set_mode_replace(p)
         p.remove(self.pynguin)
         p.promote(p)
 
+        cmd = "mode('turtle')\n"
+        self.interpretereditor.addcmd(cmd)
+
     def set_mode_pynguin(self):
-        p = self.new_pynguin('Pynguin')
+        p = self.new_pynguin('Pynguin', show_cmd=False)
+        self._set_mode_replace(p)
         p.remove(self.pynguin)
         p.promote(p)
+
+        cmd = "mode('pynguin')\n"
+        self.interpretereditor.addcmd(cmd)
 
     def timerEvent(self, ev):
         Pynguin._process_moves()
