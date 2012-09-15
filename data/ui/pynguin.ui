@@ -237,9 +237,9 @@
      <property name="title">
       <string>Mode</string>
      </property>
+     <addaction name="actionModePynguin"/>
      <addaction name="actionModeLogo"/>
      <addaction name="actionModeTurtle"/>
-     <addaction name="actionModePynguin"/>
     </widget>
     <widget class="QMenu" name="menuAvatar">
      <property name="title">
@@ -671,16 +671,25 @@
    </property>
   </action>
   <action name="actionModeLogo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Logo</string>
    </property>
   </action>
   <action name="actionModeTurtle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Turtle</string>
    </property>
   </action>
   <action name="actionModePynguin">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Pynguin</string>
    </property>
