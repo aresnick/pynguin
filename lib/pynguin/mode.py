@@ -234,9 +234,12 @@ class ModeBase(Pynguin):
     def stamp(self, imageid=None):
         self._pyn.stamp(imageid)
 
-    def label(self, name):
-        self._name = name
-        self._pyn.label(name)
+    def label(self, name=None):
+        if name is None:
+            return self.name
+        else:
+            self._name = name
+            self._pyn.label(name)
 
     def _setname(self, name):
         if name != self._name:

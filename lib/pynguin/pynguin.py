@@ -1449,8 +1449,11 @@ class Pynguin(object):
         return self._name
     name = property(_getname, _setname)
 
-    def label(self, name):
-        self.name = name
+    def label(self, name=None):
+        if name is None:
+            return self.name
+        else:
+            self.name = name
 
     def mode(self, mname=None):
         '''Convert this pynguin to a different coordinate/angle modes.
