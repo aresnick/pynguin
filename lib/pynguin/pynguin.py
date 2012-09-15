@@ -1453,6 +1453,26 @@ class Pynguin(object):
         self.name = name
 
     def mode(self, mname):
+        '''Convert this pynguin to a different coordinate/angle modes.
+
+        Does not convert in place. Returns a new object of the new type.
+        The exception to this is the primary pynguin which is automatically
+        bound to p and pynguin in the interpreter.
+
+
+        Modes available:
+                            angle 0  |     pos angles     | pos x | pos y
+                            -------  | ------------------ | ----- | ----- 
+            pynguin:         east    |     clockwise      | east  | south
+            (default)                |                    |       |
+                                     |                    |       |
+            logo:            north   |     clockwise      | east  | north
+                                     |                    |       |
+            turtle:          east    | counter-clockwise  | east  | north
+            (python turtle           |                    |       |
+                default)
+        '''
+        
         if mname not in ('pynguin', 'logo', 'turtle'):
             raise TypeError('Mode "%s" unknown' % mname)
 
