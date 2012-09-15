@@ -1480,6 +1480,7 @@ class Pynguin(object):
             raise TypeError('Mode "%s" unknown' % mname)
 
         av = self.avatar()
+        name = self.name
         is_main_pynguin = self is self.mw.pynguin
 
         p = self.mw.new_pynguin(mname, show_cmd=False)
@@ -1494,6 +1495,8 @@ class Pynguin(object):
             self.mw._sync_mode_menu(mname)
 
         p._modename = mname
+        if name:
+            p.label(name)
         if not is_main_pynguin:
             return p
 

@@ -235,7 +235,17 @@ class ModeBase(Pynguin):
         self._pyn.stamp(imageid)
 
     def label(self, name):
+        self._name = name
         self._pyn.label(name)
+
+    def _setname(self, name):
+        if name != self._name:
+            self._name = name
+            self.qmove(self._pyn._gitem_setlabel, (name,))
+    def _getname(self):
+        return self._name
+    name = property(_getname, _setname)
+
 
 class ModeLogo(ModeBase):
     def _xy_fsl(self, x, y):
