@@ -1479,7 +1479,8 @@ class Pynguin(object):
         if mname is None:
             return self._modename
 
-        if mname not in ('pynguin', 'logo', 'turtle'):
+        from . import mode
+        if mname not in mode.modes:
             raise TypeError('Mode "%s" unknown' % mname)
 
         av = self.avatar()
