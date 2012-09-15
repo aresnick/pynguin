@@ -37,4 +37,5 @@ class Splash(QtGui.QSplashScreen):
         QtCore.QTimer.singleShot(1500, self.away)
 
     def away(self):
-        self.finish(self.win)
+        if hasattr(self, 'win'):
+            self.finish(self.win)
