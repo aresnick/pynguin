@@ -187,6 +187,7 @@ class Pynguin(object):
             built-in commands.
         '''
         self.qmove(self._promote, (pyn,))
+        self.mw.setup_interpreter_locals(pyn)
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
