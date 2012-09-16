@@ -470,6 +470,9 @@ class CodeArea(HighlightedTextEdit):
 
     def insertFromMimeData(self, data):
         txt = data.data('text/plain')
+        b = bytes(txt)
+        txt = b.decode('utf-8')
+
         newtxt = []
         for line in txt.split('\n'):
             line = str(line)
