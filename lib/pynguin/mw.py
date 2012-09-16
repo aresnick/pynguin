@@ -180,19 +180,31 @@ class MainWindow(QtGui.QMainWindow):
         self._watchdocs = {}
         self._writing_external = None
 
-    def setup_interpreter_locals(self):
+    def setup_interpreter_locals(self, pyn=None):
+        '''insert some values in to the interpreter.
+
+        By default, inserts the "main" pynguin and its methods, but
+            can pass in another pynguin and use it and its methods
+            instead. (Useful when switching over from one pynguin
+            to another as the main pynguin, like in reap() or promote()
+        '''
+
+        if pyn is None:
+            pyn = self.pynguin
+        
         ilocals = self.interpreter_locals
         ilocals.update(PI=pi,
                         Pynguin=Pynguin,
                         ModeLogo=ModeLogo,
                         ModeTurtle=ModeTurtle,
-                        pynguin=self.pynguin,
-                        p=self.pynguin,
+                        pynguin=pyn,
+                        p=pyn,
                         pynguins=self.pynguins,
                         history=self.history,
                         util=util,)
+
         for fname in pynguin_functions:
-            function = getattr(self.pynguin, fname)
+            function = getattr(pyn, fname)
             ilocals[fname] = function
 
     def mousewheelscroll(self, ev):

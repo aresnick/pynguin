@@ -1459,8 +1459,11 @@ class Pynguin(object):
         '''Convert this pynguin to a different coordinate/angle modes.
 
         Does not convert in place. Returns a new object of the new type.
-        The exception to this is the primary pynguin which is automatically
-        bound to p and pynguin in the interpreter.
+
+        The primary pynguin is automatically re-bound to p and to pynguin
+        in the interpreter, but in scripts it is difficult to ensure that
+        you are getting the new object. It is best to bind the returned
+        pynguin and use that for following commands.
 
 
         Modes available:
@@ -1501,8 +1504,8 @@ class Pynguin(object):
         p._modename = mname
         if name:
             p.label(name)
-        if not is_main_pynguin:
-            return p
+
+        return p
 
     def _set_mode_replace(self, opyn, npyn):
         '''After changing mode, put the newly created pynguin
