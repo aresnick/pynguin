@@ -176,7 +176,7 @@ class CodeArea(HighlightedTextEdit):
 
         while b != last:
             self._rehibump(b, c)
-            b = next(b)
+            b = b.next()
         self._rehibump(last, c)
 
         c.setPosition(p0)
@@ -402,7 +402,7 @@ class CodeArea(HighlightedTextEdit):
         blk = self._doc.begin()
         end = self._doc.end()
         while docline < n:
-            blk = next(blk)
+            blk = blk.next()
             if blk == end:
                 blk = self._doc.lastBlock()
                 break
