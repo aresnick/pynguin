@@ -237,6 +237,8 @@ class Interpreter(HighlightedTextEdit):
         Shift = QtCore.Qt.ShiftModifier
         U = QtCore.Qt.Key_U
         C = QtCore.Qt.Key_C
+        V = QtCore.Qt.Key_V
+        X = QtCore.Qt.Key_X
         A = QtCore.Qt.Key_A
         Home = QtCore.Qt.Key_Home
         E = QtCore.Qt.Key_E
@@ -374,9 +376,19 @@ class Interpreter(HighlightedTextEdit):
             #erase from cursor to beginning of line
             self.erasetostart()
 
+        elif mdf & Control and mdf & Shift and k==X:
+            # Cut
+            self.cut()
+            scrolldown = False
+
         elif mdf & Control and mdf & Shift and k==C:
             # Copy
             self.copy()
+            scrolldown = False
+
+        elif mdf & Control and mdf & Shift and k==V:
+            # Paste
+            self.paste()
             scrolldown = False
 
         elif mdf & Control and k==C:
@@ -386,11 +398,11 @@ class Interpreter(HighlightedTextEdit):
                 logger.info('Thread running')
                 pynguin.Pynguin.ControlC = True
                 pynguin.Pynguin._stop_testall = True
-                #logging.debug('CCT')
+                #logger.debug('CCT')
                 self.mw.pynguin._empty_move_queue()
                 for pyn in self.mw.pynguins:
                     pyn._sync_items()
-                #logging.debug('synced')
+                #logger.debug('synced')
                 self.needmore = False
                 self.interpreter.resetbuffer()
 
@@ -430,6 +442,8 @@ class Interpreter(HighlightedTextEdit):
 
         if passthru:
             HighlightedTextEdit.keyPressEvent(self, ev)
+
+        logger.info('OUT')
 
     def scrolldown(self):
         '''force the console to scroll all the way down, and put
@@ -472,11 +486,40 @@ class Interpreter(HighlightedTextEdit):
         redo = actions[1]
         sep0 = actions[2]
         cut = actions[3]
+        copy = actions[4]
+        paste = actions[5]
         delete = actions[6]
         menu.removeAction(undo)
         menu.removeAction(redo)
         menu.removeAction(sep0)
+
         menu.removeAction(cut)
+        cutaction = QtGui.QAction('Cut', menu)
+        cutshortcut = QtGui.QKeySequence(QtCore.Qt.CTRL +
+                                            QtCore.Qt.SHIFT +
+                                            QtCore.Qt.Key_X)
+        cutaction.setShortcut(cutshortcut)
+        cutaction.triggered.connect(self.cut)
+        menu.insertAction(paste, cutaction)
+        
+        menu.removeAction(copy)
+        copyaction = QtGui.QAction('Copy', menu)
+        copyshortcut = QtGui.QKeySequence(QtCore.Qt.CTRL +
+                                            QtCore.Qt.SHIFT +
+                                            QtCore.Qt.Key_C)
+        copyaction.setShortcut(copyshortcut)
+        copyaction.triggered.connect(self.copy)
+        menu.insertAction(paste, copyaction)
+
+        menu.removeAction(paste)
+        pasteaction = QtGui.QAction('Paste', menu)
+        pasteshortcut = QtGui.QKeySequence(QtCore.Qt.CTRL +
+                                            QtCore.Qt.SHIFT +
+                                            QtCore.Qt.Key_V)
+        pasteaction.setShortcut(pasteshortcut)
+        pasteaction.triggered.connect(self.paste)
+        menu.insertAction(delete, pasteaction)
+
         menu.removeAction(delete)
         menu.exec_(ev.globalPos())
 
