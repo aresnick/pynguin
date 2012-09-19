@@ -179,7 +179,7 @@ class TextEditor(QtGui.QMainWindow):
             txt = blk.text()
             lentxt = len(txt)+1
             doccharstart += lentxt
-            blk = next(blk)
+            blk = blk.next()
             docline += 1
         txt = blk.text()
         lentxt = len(txt)
@@ -271,7 +271,7 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                             curs.deleteChar()
                 if blk == endblk:
                     break
-                blk = next(blk)
+                blk = blk.next()
             endpos = blk.position() + blk.length() - 1
             curs.setPosition(startpos, 0)
             curs.setPosition(endpos, 1)
@@ -421,7 +421,7 @@ class NumberBar(numberedtextedit.NumberBar):
             # line. 3 is a magic padding number. drawText(x, y, text).
             painter.drawText(self.width() - font_metrics.width(str(line_count)) - 8, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
 
-            block = next(block)
+            block = block.next()
 
         self.highest_line = line_count
         painter.end()
@@ -444,7 +444,7 @@ class NumberBar(numberedtextedit.NumberBar):
             bottom = rect.bottomLeft().y()
             if top <= realy <= bottom:
                 break
-            block = next(block)
+            block = block.next()
 
         textpos = block.position()
         curs = QtGui.QTextCursor(doc)

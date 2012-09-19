@@ -84,7 +84,7 @@ class NumberBar(QWidget):
                 font.setBold(False)
                 painter.setFont(font)
 
-            block = next(block)
+            block = block.next()
 
         self.highest_line = line_count
         painter.end()
