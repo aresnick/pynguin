@@ -9,26 +9,36 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release fixes problems which prevented the program
-    from working properly on Windows systems.
+This release ports Pynguin to Python 3.
 
 
-Pynguin is tested with Python 2.7.2 and PyQt 4.8.5 and
+Pynguin is tested with Python 3.2.3 and PyQt 4.9.1 and
     will use Pygments syntax highlighting if available.
 
 Pynguin is released under GPLv3.
 
 
 Changes in pynguin-0.13:
+    Now uses (requires) Python 3
+        - Tested with Python 3.2.3
+
     Important fixes
-        - while 1: pass can now be interrupted
 
     Pynguin API
+        - Logo mode coordinates and angles now available
+        - Python turtle mode coordinates and angles now available
+        - xy(x, y) re-uses goto(x, y)
+        - xyh() uses xy() and h() to retrieve values
 
     Canvas
+        - Remembers main pynguin pen color
+
+    UI
+        - Added new Pynguin menu for avatar and mode selection
 
     Integrated Editor
 
     Integrated Console
 
     Examples
+        - All ported to Python 3
