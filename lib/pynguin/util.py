@@ -24,6 +24,9 @@ from math import copysign
 
 from PyQt4 import QtCore, QtSvg, QtGui
 
+import logging
+logger = logging.getLogger('PynguinLogger')
+
 
 NOTHING = object()
 
@@ -75,7 +78,12 @@ class SvgRenderer(object):
         return rend
 
 
-def choose_color(r=None, g=None, b=None):
+def choose_color(r=None, g=None, b=None, a=None):
+    if a is None:
+        a = 255
+    elif not (0<=a<=255):
+        raise ValueError('Alpha value must be between 0 and 255')
+
     if r == 'random':
         r, g, b = [randrange(256) for cc in range(3)]
     elif r == 'rlight':
@@ -85,27 +93,38 @@ def choose_color(r=None, g=None, b=None):
     elif r == 'rdark':
         r, g, b = [randrange(100) for cc in range(3)]
     elif r is g is b is None:
-        return None, None, None
+        return None, None, None, None
     elif g is not None and b is not None:
         if not (0<=r<=255 and 0<=g<=255 and 0<=b<=255):
             raise ValueError('Color components must be between 0 and 255')
-        c = QtGui.QColor.fromRgb(r, g, b)
-        r, g, b = c.red(), c.green(), c.blue()
+        c = QtGui.QColor.fromRgb(r, g, b, a)
+        r, g, b, a = c.red(), c.green(), c.blue(), c.alpha()
     elif r is not None:
         try:
-            rr, gg, bb = r
-            rr, gg, bb = int(rr), int(gg), int(bb)
+            if len(r) == 4:
+                rr, gg, bb, aa = r
+                rr, gg, bb, aa = int(rr), int(gg), int(bb), int(aa)
+            elif len(r) == 3:
+                rr, gg, bb = r
+                rr, gg, bb = int(rr), int(gg), int(bb)
+                aa = 255
+            else:
+                raise ValueError
         except ValueError:
-            c = QtGui.QColor(r)
-            r, g, b = c.red(), c.green(), c.blue()
+            try:
+                ci = int(r)
+                c = QtGui.QColor.fromRgba(ci)
+            except ValueError:
+                c = QtGui.QColor(r)
+            r, g, b, a = c.red(), c.green(), c.blue(), c.alpha()
         else:
-            r, g, b = rr, gg, bb
+            r, g, b, a = rr, gg, bb, aa
     elif r is None or g is None or b is None:
         raise TypeError
 
-    return r, g, b
+    return r, g, b, a
 
-def nudge_color(color, r=None, g=None, b=None):
+def nudge_color(color, r=None, g=None, b=None, a=None):
     """Change the color (a 3-element tuple) by given amounts,
         return the new RGB tuple.
 
@@ -148,7 +167,13 @@ def nudge_color(color, r=None, g=None, b=None):
     (150, 105, 90)
     """
 
-    rc, gc, bc = color
+    if len(color) == 3:
+        rc, gc, bc = color
+        ac = 255
+    elif len(color) == 4:
+        rc, gc, bc, ac = color
+    else:
+        raise ValueError
 
     if r is not None:
         try:
@@ -168,14 +193,22 @@ def nudge_color(color, r=None, g=None, b=None):
         except TypeError:
             bc *= (float(b[:-1]) / 100.0)
 
+    if a is not None:
+        try:
+            ac += a
+        except TypeError:
+            ac *= (float(a[:-1]) / 100.0)
+
     rc = min(rc, 255)
     gc = min(gc, 255)
     bc = min(bc, 255)
+    ac = min(ac, 255)
     rc = max(rc, 0)
     gc = max(gc, 0)
     bc = max(bc, 0)
+    ac = max(ac, 0)
 
-    return (rc, gc, bc)
+    return (rc, gc, bc, ac)
 
 
 def get_datadir():

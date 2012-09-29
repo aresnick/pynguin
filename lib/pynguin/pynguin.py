@@ -295,10 +295,10 @@ class Pynguin(object):
         '''regular timer tick to make sure graphics are being updated'''
         #logger.debug('_pm')
         cls._r_process_moves()
-        if cls.drawspeed == 0:
-            delay = cls.min_delay
-        else:
-            delay = cls.delay
+        #if cls.drawspeed == 0:
+            #delay = cls.min_delay
+        #else:
+            #delay = cls.delay
 
     @classmethod
     def _empty_move_queue(cls):
@@ -345,12 +345,15 @@ class Pynguin(object):
         drawspeed = cls.drawspeed
         delay = cls.delay
         etime = cls._checktime.elapsed()
+        #logger.info('_r')
         if cls.ControlC:
             cls.ControlC += 1
             cls._empty_move_queue()
-            #logger.debug('CCnomove')
+            #logger.info('CCnomove %s' % cls.mw.interpretereditor.cmdthread)
             if cls.mw.interpretereditor.cmdthread is not None:
+                #logger.info('CC1')
                 cls.mw.interpretereditor.cmdthread.terminate()
+                #logger.info('CC2')
 
         elif not drawspeed or etime > delay:
             ied = cls.mw.interpretereditor
@@ -877,11 +880,11 @@ class Pynguin(object):
         self.pen = self.ritem._pen = True
         self.qmove(self._pendown)
 
-    def _color(self, r=None, g=None, b=None):
-        c = QtGui.QColor(r, g, b)
+    def _color(self, r=None, g=None, b=None, a=255):
+        c = QtGui.QColor(r, g, b, a)
         self.gitem.pen.setColor(c)
 
-    def color(self, r=None, g=None, b=None):
+    def color(self, r=None, g=None, b=None, a=None):
         '''color(red, green, blue) # 0-255 for each value
         color() # return the current color
 
@@ -901,23 +904,23 @@ class Pynguin(object):
         return the color being used for drawing -- makes getting
             randomly selected colors easier.
         '''
-        r, g, b = choose_color(r, g, b)
+        r, g, b, a = choose_color(r, g, b, a)
         if r is g is b is None:
             return self.ritem.color
-        self.ritem.color = (r, g, b)
+        self.ritem.color = (r, g, b, a)
         self.qmove(self._gitem_new_line)
-        self.qmove(self._color, (r, g, b))
+        self.qmove(self._color, (r, g, b, a))
 
         if self is self.mw.pynguin:
             settings = QtCore.QSettings()
-            ncolor = QtGui.QColor(r, g, b)
-            settings.setValue('pynguin/color', ncolor.name())
+            ncolor = QtGui.QColor(r, g, b, a)
+            settings.setValue('pynguin/color', ncolor.rgba())
         
-        return r, g, b
+        return r, g, b, a
 
     def bgcolor(self, r=None, g=None, b=None):
         settings = QtCore.QSettings()
-        r, g, b = choose_color(r, g, b)
+        r, g, b, a = choose_color(r, g, b)
         if r is g is b is None:
             default = '#8282a0'
             c = settings.value('view/bgcolor', default)
@@ -1003,7 +1006,7 @@ class Pynguin(object):
             self.qmove(self._gitem_new_line)
             self.qmove(self._width, (w,))
 
-    def _fillcolor(self, r=None, g=None, b=None):
+    def _fillcolor(self, r=None, g=None, b=None, a=None):
         '''fillcolor(red, green, blue) # 0-255 for each value
         fillcolor() # return the current fill color
 
@@ -1011,11 +1014,11 @@ class Pynguin(object):
             3 integers between 0 and 255, specifying the red, blue, and
             green components of the color.
         '''
-        color = QtGui.QColor.fromRgb(r, g, b)
+        color = QtGui.QColor.fromRgb(r, g, b, a)
         self.gitem.brush.setColor(color)
         self._gitem_new_line()
 
-    def fillcolor(self, r=None, g=None, b=None):
+    def fillcolor(self, r=None, g=None, b=None, a=None):
         '''fillcolor(r, g, b)
 
         Set the color to be used for filling drawn shapes.
@@ -1023,12 +1026,12 @@ class Pynguin(object):
         return the color being used for filling -- makes getting
             randomly selected colors easier.
         '''
-        r, g, b = choose_color(r, g, b)
+        r, g, b, a = choose_color(r, g, b, a)
         if r is g is b is None:
             return self.ritem.fillcolor
-        self.ritem.fillcolor = (r, g, b)
-        self.qmove(self._fillcolor, (r, g, b))
-        return r, g, b
+        self.ritem.fillcolor = (r, g, b, a)
+        self.qmove(self._fillcolor, (r, g, b, a))
+        return r, g, b, a
 
     def _gitem_fillmode(self, start):
         if start:
@@ -1159,7 +1162,7 @@ class Pynguin(object):
             if imageid is None:
                 _, imageid = os.path.split(filepath)
             self.mw._sync_avatar_menu(imageid, filepath)
-    def setImageid(self, imageid, sync):
+    def setImageid(self, imageid, sync=None):
         '''change the visible (avatar) image'''
         self._imageid = imageid
         self.qmove(self._setImageid, (imageid, None, sync))
