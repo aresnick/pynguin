@@ -38,7 +38,7 @@ from .mode import ModeLogo, ModeTurtle
 from . import util
 from .util import sign, get_datadir, get_docdir
 from .codearea import CodeArea
-from .interpreter import Interpreter, CmdThread, Console
+from .interpreter import Interpreter, CmdThread, Console, WatcherThread
 from .about import AboutDialog
 from . import conf
 
@@ -1579,8 +1579,10 @@ Check configuration!''')
             if self.interpretereditor.cmdthread is None:
                 self.interpretereditor.cmdthread = CmdThread(self.interpretereditor, code)
                 cmdthread = self.interpretereditor.cmdthread
-                cmdthread.finished.connect(self.interpretereditor.testthreaddone)
                 cmdthread.start()
+                self.watcherthread = WatcherThread(cmdthread)
+                self.watcherthread.finished.connect(self.interpretereditor.testthreaddone)
+                self.watcherthread.start()
 
                 kind, name, params, nodefault = self.findmain(code)
                 if kind is not None:
@@ -1678,11 +1680,14 @@ Check configuration!''')
             added pynguins, use p.color()
         '''
         icolor = self.pynguin.gitem.pen.brush().color()
-        ncolor = QtGui.QColorDialog.getColor(icolor, self)
+        ncolor = QtGui.QColorDialog.getColor(icolor, self, 'Pen Color', QtGui.QColorDialog.ShowAlphaChannel)
         if ncolor.isValid():
             r, g, b, a = ncolor.getRgb()
-            self.pynguin.color(r, g, b)
-            cmd = 'color(%s, %s, %s)\n' % (r, g, b)
+            self.pynguin.color(r, g, b, a)
+            if a != 255:
+                cmd = 'color(%s, %s, %s, %s)\n' % (r, g, b, a)
+            else:
+                cmd = 'color(%s, %s, %s)\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
     def set_background_color(self):

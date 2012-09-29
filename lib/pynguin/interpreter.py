@@ -29,6 +29,8 @@ from .editor import HighlightedTextEdit
 from . import pynguin
 from . import conf
 
+from . import thread2
+
 
 class Console(code.InteractiveConsole):
     def __init__(self, ilocals, editor):
@@ -47,12 +49,19 @@ class Console(code.InteractiveConsole):
         #logging.debug('foo')
 
 
-class CmdThread(QtCore.QThread):
+class WatcherThread(QtCore.QThread):
+    def __init__(self, t):
+        QtCore.QThread.__init__(self)
+        self.t = t
+
+    def run(self):
+        self.t.join()
+
+class CmdThread(thread2.Thread):
     def __init__(self, ed, txt):
         '''set up a separate thread to run the code given in txt in the
             InteractiveInterpreter ed.'''
-        QtCore.QThread.__init__(self)
-        QtCore.QThread.setTerminationEnabled()
+        thread2.Thread.__init__(self)
         self.ed = ed
         self.txt = txt
     def run(self):
@@ -275,8 +284,10 @@ class Interpreter(HighlightedTextEdit):
 
             if self.cmdthread is None:
                 self.cmdthread = CmdThread(self, txt)
-                self.cmdthread.finished.connect(self.threaddone)
                 self.cmdthread.start()
+                self.watcherthread = WatcherThread(self.cmdthread)
+                self.watcherthread.finished.connect(self.threaddone)
+                self.watcherthread.start()
 
                 passthru = False
             else:
@@ -394,7 +405,7 @@ class Interpreter(HighlightedTextEdit):
         elif mdf & Control and k==C:
             #send keyboard interrupt
             logger.info('Ctrl-C pressed')
-            if self.cmdthread is not None and self.cmdthread.isRunning():
+            if self.cmdthread is not None and self.cmdthread.isAlive():
                 logger.info('Thread running')
                 pynguin.Pynguin.ControlC = True
                 pynguin.Pynguin._stop_testall = True
