@@ -92,6 +92,9 @@ def choose_color(r=None, g=None, b=None, a=None):
         r, g, b = [randrange(100, 200) for cc in range(3)]
     elif r == 'rdark':
         r, g, b = [randrange(100) for cc in range(3)]
+    elif r == 'ralpha':
+        r, g, b = [randrange(256) for cc in range(3)]
+        a = randrange(100, 200)
     elif r is g is b is None:
         return None, None, None, None
     elif g is not None and b is not None:

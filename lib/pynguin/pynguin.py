@@ -899,7 +899,8 @@ class Pynguin(object):
                 string 'random' for a randomly selected color or
                 'rlight' for a random light color
                 'rmedium' for a random medium color
-                'rdark' for a random dark color.
+                'rdark' for a random dark color
+                'ralpha' for a random color with random alpha channel
 
         return the color being used for drawing -- makes getting
             randomly selected colors easier.
