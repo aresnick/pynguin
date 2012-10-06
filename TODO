@@ -26,6 +26,7 @@ remember fill color?
 Allow tracking non-main pynguin
 Reset all settings resets mode in saved settings, but not in the
     active pynguin. Should change the mode to default immediately.
+Ability to keep handle on drawn items, move them, use them as avatar.
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
