@@ -23,6 +23,8 @@ Changes in pynguin-0.13:
         - Tested with Python 3.2.3
 
     Important fixes
+        - New approach for threading of user code
+            - should provide safer, more reliable, termination of user code
 
     Pynguin API
         - Logo mode coordinates and angles now available
