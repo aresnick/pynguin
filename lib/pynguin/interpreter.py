@@ -174,7 +174,7 @@ class Interpreter(HighlightedTextEdit):
         cblk = self._doc.findBlock(cpos)
         blktxt4 = cblk.text()[:4]
         blen = cblk.length()
-        if blen == 0:
+        if blen==0 or (blen==1 and blktxt4==''):
             self.write('>>> ')
         elif blktxt4 != '>>> ':
             self.write('\n')
