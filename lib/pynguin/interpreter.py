@@ -198,7 +198,7 @@ class Interpreter(HighlightedTextEdit):
         logger.info('self.threaddone')
 
         if not self.needmore:
-            self.write('>>> ')
+            self.checkprompt()
         else:
             self.write('... ')
 
