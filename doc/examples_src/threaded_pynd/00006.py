@@ -1,2 +1,2 @@
 def alt(a):
-    arun('left', a)
+    arun_k('left', a)

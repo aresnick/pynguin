@@ -1,2 +1,2 @@
 def agoto(x, y=None):
-    arun('goto', x, y)
+    arun_k('goto', x, y)

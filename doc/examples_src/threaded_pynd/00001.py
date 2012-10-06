@@ -11,6 +11,9 @@ def trun(pyn, cmd, *args):
     function.
     '''
 
+    if hasattr(pyn, '_is_helper') and pyn._is_helper:
+        return 'Use primary pynguin, not helper.'
+
     import threading
 
     busy = threading.threads.get(pyn, False)

@@ -1,2 +1,2 @@
 def afd(d):
-    arun('forward', d)
+    arun_k('forward', d)

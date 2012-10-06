@@ -2,8 +2,15 @@ def make(n):
     '''Create n new pynguins,
     and set up for the ability
     to kill active threads later
-    using the kill_threads()
+    using the kill_thread()
     function.
+
+    kill_thread() requires a cooperative
+    style of thread programming. The
+    running command should either finish
+    quickly or else it should check often
+    and stop work if it has been asked
+    to stop.
 
     Note: If you already have some
     pynguins that you want to run

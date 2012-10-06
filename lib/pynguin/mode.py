@@ -38,6 +38,7 @@ class ModeBase(Pynguin):
 
     def _pyn_setup(self):
         self._pyn = Pynguin()
+        self._pyn._is_helper = True
         #self._pyn_reset_helper()
 
     def _pyn_setup2(self):
