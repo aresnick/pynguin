@@ -817,7 +817,7 @@ Check configuration!''')
         zipi.date_time = time.localtime()
         zipi.external_attr = 0o644 << 16
         zipi.comment = VERSION
-        z.writestr(zipi, history.encode('utf-8'))
+        z.writestr(zipi, history) #.encode('utf-8'))
 
         manifestname = '@@manifest@@'
         zipi = zipfile.ZipInfo()
@@ -1174,6 +1174,8 @@ Check configuration!''')
                 self.interpreter.runcode(txt)
 
     def _loaddata(self, data):
+        if hasattr(data, 'decode'):
+            data = data.decode('utf-8')
         self.editor.add(data)
         if data.startswith('def ') or data.startswith('class '):
             if data[4:12] == 'onclick(':
@@ -1189,7 +1191,7 @@ Check configuration!''')
                     print(str(line1))
 
     def _loadhistory(self, data):
-        history = data.split('\n')
+        history = str(data).split('\n')
         self.interpretereditor.history = history
 
     def _shouldload00(self, ename):
@@ -1247,6 +1249,11 @@ Check configuration!''')
         else:
             namelist.sort()
 
+        if dump:
+            print('Manifest/files:')
+            for name in namelist:
+                print('  ', name)
+
         for ename in namelist:
             logger.info('loading %s' % ename)
             if dump:
@@ -1272,7 +1279,8 @@ Check configuration!''')
                 fo = z.open(ename, 'rU')
 
             data = fo.read()
-            data = data.decode('utf-8')
+            if hasattr(data, 'decode'):
+                data = data.decode('utf-8')
             if dump:
                 if '@@history@@' in ename:
                     print('Command history')
