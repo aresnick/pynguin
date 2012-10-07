@@ -32,6 +32,7 @@ Changes in pynguin-0.13:
         - xy(x, y) re-uses goto(x, y)
         - xyh() uses xy() and h() to retrieve values
         - color() now accepts an optional alpha channel value (transparency)
+            - also color('ralpha') choose a random color with random alpha
 
     Canvas
         - Remembers main pynguin pen color
