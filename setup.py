@@ -7,7 +7,7 @@ import sys
 
 
 NAME = 'pynguin'
-VERSION = '0.12'
+VERSION = '0.13'
 
 DESC = 'Python turtle graphics application'
 
@@ -26,7 +26,7 @@ CLASSIFIERS = [
     'Intended Audience :: Education',
     'License :: OSI Approved :: GNU General Public License (GPL)',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 3',
     'Topic :: Education',
     'Natural Language :: English',
 ]
