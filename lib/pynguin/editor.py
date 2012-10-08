@@ -347,8 +347,9 @@ class PythonHighlighter(highlightedtextedit.PythonHighlighter):
         self.singleLineCommentFormat = QtGui.QTextCharFormat(self.base_format)
         self.singleLineCommentFormat.setForeground(QtGui.QBrush(QtGui.QColor(187, 87, 255)))
         self.multiLineStringFormat = QtGui.QTextCharFormat(self.base_format)
-        self.multiLineStringFormat.setBackground(
-            QtGui.QBrush(QtGui.QColor(127, 127, 255)))
+        self.multiLineStringFormat.setForeground(QtGui.QBrush(QtGui.QColor(37, 127, 25)))
+        #self.multiLineStringFormat.setBackground(
+        #   QtGui.QBrush(QtGui.QColor(127, 127, 255)))
         self.quotationFormat1 = QtGui.QTextCharFormat(self.base_format)
         self.quotationFormat1.setForeground(QtCore.Qt.yellow)
         self.quotationFormat2 = QtGui.QTextCharFormat(self.base_format)
