@@ -113,13 +113,13 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
         while startIndex >= 0:
 
             endIndex = text.find(self.multiLineStringEnd,
-                startIndex + len(self.multiLineStringBegin.pattern()))
+                startIndex + len(self.multiLineStringBegin))
             if endIndex == -1:
                 self.setCurrentBlockState(1)
-                commentLength = text.length() - startIndex
+                commentLength = len(text) - startIndex
             else:
                 commentLength = endIndex - startIndex + \
-                                self.multiLineStringEnd.matchedLength()
+                                len(self.multiLineStringEnd)
                 self.highlightRules(text, endIndex, len(text))
 
             self.setFormat(startIndex, commentLength, self.multiLineStringFormat)
