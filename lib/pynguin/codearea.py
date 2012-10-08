@@ -382,7 +382,7 @@ class CodeArea(HighlightedTextEdit):
                 self.switchto(docid)
                 return
         txt = open(fp).read()
-        txt = txt.decode('utf-8')
+        #txt = str(txt).decode('utf-8')
         self.new()
         self._doc.setPlainText(txt)
         self._doc._filepath = fp

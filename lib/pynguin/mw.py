@@ -1138,7 +1138,7 @@ Check configuration!''')
                     self._addwatcher(fp, doc)
             else:
                 txt = open(fp).read()
-                txt = txt.decode('utf-8')
+                #txt = txt.decode('utf-8')
                 print(txt)
                 print()
         else:
