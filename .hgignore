@@ -1,6 +1,7 @@
 syntax:glob
 *.pyc
 doc/examples/test/
+doc/testing/
 logfile.log
 backup~*
 doc/video
