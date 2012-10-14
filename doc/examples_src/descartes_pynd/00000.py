@@ -1,4 +1,6 @@
 def show_all():
+    mode('pynguin')
+
     import time
 
     home()

@@ -1,5 +1,8 @@
 def show_all():
+    mode('pynguin')
+
     import time
+
     xmin, ymin, xmax, ymax = viewcoords()
     funcs = sorted(list(globals().keys()))
     for fname in funcs:
