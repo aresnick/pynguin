@@ -20,12 +20,12 @@ Replace squares with QGraphicsRectItem when finished (like circles)
 Pygments color in interactive console area
 property access for color and fill?
 Pynguin subclass (Turtle?) that uses turtle.py API
-Alpha values for colors?
 color(None) for transparent line?
 remember fill color?
 Reset all settings resets mode in saved settings, but not in the
     active pynguin. Should change the mode to default immediately.
 Ability to keep handle on drawn items, move them, use them as avatar.
+Ability to adjust speed individually for each pynguin?
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
