@@ -1514,6 +1514,8 @@ class Pynguin(object):
         self._set_mode_replace(self, p)
         p.remove(self)
         p.avatar(av)
+        p.color(self.color())
+        p.width(self.width())
 
         if is_main_pynguin:
             p.promote(p)
