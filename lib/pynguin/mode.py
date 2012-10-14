@@ -250,6 +250,14 @@ class ModeBase(Pynguin):
         return self._name
     name = property(_getname, _setname)
 
+    def track(self, track=True):
+        if self is self.mw.pynguin:
+            Pynguin._track_main_pynguin = track
+        else:
+            Pynguin._track_main_pynguin = False
+
+        self.qmove(self._pyn._gitem_track, (track, self._pyn))
+
 
 class ModeLogo(ModeBase):
     def _xy_fsl(self, x, y):

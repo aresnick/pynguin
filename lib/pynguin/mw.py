@@ -494,8 +494,8 @@ class MainWindow(QtGui.QMainWindow):
         self._sync_avatar_menu(imageid)
 
         track = settings.value('pynguin/track', False, bool)
-        Pynguin._track_main_pynguin = track
-        self._sync_track(track)
+        if track:
+            self.pynguin.track()
 
     def setup_recent(self):
         settings = self.settings

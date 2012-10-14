@@ -77,6 +77,7 @@ class Pynguin(object):
     rend = None # set by MainWindow before any Pynguin get instantiated
 
     _track_main_pynguin = None # set up by mw.setup_settings
+    _track_pynguin = None
 
     def _log(self, *args):
         argstrings = [str(a) for a in args]
@@ -769,13 +770,27 @@ class Pynguin(object):
     def _gitem_home(self):
         self._item_home(self.gitem)
 
-    def _gitem_track(self, track):
-        Pynguin._track_main_pynguin = track
+    def _gitem_track(self, track, pyn):
+        if track:
+            Pynguin._track_pynguin = pyn
+        else:
+            Pynguin._track_pynguin = None
+
+
+        if hasattr(pyn, '_is_helper') and pyn._is_helper:
+            # _track_main_pynguin gets set in mode.py
+            pass
+        else:
+            if track and pyn is self.mw.pynguin:
+                Pynguin._track_main_pynguin = True
+            else:
+                Pynguin._track_main_pynguin = False
+
         self.gitem._track()
-        self.mw._sync_track(track)
+        self.mw._sync_track(bool(Pynguin._track_main_pynguin))
 
     def track(self, track=True):
-        self.qmove(self._gitem_track, (track,))
+        self.qmove(self._gitem_track, (track, self))
     def notrack(self):
         self.track(False)
 
@@ -1506,6 +1521,9 @@ class Pynguin(object):
             settings.setValue('pynguin/mode', mname)
             self.mw._sync_mode_menu(mname)
 
+            if Pynguin._track_main_pynguin:
+                p.track()
+
         p._modename = mname
         if name:
             p.label(name)
@@ -1646,11 +1664,12 @@ class PynguinGraphicsItem(GraphicsItem):
 
     def _track(self):
         'center the view on the pynguin'
-        if Pynguin._track_main_pynguin and not self._notrack:
+
+        if Pynguin._track_pynguin and not self._notrack:
             pynguin = self.pynguin
-            mainpyn = pynguin.mw.pynguin
+            trackpyn = Pynguin._track_pynguin
             scene = self.scene()
-            if pynguin is mainpyn and scene is not None:
+            if pynguin is trackpyn and scene is not None:
                 scene.view.ensureVisible(self)
                 pynguin.mw._centerview()
 
