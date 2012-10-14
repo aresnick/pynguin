@@ -1,4 +1,4 @@
-# Copyright 2010 Lee Harr
+# Copyright 2010-2012 Lee Harr
 #
 # This file is part of pynguin.
 # http://pynguin.googlecode.com/

@@ -12,6 +12,8 @@ import time
 # This file is part of WikiParser (http://thewikiblog.appspot.com/).
 # http://code.google.com/p/wikib/
 #
+# (GNU GPL v2)
+#
 
 def hex2QColor(c):
     r=int(c[0:2], 16)
