@@ -40,15 +40,15 @@ INSTALLATION:
 DEPENDENCIES:
     python:
         http://python.org/
-            (tested with python-2.7.2)
+            (tested with python-3.2.3)
 
     pyqt4:
         http://www.riverbankcomputing.co.uk/software/pyqt/
-            (tested with pyqt-4.8.5)
+            (tested with pyqt-4.9.3)
 
     pygments (optional):
         http://pygments.org/
-            (tested with 1.4)
+            (tested with 1.5)
 
 
 RUNNING:

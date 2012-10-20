@@ -12,7 +12,7 @@ http://pynguin.googlecode.com/
 This release ports Pynguin to Python 3.
 
 
-Pynguin is tested with Python 3.2.3 and PyQt 4.9.1 and
+Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
     will use Pygments syntax highlighting if available.
 
 Pynguin is released under GPLv3.
@@ -25,6 +25,7 @@ Changes in pynguin-0.13:
     Important fixes
         - New approach for threading of user code
             - should provide safer, more reliable, termination of user code
+            - can now reliably stop code like ... while 1: pass
 
     Pynguin API
         - Logo mode coordinates and angles now available
