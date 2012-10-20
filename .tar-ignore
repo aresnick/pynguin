@@ -5,7 +5,8 @@ doc/screenshots
 doc/examples/test
 doc/testing
 doc/video
-*.log
+*.log*
 backup*
 wiki
 deb_dist
+__pycache__

@@ -2,6 +2,6 @@ syntax:glob
 *.pyc
 doc/examples/test/
 doc/testing/
-logfile.log
+logfile.log*
 backup~*
 doc/video
