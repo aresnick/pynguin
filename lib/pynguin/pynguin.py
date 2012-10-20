@@ -79,16 +79,19 @@ class Pynguin(object):
     _track_main_pynguin = None # set up by mw.setup_settings
     _track_pynguin = None
 
+    _modename = 'pynguin'
+
     def _log(self, *args):
         argstrings = [str(a) for a in args]
         strargs = ' '.join(argstrings)
         logger.info(strargs)
 
-    def __init__(self, pos=None, ang=None):
+    def __init__(self, pos=None, ang=None, helper=False):
         if pos is None:
             pos = (0, 0)
         if ang is None:
             ang = 0
+        self._is_helper = helper
         
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
@@ -116,10 +119,14 @@ class Pynguin(object):
         else:
             self.qmove(self._gitem_setup)
 
+            cc = 0
             while self.gitem is None or not self.gitem.ready:
                 self.wait(0.01)
                 if self.ControlC:
                     raise KeyboardInterrupt
+                elif cc >= 50:
+                    self._gitem_setup()
+                cc += 1
 
     def _init_move(self, pos, ang):
         x, y = pos
@@ -145,7 +152,8 @@ class Pynguin(object):
                 mainpyn = self.mw.pynguins[0]
             else:
                 #nobody left ... create a new one
-                mainpyn = Pynguin()
+                mname = pyn._modename
+                mainpyn = self.mw.new_pynguin(mname, show_cmd=False)
             self.mw.pynguin = mainpyn
             self.mw.setup_interpreter_locals()
 
@@ -166,7 +174,11 @@ class Pynguin(object):
 
         if pyn is None:
             pyn = self
-        if hasattr(pyn, '_pyn'):
+
+        if hasattr(self, '_pyn'):
+            self._pyn.remove(pyn)
+            return
+        elif hasattr(pyn, '_pyn'):
             self.remove(pyn._pyn)
         self.qmove(self._remove, (pyn,))
 
@@ -201,6 +213,8 @@ class Pynguin(object):
         self.gitem._current_line = None
 
         self.gitem.ready = True
+        if self._is_helper == 2:
+            self._is_helper = True
 
     def _set_item_pos(self, item, pos):
         item.setPos(pos)
@@ -869,8 +883,10 @@ class Pynguin(object):
         pynguins.remove(self)
         while pynguins:
             pyn = pynguins.pop()
+            if pyn._is_helper == 2:
+                continue
             self.scene.removeItem(pyn.gitem)
-            if pyn.gitem.litem is not None:
+            if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
                 self.scene.removeItem(pyn.gitem.litem)
         pynguins.append(self)
 
@@ -1530,7 +1546,12 @@ class Pynguin(object):
         if name:
             p.label(name)
 
+        self.qmove = self._qmove_after_mode_switch
+
         return p
+
+    def _qmove_after_mode_switch(*args, **kw):
+        raise RuntimeError('Attempting to use expired object after change of mode. Use the object returned by mode() instead.')
 
     def _set_mode_replace(self, opyn, npyn):
         '''After changing mode, put the newly created pynguin

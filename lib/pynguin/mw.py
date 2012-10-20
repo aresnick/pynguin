@@ -559,10 +559,11 @@ class MainWindow(QtGui.QMainWindow):
 
         cls = globals()[class_name]
         p = cls()
+        p._modename = mname
+
         ilocals = self.interpreter_locals
         if 'p' not in ilocals:
             ilocals['p'] = p
-            p._modename = mname
             self._sync_mode_menu(mname)
 
         elif show_cmd:

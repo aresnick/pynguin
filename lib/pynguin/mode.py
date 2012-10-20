@@ -56,7 +56,7 @@ class ModeBase(Pynguin):
         self.gitem.ready = True
 
     def _pyn_setup(self):
-        self._pyn = Pynguin()
+        self._pyn = Pynguin(helper=2)
         self._pyn._is_helper = True
         #self._pyn_reset_helper()
 
@@ -279,6 +279,9 @@ class ModeBase(Pynguin):
 
 
 class ModeLogo(ModeBase):
+
+    _modename = 'logo'
+
     def _xy_fsl(self, x, y):
         # from faked standard to logo coords
         return y, x
@@ -306,6 +309,9 @@ class ModeLogo(ModeBase):
 
 
 class ModeTurtle(ModeBase):
+
+    _modename = 'turtle'
+    
     def _xy_fsl(self, x, y):
         # from faked standard to logo coords
         return x, -y
