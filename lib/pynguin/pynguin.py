@@ -880,7 +880,7 @@ class Pynguin(object):
                 self.mw.pynguin.reset(full=True)
             else:
                 for pyn in self.mw.pynguins:
-                    if pyn is not self:
+                    if pyn is not self and not pyn._is_helper:
                         if pyn.gitem is not None:
                             pyn.reset()
                 self.qmove(self._full_reset)
@@ -908,7 +908,7 @@ class Pynguin(object):
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
         pynguins.remove(self)
-        keepers = []
+        keepers = [self]
         while pynguins:
             pyn = pynguins.pop()
             if pyn._is_helper == 2:
@@ -917,7 +917,6 @@ class Pynguin(object):
             self.scene.removeItem(pyn.gitem)
             if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
                 self.scene.removeItem(pyn.gitem.litem)
-        pynguins.append(self)
         pynguins.extend(keepers)
 
     def _pendown(self, down=True):
