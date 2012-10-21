@@ -55,6 +55,8 @@ Read pynguin source for manual deb build instructions.
     #       #override_dh_auto_install:
     #       #(tab) python3 setup.py install --root=debian/pynguin --install-layout=deb
     #       #override_dh_auto_build:
+    #       #override_dh_compress:
+    #       #(tab) dh_compress -X.pyn
     # debuild
 
 if '-d' in sys.argv:
