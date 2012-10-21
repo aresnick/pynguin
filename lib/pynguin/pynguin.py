@@ -887,7 +887,10 @@ class Pynguin(object):
 
         else:
             if self.avatar() == 'hidden':
-                self.avatar('pynguin')
+                settings = QtCore.QSettings()
+                reset_forces_visible = settings.value('pynguin/reset_forces_visible', True, bool)
+                if reset_forces_visible:
+                    self.avatar('pynguin')
             self.clear()
             self.label = ''
             self.goto(0, 0)

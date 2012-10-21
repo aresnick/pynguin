@@ -341,6 +341,16 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
+        <widget class="QCheckBox" name="reset_forces_visible">
+         <property name="text">
+          <string>reset() forces visible pynguin</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="allow_start_hidden">
          <property name="text">
           <string>Allow starting with pynguin hidden</string>
@@ -355,7 +365,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>164</height>
+           <height>139</height>
           </size>
          </property>
         </spacer>

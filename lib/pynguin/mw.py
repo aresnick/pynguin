@@ -438,6 +438,8 @@ class MainWindow(QtGui.QMainWindow):
             autocall = ui.testall_autocall.isChecked()
             settings.setValue('editor/testall_autocall', autocall)
 
+            reset_forces_visible = ui.reset_forces_visible.isChecked()
+            settings.setValue('pynguin/reset_forces_visible', reset_forces_visible)
             allow_start_hidden = ui.allow_start_hidden.isChecked()
             settings.setValue('pynguin/allow_start_hidden', allow_start_hidden)
             quiet = ui.quietinterrupt.isChecked()

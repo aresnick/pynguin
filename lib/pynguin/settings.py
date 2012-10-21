@@ -76,6 +76,8 @@ class Settings(QtGui.QDialog):
         self.ui.testall_autocall.setChecked(autocall)
 
 
+        reset_forces_visible = settings.value('pynguin/reset_forces_visible', True, bool)
+        self.ui.reset_forces_visible.setChecked(reset_forces_visible)
         allow_start_hidden = settings.value('pynguin/allow_start_hidden', False, bool)
         self.ui.allow_start_hidden.setChecked(allow_start_hidden)
         quietinterrupt = settings.value('console/quietinterrupt', False, bool)
