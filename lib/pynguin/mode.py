@@ -57,8 +57,6 @@ class ModeBase(Pynguin):
 
     def _pyn_setup(self):
         self._pyn = Pynguin(helper=2)
-        self._pyn._is_helper = True
-        #self._pyn_reset_helper()
 
     def _pyn_setup2(self):
         Pynguin.avatar(self, 'hidden', sync=False)
@@ -96,7 +94,7 @@ class ModeBase(Pynguin):
             self._pyn_setup()
         else:
             self._pyn.reset()
-        self._init_move((0,0),0)
+        self._init_move((0, 0), 0)
 
     def reap(self):
         x, y, h = self.xyh()

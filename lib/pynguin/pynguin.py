@@ -81,12 +81,21 @@ class Pynguin(object):
 
     _modename = 'pynguin'
 
+    defunct = False
+
     def _log(self, *args):
         argstrings = [str(a) for a in args]
         strargs = ' '.join(argstrings)
         logger.info(strargs)
 
     def __init__(self, pos=None, ang=None, helper=False):
+        '''helper=True means this pynguin is being used by one
+            of the alternate modes in mode.py
+
+            helper=2 means this helper pynguin is still being
+            set up and should not be used yet. At the end of
+            setup helper=2 is set to helper=True
+        '''
         if pos is None:
             pos = (0, 0)
         if ang is None:
@@ -141,11 +150,14 @@ class Pynguin(object):
             pyn.drawn_items = []
 
         pyn._setImageid('hidden', sync=False)
-        self.scene.removeItem(pyn.gitem)
-        if pyn.gitem.litem is not None:
-            self.scene.removeItem(pyn.gitem.litem)
+        if pyn.gitem is not None:
+            self.scene.removeItem(pyn.gitem)
+            if pyn.gitem.litem is not None:
+                self.scene.removeItem(pyn.gitem.litem)
         pyn.gitem = None
-        self.mw.pynguins.remove(pyn)
+
+        if pyn in self.mw.pynguins:
+            self.mw.pynguins.remove(pyn)
         if pyn == self.mw.pynguin:
             if self.mw.pynguins:
                 # need to promote another pynguin to be the main one
@@ -156,6 +168,8 @@ class Pynguin(object):
                 mainpyn = self.mw.new_pynguin(mname, show_cmd=False)
             self.mw.pynguin = mainpyn
             self.mw.setup_interpreter_locals()
+
+        pyn.defunct = True
 
     def remove(self, pyn=None):
         '''take the given pynguin (or this one if none specified)
@@ -212,9 +226,10 @@ class Pynguin(object):
         self.fillrule('winding')
         self.gitem._current_line = None
 
-        self.gitem.ready = True
         if self._is_helper == 2:
             self._is_helper = True
+
+        self.gitem.ready = True
 
     def _set_item_pos(self, item, pos):
         item.setPos(pos)
@@ -322,7 +337,7 @@ class Pynguin(object):
             try:
                 #logging.debug('1')
                 #logging.debug('________________1emq %s' % cls._moves.qsize())
-                move, args = cls._moves.get(block=False)
+                move, args, pyn = cls._moves.get(block=False)
                 #logging.debug('2')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
                 #logging.debug('________________2emq %s' % cls._moves.qsize())
@@ -375,15 +390,23 @@ class Pynguin(object):
             while True:
                 #logger.debug('_____rpm')
                 try:
-                    move, args = cls._moves.get(block=False)
+                    move, args, pyn = cls._moves.get(block=False)
                 except queue.Empty:
                     break
                 else:
+                    if pyn.defunct:
+                        logger.info('defunct')
+                        continue
 
                     try:
                         move(*args)
-                    except Exception as e:
-                        ied.write(str(e))
+                    except Exception:
+                        import sys
+                        tb = sys.exc_info()[2]
+                        import traceback
+                        tb = traceback.format_exc()
+                        logger.info(tb)
+                        ied.write(tb)
                         ied.write('\n')
                         if ied.cmdthread is not None:
                             ied.cmdthread.terminate()
@@ -421,7 +444,8 @@ class Pynguin(object):
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def _gitem_new_line(self):
-        self.gitem._current_line = None
+        if self.gitem is not None:
+            self.gitem._current_line = None
 
     def _item_forward(self, item, distance, draw=True):
         '''Move item ahead distance. If draw is True, also add a line
@@ -524,11 +548,11 @@ class Pynguin(object):
 
         while True:
             try:
-                #logging.debug('qb')
-                self._moves.put_nowait((func, args))
-                #logging.debug('qp')
+                #logger.debug('qb')
+                self._moves.put_nowait((func, args, self))
+                #logger.debug('qp')
             except queue.Full:
-                #logging.debug('Full')
+                #logger.debug('Full')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
             else:
                 break
@@ -881,14 +905,17 @@ class Pynguin(object):
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
         pynguins.remove(self)
+        keepers = []
         while pynguins:
             pyn = pynguins.pop()
             if pyn._is_helper == 2:
+                keepers.append(pyn)
                 continue
             self.scene.removeItem(pyn.gitem)
             if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
                 self.scene.removeItem(pyn.gitem.litem)
         pynguins.append(self)
+        pynguins.extend(keepers)
 
     def _pendown(self, down=True):
         self.gitem._pen = down
@@ -1131,6 +1158,8 @@ class Pynguin(object):
 
     def _setImageid(self, imageid, filepath=None, sync=None):
         ogitem = self.gitem
+        if ogitem is None:
+            return
         pos = ogitem.pos()
         ang = ogitem.ang
 
