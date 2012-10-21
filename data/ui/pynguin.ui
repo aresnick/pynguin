@@ -186,7 +186,7 @@
    </widget>
    <widget class="QMenu" name="viewmenu">
     <property name="title">
-     <string>View</string>
+     <string>Canvas</string>
     </property>
     <addaction name="actionBackground_color"/>
     <addaction name="separator"/>
@@ -263,10 +263,10 @@
     <addaction name="menuMode"/>
    </widget>
    <addaction name="filemenu"/>
-   <addaction name="viewmenu"/>
    <addaction name="menuPynguin"/>
    <addaction name="penmenu"/>
    <addaction name="speedmenu"/>
+   <addaction name="viewmenu"/>
    <addaction name="editormenu"/>
    <addaction name="menuSettings"/>
    <addaction name="helpmenu"/>
