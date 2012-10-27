@@ -113,13 +113,14 @@ class Pynguin(object):
         return self._zvalue < other._zvalue
 
     def _setup(self):
-        self.mw.pynguins.append(self)
+        if not self._is_helper:
+            self.mw.pynguins.append(self)
 
-        # enforce maximum of 150 pynguins
-        npyn = len(self.mw.pynguins)
-        if npyn > 150:
-            self.mw.pynguins.remove(self)
-            raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
+            # enforce maximum of 150 pynguins
+            npyn = len(self.mw.pynguins)
+            if npyn > 150:
+                self.mw.pynguins.remove(self)
+                raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
 
         if self.mw.pynguin is None:
             self._gitem_setup()
@@ -907,20 +908,24 @@ class Pynguin(object):
             self.mw._centerview()
 
     def _remove_other_pynguins(self):
+        '''remove the graphical avatar items for all the pynguins
+            other than the main one.
+        '''
         pynguins = self.mw.pynguins
-        self._log('_rop', pynguins, self)
         pynguins.remove(self)
-        keepers = [self]
-        if hasattr(self, '_pyn'):
-            pynguins.remove(self._pyn)
-            keepers.append(self._pyn)
+
         while pynguins:
             pyn = pynguins.pop()
-            self._log('removing', pyn)
             self.scene.removeItem(pyn.gitem)
             if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
                 self.scene.removeItem(pyn.gitem.litem)
-        pynguins.extend(keepers)
+            if hasattr(pyn, '_pyn'):
+                _pyn = pyn._pyn
+                self.scene.removeItem(_pyn.gitem)
+                if hasattr(_pyn.gitem, 'litem') and _pyn.gitem.litem is not None:
+                    self.scene.removeItem(_pyn.gitem.litem)
+
+        pynguins.append(self)
 
     def _pendown(self, down=True):
         self.gitem._pen = down
