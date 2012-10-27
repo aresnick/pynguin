@@ -90,10 +90,7 @@ class ModeBase(Pynguin):
 
     def reset(self, full=False):
         Pynguin.reset(self, full)
-        if full:
-            self._pyn_setup()
-        else:
-            self._pyn.reset()
+        self._pyn.reset()
         self._init_move((0, 0), 0)
 
     def reap(self):

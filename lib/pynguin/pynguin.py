@@ -101,7 +101,7 @@ class Pynguin(object):
         if ang is None:
             ang = 0
         self._is_helper = helper
-        
+
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
         self.gitem = None # Gets set up later in the main thread
@@ -891,6 +891,7 @@ class Pynguin(object):
                 reset_forces_visible = settings.value('pynguin/reset_forces_visible', True, bool)
                 if reset_forces_visible:
                     self.avatar('pynguin')
+
             self.clear()
             self.label = ''
             self.goto(0, 0)
@@ -907,13 +908,15 @@ class Pynguin(object):
 
     def _remove_other_pynguins(self):
         pynguins = self.mw.pynguins
+        self._log('_rop', pynguins, self)
         pynguins.remove(self)
         keepers = [self]
+        if hasattr(self, '_pyn'):
+            pynguins.remove(self._pyn)
+            keepers.append(self._pyn)
         while pynguins:
             pyn = pynguins.pop()
-            if pyn._is_helper == 2:
-                keepers.append(pyn)
-                continue
+            self._log('removing', pyn)
             self.scene.removeItem(pyn.gitem)
             if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
                 self.scene.removeItem(pyn.gitem.litem)
@@ -976,7 +979,7 @@ class Pynguin(object):
             settings = QtCore.QSettings()
             ncolor = QtGui.QColor(r, g, b, a)
             settings.setValue('pynguin/color', ncolor.rgba())
-        
+
         return r, g, b, a
 
     def bgcolor(self, r=None, g=None, b=None):
@@ -1535,7 +1538,7 @@ class Pynguin(object):
 
         Modes available:
                             angle 0  |     pos angles     | pos x | pos y
-                            -------  | ------------------ | ----- | ----- 
+                            -------  | ------------------ | ----- | -----
             pynguin:         east    |     clockwise      | east  | south
             (default)                |                    |       |
                                      |                    |       |
