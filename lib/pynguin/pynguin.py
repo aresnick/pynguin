@@ -1007,16 +1007,27 @@ class Pynguin(object):
         x, y = int(self.x), int(self.y)
         items = scene.items(QtCore.QPointF(x, y))
 
-        gitem = self.gitem
-        item = gitem.item
-        current_line = gitem._current_line
-
-        if item in items:
-            items.remove(item)
-        if gitem in items:
-            items.remove(gitem)
+        current_line = self.gitem._current_line
         if current_line in items:
             items.remove(current_line)
+
+        pyns = self.mw.pynguins[:]
+        hiding = []
+        while pyns:
+            pyn = pyns.pop()
+            
+            gitem = pyn.gitem
+            item = gitem.item
+
+            if item in items:
+                items.remove(item)
+            if gitem in items:
+                items.remove(gitem)
+                gitem.hide()
+                hiding.append(gitem)
+
+            if hasattr(pyn, '_pyn'):
+                pyns.append(pyn._pyn)
 
         if items:
             src = QtCore.QRectF(x, y, 1, 1)
@@ -1024,13 +1035,9 @@ class Pynguin(object):
             self._i = i = QtGui.QImage(sz, QtGui.QImage.Format_RGB32)
             p = QtGui.QPainter(i)
             irf = QtCore.QRectF(0, 0, 1, 1)
-            for pynguin in self.mw.pynguins:
-                pynguin.gitem.hide()
             if current_line is not None:
                 current_line.hide()
             scene.render(p, irf, src)
-            for pynguin in self.mw.pynguins:
-                pynguin.gitem.show()
             if current_line is not None:
                 current_line.show()
             rgb = i.pixel(0, 0)
@@ -1044,6 +1051,10 @@ class Pynguin(object):
                 self._colorat_return = util.NOTHING
         else:
             self._colorat_return = util.NOTHING
+
+        for gitem in hiding:
+            gitem.show()
+
     def colorat(self):
         self._colorat_return = None
         self.qmove(self._colorat)

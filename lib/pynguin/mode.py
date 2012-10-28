@@ -272,6 +272,8 @@ class ModeBase(Pynguin):
 
         self.qmove(self._pyn._gitem_track, (track, self._pyn))
 
+    def colorat(self):
+        return self._pyn.colorat()
 
 class ModeLogo(ModeBase):
 
