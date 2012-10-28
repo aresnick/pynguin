@@ -17,9 +17,13 @@ def angs(n=10, quiet=False):
         if a triangle is found that
         is not a right triangle.
     '''
+    mode('pynguin')
+    reset()
+
     grid()
     axes()
     plot(sc)
+
     points = tris(sc, n)
     x0, x1, x2 = tri(sc, 0)
     y0 = y2 = 0
