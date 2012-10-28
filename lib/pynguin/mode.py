@@ -64,6 +64,10 @@ class ModeBase(Pynguin):
         self.gitem.setZValue(0)
         #self.turnto(0)
 
+    def _sync_items(self):
+        Pynguin._sync_items(self)
+        self._pyn._sync_items()
+
     def _setx(self, x):
         _, y = self.xy()
         self.goto(x, y)
