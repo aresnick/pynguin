@@ -336,18 +336,18 @@ class Pynguin(object):
         while True:
             #logger.debug('________________emq')
             try:
-                #logging.debug('1')
-                #logging.debug('________________1emq %s' % cls._moves.qsize())
+                #logger.debug('1')
+                #logger.debug('________________1emq %s' % cls._moves.qsize())
                 move, args, pyn = cls._moves.get(block=False)
-                #logging.debug('2')
+                #logger.debug('2')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                #logging.debug('________________2emq %s' % cls._moves.qsize())
+                #logger.debug('________________2emq %s' % cls._moves.qsize())
             except queue.Empty:
-                #logging.debug('EMPTY')
+                #loger.debug('EMPTY')
                 break
 
-            #logging.debug('4')
-        #logging.debug('5')
+            #logger.debug('4')
+        #logger.debug('5')
 
     def _sync_items(self):
         '''Sometimes, after running code is interrupted (like by Ctrl-C)
