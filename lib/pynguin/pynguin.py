@@ -42,7 +42,7 @@ pynguin_functions = [
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
     'avatar', 'remove', 'promote', 'reap',
-    'speed', 'track', 'notrack', 'bgcolor', 'mode']
+    'speed', 'track', 'notrack', 'bgcolor', 'mode', 'colorat']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
     'history', 'util',]
