@@ -1652,16 +1652,22 @@ Check configuration!''')
                 idx = count - i - 1
             docid = str(self.ui.mselect.itemData(idx))
             if docid in self.editor.documents:
-                ie.spin(0)
+                if not ie.spin(0):
+                    Pynguin._stop_testall = True
                 self.editor.switchto(docid)
                 self.editor.setFocus()
                 if reset:
                     ie.addcmd('reset()')
                     ie.spin(5)
                     self.interpretereditor.go()
-                ie.spin(0)
+                if not ie.spin(0):
+                    Pynguin._stop_testall = True
 
                 if Pynguin._stop_testall:
+                    ie.clearline()
+                    ie.write('Stopped\n')
+                    ie.write('>>> ')
+                    ie.setFocus()
                     break
 
                 ie.clearline()

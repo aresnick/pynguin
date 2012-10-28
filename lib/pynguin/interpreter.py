@@ -29,7 +29,7 @@ from .editor import HighlightedTextEdit
 from . import pynguin
 from . import conf
 
-from . import thread2
+from . import thread2a
 
 
 class Console(code.InteractiveConsole):
@@ -55,13 +55,15 @@ class WatcherThread(QtCore.QThread):
         self.t = t
 
     def run(self):
+        #logger.info('WT start')
         self.t.join()
+        #logger.info('WT finish')
 
-class CmdThread(thread2.Thread):
+class CmdThread(thread2a.Thread):
     def __init__(self, ed, txt):
         '''set up a separate thread to run the code given in txt in the
             InteractiveInterpreter ed.'''
-        thread2.Thread.__init__(self)
+        thread2a.Thread.__init__(self)
         self.ed = ed
         self.txt = txt
     def run(self):
@@ -220,9 +222,17 @@ class Interpreter(HighlightedTextEdit):
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
         else:
             self.spin(1)
+            cs = 500
             while self.cmdthread is not None:
+                if not cs:
+                    logger.info('spin fail')
+                    self.ctrl_c_thread_running()
+                    return False
+                cs -= 1
                 time.sleep(delay)
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+        return True
 
     def keyPressEvent(self, ev):
         k = ev.key()
@@ -406,16 +416,7 @@ class Interpreter(HighlightedTextEdit):
             #send keyboard interrupt
             logger.info('Ctrl-C pressed')
             if self.cmdthread is not None and self.cmdthread.isAlive():
-                logger.info('Thread running')
-                pynguin.Pynguin.ControlC = True
-                pynguin.Pynguin._stop_testall = True
-                #logger.debug('CCT')
-                self.mw.pynguin._empty_move_queue()
-                for pyn in self.mw.pynguins:
-                    pyn._sync_items()
-                #logger.debug('synced')
-                self.needmore = False
-                self.interpreter.resetbuffer()
+                self.ctrl_c_thread_running()
 
             else:
                 pynguin.Pynguin.ControlC = False
@@ -455,6 +456,18 @@ class Interpreter(HighlightedTextEdit):
             HighlightedTextEdit.keyPressEvent(self, ev)
 
         logger.info('OUT')
+
+    def ctrl_c_thread_running(self):
+        logger.info('Thread running')
+        pynguin.Pynguin.ControlC = True
+        pynguin.Pynguin._stop_testall = True
+        #logger.debug('CCT')
+        self.mw.pynguin._empty_move_queue()
+        for pyn in self.mw.pynguins:
+            pyn._sync_items()
+        #logger.debug('synced')
+        self.needmore = False
+        self.interpreter.resetbuffer()
 
     def scrolldown(self):
         '''force the console to scroll all the way down, and put
