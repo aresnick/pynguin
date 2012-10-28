@@ -451,6 +451,8 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings()
         settings.clear()
         self.setup_settings()
+        self.pynguin.mode('pynguin')
+        self.pynguin.reset(True)
 
     def initialize_settings(self):
         QtCore.QCoreApplication.setOrganizationName('pynguin.googlecode.com')

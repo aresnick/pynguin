@@ -3,7 +3,6 @@ Focus follows mouse?
 Icons for menu items
 Toolbar?
 Use QGraphicsItemAnimation for animation?
-Figure out how to kill infinite loops
 Create a non-graphical turtle library?
 Show all available commands in a menu
 auto-indent in the console?
@@ -22,8 +21,6 @@ property access for color and fill?
 Pynguin subclass (Turtle?) that uses turtle.py API
 color(None) for transparent line?
 remember fill color?
-Reset all settings resets mode in saved settings, but not in the
-    active pynguin. Should change the mode to default immediately.
 Ability to keep handle on drawn items, move them, use them as avatar.
 Ability to adjust speed individually for each pynguin?
 

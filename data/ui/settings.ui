@@ -388,6 +388,16 @@
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>* Warning: Also resets drawing!</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
