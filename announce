@@ -28,8 +28,8 @@ Changes in pynguin-0.13:
             - can now reliably stop code like ... while 1: pass
 
     Pynguin API
-        - Logo mode coordinates and angles now available
-        - Python turtle mode coordinates and angles now available
+        - Logo-mode coordinates and angles now available
+        - Python turtle-mode coordinates and angles now available
         - xy(x, y) re-uses goto(x, y)
         - xyh() uses xy() and h() to retrieve values
         - color() now accepts an optional alpha channel value (transparency)
