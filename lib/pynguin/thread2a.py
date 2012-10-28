@@ -29,4 +29,4 @@ class Thread(thread2.Thread):
     def raise_exc(self, exctype):
         tid = self._get_my_tid()
         if tid != -1:
-            _async_raise(tid, exctype)
+            thread2._async_raise(tid, exctype)
