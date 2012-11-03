@@ -591,6 +591,16 @@ class MainWindow(QtGui.QMainWindow):
 
         return p
 
+    def reset_pynguin(self):
+        self.pynguin.reset()
+        cmd = 'reset()\n'
+        self.interpretereditor.addcmd(cmd)
+
+    def clear_canvas(self):
+        self.pynguin.clear()
+        cmd = 'clear()\n'
+        self.interpretereditor.addcmd(cmd)
+
     def set_mode_logo(self):
         self.pynguin.mode('logo')
 

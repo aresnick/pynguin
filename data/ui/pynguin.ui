@@ -188,6 +188,7 @@
     <property name="title">
      <string>Canvas</string>
     </property>
+    <addaction name="actionClearCanvas"/>
     <addaction name="actionBackground_color"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_in"/>
@@ -258,6 +259,7 @@
      <addaction name="actionHidden"/>
      <addaction name="menuCustom"/>
     </widget>
+    <addaction name="actionResetPynguin"/>
     <addaction name="actionNewPynguin"/>
     <addaction name="menuAvatar"/>
     <addaction name="menuMode"/>
@@ -696,7 +698,17 @@
   </action>
   <action name="actionNewPynguin">
    <property name="text">
-    <string>New</string>
+    <string>Add new</string>
+   </property>
+  </action>
+  <action name="actionClearCanvas">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionResetPynguin">
+   <property name="text">
+    <string>Reset</string>
    </property>
   </action>
  </widget>
@@ -1390,6 +1402,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionResetPynguin</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset_pynguin()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionClearCanvas</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clear_canvas()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1432,5 +1476,7 @@
   <slot>set_mode_logo()</slot>
   <slot>set_mode_turtle()</slot>
   <slot>set_mode_pynguin()</slot>
+  <slot>reset_pynguin()</slot>
+  <slot>clear_canvas()</slot>
  </slots>
 </ui>
