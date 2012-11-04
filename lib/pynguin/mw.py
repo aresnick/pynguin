@@ -1654,6 +1654,11 @@ Check configuration!''')
         '''
 
         ie = self.interpretereditor
+        if not ie.cmdthread is None:
+            ie.write('not starting...\n')
+            ie.write('code already running\n')
+            return
+
         settings = QtCore.QSettings()
         rev = settings.value('editor/testall_reverse', False, bool)
         autorun = settings.value('editor/testall_autocall', False, bool)

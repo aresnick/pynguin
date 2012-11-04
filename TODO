@@ -23,6 +23,7 @@ color(None) for transparent line?
 remember fill color?
 Ability to keep handle on drawn items, move them, use them as avatar.
 Ability to adjust speed individually for each pynguin?
+Test/Run all sometimes gets stuck trying to start
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
