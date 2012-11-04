@@ -159,7 +159,8 @@ class Pynguin(object):
 
         if pyn in self.mw.pynguins:
             self.mw.pynguins.remove(pyn)
-        if pyn == self.mw.pynguin:
+
+        if pyn is self.mw.pynguin:
             if self.mw.pynguins:
                 # need to promote another pynguin to be the main one
                 mainpyn = self.mw.pynguins[0]
@@ -190,10 +191,9 @@ class Pynguin(object):
         if pyn is None:
             pyn = self
 
-        if hasattr(self, '_pyn'):
-            self._pyn.remove(pyn)
-            return
-        elif hasattr(pyn, '_pyn'):
+        self._log('rmv', pyn)
+        if hasattr(pyn, '_pyn'):
+            self._log('plus')
             self.remove(pyn._pyn)
         self.qmove(self._remove, (pyn,))
 
@@ -201,7 +201,9 @@ class Pynguin(object):
         '''promote self to be main pynguin and remove all other pynguins,
             taking charge of their drawings.
         '''
-        self.promote(self)
+        if self is not self.mw.pynguin:
+            self.promote(self)
+
         for pyn in self.mw.pynguins:
             if pyn is not self:
                 self.remove(pyn)
@@ -322,32 +324,13 @@ class Pynguin(object):
         return x, y
 
     @classmethod
-    def _process_moves(cls):
-        '''regular timer tick to make sure graphics are being updated'''
-        #logger.debug('_pm')
-        cls._r_process_moves()
-        #if cls.drawspeed == 0:
-            #delay = cls.min_delay
-        #else:
-            #delay = cls.delay
-
-    @classmethod
     def _empty_move_queue(cls):
         while True:
-            #logger.debug('________________emq')
             try:
-                #logger.debug('1')
-                #logger.debug('________________1emq %s' % cls._moves.qsize())
                 move, args, pyn = cls._moves.get(block=False)
-                #logger.debug('2')
                 QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                #logger.debug('________________2emq %s' % cls._moves.qsize())
             except queue.Empty:
-                #loger.debug('EMPTY')
                 break
-
-            #logger.debug('4')
-        #logger.debug('5')
 
     def _sync_items(self):
         '''Sometimes, after running code is interrupted (like by Ctrl-C)
@@ -369,8 +352,10 @@ class Pynguin(object):
         self.ritem.ang = ang
 
     @classmethod
-    def _r_process_moves(cls):
-        '''apply the queued commands for the graphical display item
+    def _process_moves(cls):
+        '''regular timer tick to make sure graphics are being updated
+
+            Apply the queued commands for the graphical display item
             This must be done from the main thread
         '''
         drawspeed = cls.drawspeed

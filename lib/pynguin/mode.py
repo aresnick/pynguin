@@ -45,6 +45,10 @@ class ModeBase(Pynguin):
 
     '''
 
+    # No draw delay for the non-visible pynguin
+    drawspeed = 0
+    turnspeed = 0
+
     def _gitem_setup(self):
         self._pyn_setup()
         Pynguin._gitem_setup(self)
@@ -97,20 +101,20 @@ class ModeBase(Pynguin):
         self._pyn.reset()
         self._init_move((0, 0), 0)
 
-    def reap(self):
-        x, y, h = self.xyh()
-        self.qmove(self._remove, (self._pyn,))
-        self.promote(self)
-        for pyn in self.mw.pynguins:
-            if pyn is not self and pyn is not self._pyn:
-                self.qmove(self._remove, (pyn,))
-        self.qmove(self._pyn_setup)
-        self.qmove(self._init_move, ((x, y), h))
-        self.qmove(self._reap_helper)
+    #def reap(self):
+        #x, y, h = self.xyh()
+        #self.qmove(self._remove, (self._pyn,))
+        #self.promote(self)
+        #for pyn in self.mw.pynguins:
+            #if pyn is not self and pyn is not self._pyn:
+                #self.qmove(self._remove, (pyn,))
+        #self.qmove(self._pyn_setup)
+        #self.qmove(self._init_move, ((x, y), h))
+        #self.qmove(self._reap_helper)
 
-    def _reap_helper(self):
-        self._pyn.drawn_items.extend(self.drawn_items)
-        self.drawn_items = []
+    #def _reap_helper(self):
+        #self._pyn.drawn_items.extend(self.drawn_items)
+        #self.drawn_items = []
 
     def xy(self, x=None, y=None):
         if x is None and y is None:
@@ -201,6 +205,11 @@ class ModeBase(Pynguin):
 
     def clear(self):
         self._pyn.clear()
+
+    def remove(self, pyn=None):
+        if pyn is None:
+            pyn = self
+        self._pyn.remove(pyn)
 
     def penup(self):
         self._pyn.penup()
@@ -314,7 +323,7 @@ class ModeLogo(ModeBase):
 class ModeTurtle(ModeBase):
 
     _modename = 'turtle'
-    
+
     def _xy_fsl(self, x, y):
         # from faked standard to logo coords
         return x, -y
