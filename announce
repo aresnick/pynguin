@@ -26,15 +26,15 @@ Changes in pynguin-0.13:
         - New approach for threading of user code
             - should provide safer, more reliable, termination of user code
             - can now reliably stop code like ... while 1: pass
-        - Preserve fill state and color when changing avatar
+        - Preserves fill state and color when changing avatar
 
     Pynguin API
         - Logo-mode coordinates and angles now available
         - Python turtle-mode coordinates and angles now available
-        - xy(x, y) re-uses goto(x, y)
+        - xy(x, y) re-uses goto(x, y) code
         - xyh() uses xy() and h() to retrieve values
-        - color() now accepts an optional alpha channel value (transparency)
-            - also color('ralpha') chooses a random color with random alpha
+        - color() takes an optional alpha channel value for transparency
+            - color('ralpha') chooses a random color with random alpha
 
     Canvas
         - Remembers main pynguin pen color and fill color
@@ -42,6 +42,7 @@ Changes in pynguin-0.13:
 
     UI
         - Added new Pynguin menu for avatar and mode selection
+        - Added alpha value selector to pen and fill color dialogs
 
     Integrated Editor
 
