@@ -525,7 +525,7 @@ class Interpreter(HighlightedTextEdit):
         cutaction.setShortcut(cutshortcut)
         cutaction.triggered.connect(self.cut)
         menu.insertAction(paste, cutaction)
-        
+
         menu.removeAction(copy)
         copyaction = QtGui.QAction('Copy', menu)
         copyshortcut = QtGui.QKeySequence(QtCore.Qt.CTRL +
