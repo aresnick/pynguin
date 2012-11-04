@@ -212,12 +212,14 @@ class ModeBase(Pynguin):
         self.pen = True
 
     def color(self, r=None, g=None, b=None, a=None):
+        Pynguin.color(self, r, g, b, a)
         return self._pyn.color(r, g, b, a)
 
     def width(self, w=None):
         return self._pyn.width(w)
 
     def fillcolor(self, r=None, g=None, b=None, a=None):
+        Pynguin.fillcolor(self, r, g, b, a)
         return self._pyn.fillcolor(r, g, b, a)
 
     def fill(self, color=None, rule=None):

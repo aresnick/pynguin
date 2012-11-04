@@ -191,7 +191,7 @@ class MainWindow(QtGui.QMainWindow):
 
         if pyn is None:
             pyn = self.pynguin
-        
+
         ilocals = self.interpreter_locals
         ilocals.update(PI=pi,
                         Pynguin=Pynguin,
@@ -465,13 +465,19 @@ class MainWindow(QtGui.QMainWindow):
 
         default = '#8282a0'
         c = settings.value('view/bgcolor', default)
-        bgcolor = QtGui.QColor(c)
-        brush = QtGui.QBrush(bgcolor)
-        self.scene.setBackgroundBrush(brush)
+        self.pynguin.bgcolor(c)
 
-        default = '#ffffff'
-        c = settings.value('pynguin/color', default)
-        self.pynguin.color(c)
+        default = 4294967295 # white
+        rgba = int(settings.value('pynguin/color', default))
+        c = QtGui.QColor.fromRgba(rgba)
+        r, g, b, a = c.getRgb()
+        self.pynguin.color(r, g, b, a)
+
+        default = 4284800110 # (100, 220, 110, 255)
+        rgba = int(settings.value('pynguin/fillcolor', default))
+        c = QtGui.QColor.fromRgba(rgba)
+        r, g, b, a = c.getRgb()
+        self.pynguin.fillcolor(r, g, b, a)
 
         fontsize = settings.value('editor/fontsize', 16, int)
         self.editor.setfontsize(fontsize)
@@ -562,7 +568,7 @@ class MainWindow(QtGui.QMainWindow):
         if mname is None:
             # remember the saved mode
             mname = settings.value('pynguin/mode', 'pynguin')
-            
+
         from . import mode
         class_name = mode.modes[mname]
 
@@ -1909,7 +1915,7 @@ Check configuration!''')
             sync = None
         else:
             sync = False
-        
+
         idpath = str(imageid)
         if idpath.startswith('@@_'):
             # custom svg

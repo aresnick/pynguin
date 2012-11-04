@@ -26,6 +26,7 @@ Changes in pynguin-0.13:
         - New approach for threading of user code
             - should provide safer, more reliable, termination of user code
             - can now reliably stop code like ... while 1: pass
+        - Preserve fill state and color when changing avatar
 
     Pynguin API
         - Logo-mode coordinates and angles now available
@@ -36,7 +37,7 @@ Changes in pynguin-0.13:
             - also color('ralpha') chooses a random color with random alpha
 
     Canvas
-        - Remembers main pynguin pen color
+        - Remembers main pynguin pen color and fill color
         - Can now track any pynguin
 
     UI

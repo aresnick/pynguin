@@ -989,7 +989,6 @@ class Pynguin(object):
 
     def bgcolor(self, r=None, g=None, b=None):
         settings = QtCore.QSettings()
-        r, g, b, a = choose_color(r, g, b)
         if r is g is b is None:
             default = '#8282a0'
             c = settings.value('view/bgcolor', default)
@@ -997,6 +996,7 @@ class Pynguin(object):
             r, g, b, _ = color.getRgb()
             return r, g, b
         else:
+            r, g, b, a = choose_color(r, g, b)
             ncolor = QtGui.QColor(r, g, b)
         brush = QtGui.QBrush(ncolor)
         self.mw.scene.setBackgroundBrush(brush)
@@ -1015,7 +1015,7 @@ class Pynguin(object):
         hiding = []
         while pyns:
             pyn = pyns.pop()
-            
+
             gitem = pyn.gitem
             item = gitem.item
 
@@ -1087,19 +1087,20 @@ class Pynguin(object):
             self.qmove(self._width, (w,))
 
     def _fillcolor(self, r=None, g=None, b=None, a=None):
-        '''fillcolor(red, green, blue) # 0-255 for each value
+        '''fillcolor(red, green, blue, alpha) # 0-255 for each value
         fillcolor() # return the current fill color
 
         Set the fill color for drawing. The color should be given as
             3 integers between 0 and 255, specifying the red, blue, and
-            green components of the color.
+            green components of the color. Optionally, an alpha value
+            can also be given to set transparency.
         '''
         color = QtGui.QColor.fromRgb(r, g, b, a)
         self.gitem.brush.setColor(color)
         self._gitem_new_line()
 
     def fillcolor(self, r=None, g=None, b=None, a=None):
-        '''fillcolor(r, g, b)
+        '''fillcolor(r, g, b, a)
 
         Set the color to be used for filling drawn shapes.
 
@@ -1111,6 +1112,12 @@ class Pynguin(object):
             return self.ritem.fillcolor
         self.ritem.fillcolor = (r, g, b, a)
         self.qmove(self._fillcolor, (r, g, b, a))
+
+        if self is self.mw.pynguin:
+            settings = QtCore.QSettings()
+            ncolor = QtGui.QColor(r, g, b, a)
+            settings.setValue('pynguin/fillcolor', ncolor.rgba())
+
         return r, g, b, a
 
     def _gitem_fillmode(self, start):
@@ -1226,6 +1233,7 @@ class Pynguin(object):
                     painter.drawPixmap(wo, ho, pm)
 
         pen = ogitem.pen
+        brush = ogitem.brush
         scene = ogitem.scene()
         gitem = PynguinGraphicsItem(rend, imageid, self)
         gitem.setZValue(ogitem.zValue())
@@ -1233,6 +1241,8 @@ class Pynguin(object):
         gitem.ang = ang
         gitem.pen = pen
         gitem._pen = ogitem._pen
+        gitem.brush = brush
+        gitem._fillmode = ogitem._fillmode
         gitem._fillrule = ogitem._fillrule
         gitem._current_line = ogitem._current_line
         gitem.litem = ogitem.litem
