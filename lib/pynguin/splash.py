@@ -34,8 +34,13 @@ class Splash(QtGui.QSplashScreen):
         painter.end()
         QtGui.QSplashScreen.__init__(self, img)
         self.setMask(img.mask())
+        self.away_later()
+
+    def away_later(self):
         QtCore.QTimer.singleShot(1500, self.away)
 
     def away(self):
         if hasattr(self, 'win'):
             self.finish(self.win)
+        else:
+            self.away_later()
