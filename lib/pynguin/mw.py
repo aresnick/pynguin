@@ -1816,13 +1816,17 @@ Check configuration!''')
             later added pynguins, use p.fillcolor()
         '''
         icolor = self.pynguin.gitem.brush.color()
-        ncolor = QtGui.QColorDialog.getColor(icolor, self)
+        ncolor = QtGui.QColorDialog.getColor(icolor, self, 'Fill Color',
+                                    QtGui.QColorDialog.ShowAlphaChannel)
         if ncolor.isValid():
             r, g, b, a = ncolor.getRgb()
             self.pynguin.fill()
             self._sync_fill_menu('fill')
-            self.pynguin.fillcolor(r, g, b)
-            cmd = 'fill(color=(%s, %s, %s))\n' % (r, g, b)
+            self.pynguin.fillcolor(r, g, b, a)
+            if a != 255:
+                cmd = 'fill(color=(%s, %s, %s, %s))\n' % (r, g, b, a)
+            else:
+                cmd = 'fill(color=(%s, %s, %s))\n' % (r, g, b)
             self.interpretereditor.addcmd(cmd)
 
     def setup_avatar_choices(self):
