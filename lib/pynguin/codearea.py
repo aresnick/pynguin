@@ -437,7 +437,7 @@ class CodeArea(HighlightedTextEdit):
         idx = mselect.currentIndex()
         if idx < count-1:
             mselect.setCurrentIndex(idx+1)
-            docid = str(mselect.itemData(idx+1).toString())
+            docid = str(mselect.itemData(idx+1))
             if docid in self.documents:
                 self.switchto(docid)
                 self.setFocus()
@@ -463,7 +463,7 @@ class CodeArea(HighlightedTextEdit):
         idx = mselect.currentIndex()
         if idx > 0:
             mselect.setCurrentIndex(idx-1)
-            docid = str(mselect.itemData(idx-1).toString())
+            docid = str(mselect.itemData(idx-1))
             if docid in self.documents:
                 self.switchto(docid)
                 self.setFocus()
