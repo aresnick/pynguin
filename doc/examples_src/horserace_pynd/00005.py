@@ -1,5 +1,16 @@
-def all_less(lst, val):
-    for var in lst:
-        if var > val:
-            return False
-    return True
+def draw_finish():
+    xmin, ymin, xmax, ymax = viewcoords()
+    pendown()
+    x, y = xy()
+    goto(x, y+40)
+
+    while y > ymin-40:
+        fill(color='white')
+        square(20)
+        square(-20)
+        fd(20)
+        fill(color='black')
+        square(20)
+        square(-20)
+        fd(20)
+        x, y = xy()

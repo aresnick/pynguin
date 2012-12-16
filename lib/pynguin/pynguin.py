@@ -19,14 +19,18 @@
 
 import os
 import queue
+import time
 from random import randrange
 from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 import random
+import string
 import logging
 logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui, QtSvg
+processEvents = QtGui.QApplication.processEvents
+AllEvents = QtCore.QEventLoop.AllEvents
 
 from . import util
 from .util import sign, choose_color
@@ -44,19 +48,112 @@ pynguin_functions = [
     'avatar', 'remove', 'promote', 'reap',
     'speed', 'track', 'notrack', 'bgcolor', 'mode', 'colorat']
 interpreter_protect = [
-    'p', 'pynguin', 'Pynguin', 'pynguins', 'PI',
-    'history', 'util',]
+    'p', 'pynguin', 'Pynguin', 'ModeLogo', 'ModeTurtle', 'pynguins',
+    'PI', 'history', 'util',]
 
 class TooManyPynguins(RuntimeError):
     pass
 
+class QQ(object):
+    class QQDelaying(Exception):
+        pass
+
+    def __init__(self):
+        self._queues = {}
+        self._pynguins = []
+        self.nq = 0
+        self.qq = 0
+
+    def append(self, pyn, q):
+        if pyn in self._pynguins:
+            raise RuntimeError
+        self._pynguins.append(pyn)
+        self._queues[pyn] = q
+        self.nq += 1
+
+    def remove(self, pyn):
+        if pyn in self._queues:
+            del self._queues[pyn]
+            self._pynguins.remove(pyn)
+            self.nq = len(self._queues)
+        self.qq = 0
+
+    def get(self):
+        if not self.nq:
+            raise queue.Empty
+
+        qq0 = self.qq
+        delaying = 0
+        while True:
+            pyn = self._pynguins[self.qq]
+            pynqq = self.qq
+
+            self.qq += 1
+            if self.qq >= self.nq:
+                self.qq = 0
+
+            if pyn._delaying is not None:
+                if pyn.drawspeed == 0:
+                    pyn._delaying = None
+                    self.qq = pynqq
+                    continue
+                else:
+                    delaying += 1
+                    pyn._delaying -= self.nq
+                    if pyn._delaying <= 0:
+                        pyn._delaying = None
+
+            else:
+                try:
+                    q = self._queues.get(pyn)
+                    if q is not None:
+                        mv = q.get(block=False)
+                    else:
+                        self.remove(pyn)
+                        qq0 = 0
+                        continue
+                except queue.Empty:
+                    pass
+                else:
+                    return mv
+
+            if self.qq == qq0:
+                if delaying:
+                    raise self.QQDelaying
+                else:
+                    raise queue.Empty
+
+    def clear(self, lock):
+        for pyn in self._pynguins:
+            pyn._delaying = None
+
+            while True:
+                try:
+                    q = self._queues.get(pyn)
+                    if q is not None:
+                        mv = q.get(block=False)
+                        if not lock:
+                            processEvents(AllEvents)
+                except queue.Empty:
+                    break
+
+    def qqsize(self):
+        sz = 0
+        for pyn, q in self._queues.items():
+            sz += q.qsize()
+        return sz
+
+
 class Pynguin(object):
+    class Defunct(Exception):
+        pass
+
     ControlC = False
 
-    min_delay = 1
-    delay = 50
+    delay = 0
+    _throttledown = 0
 
-    _moves = queue.Queue(50) # max number of items in queue
+    _all_moves = QQ()
     _checktime = QtCore.QTime()
     _checktime.start()
 
@@ -83,24 +180,31 @@ class Pynguin(object):
 
     defunct = False
 
+    _delaying = None
+    _wfi = None
+
     def _log(self, *args):
         argstrings = [str(a) for a in args]
         strargs = ' '.join(argstrings)
         logger.info(strargs)
 
-    def __init__(self, pos=None, ang=None, helper=False):
-        '''helper=True means this pynguin is being used by one
+    def __init__(self, pos=None, ang=None, helper_for=False):
+        '''helper not False means this pynguin is being used by one
             of the alternate modes in mode.py
 
-            helper=2 means this helper pynguin is still being
-            set up and should not be used yet. At the end of
-            setup helper=2 is set to helper=True
+            _is_helper should be a link to the pynguin this one
+                is a helper for.
+
         '''
+
+        self._moves = queue.Queue(0) # max number of items in queue
+        self._all_moves.append(self, self._moves)
+
         if pos is None:
             pos = (0, 0)
         if ang is None:
             ang = 0
-        self._is_helper = helper
+        self._is_helper = helper_for
 
         self.scene = self.mw.scene
         self.ritem = RItem() #real location, angle, etc.
@@ -124,7 +228,6 @@ class Pynguin(object):
 
         if self.mw.pynguin is None:
             self._gitem_setup()
-            self.mw.startTimer(self.delay)
 
         else:
             self.qmove(self._gitem_setup)
@@ -143,6 +246,10 @@ class Pynguin(object):
         self.goto(x, y)
         self.turnto(ang)
 
+        settings = QtCore.QSettings()
+        speed = settings.value('pynguin/speed', 'fast')
+        self.speed(speed)
+
     def _remove(self, pyn):
         if pyn is self:
             self._clear()
@@ -154,11 +261,14 @@ class Pynguin(object):
         if pyn.gitem is not None:
             self.scene.removeItem(pyn.gitem)
             if pyn.gitem.litem is not None:
-                self.scene.removeItem(pyn.gitem.litem)
+                liscene = pyn.gitem.litem.scene()
+                liscene.removeItem(pyn.gitem.litem)
         pyn.gitem = None
 
         if pyn in self.mw.pynguins:
             self.mw.pynguins.remove(pyn)
+
+        self._all_moves.remove(pyn)
 
         if pyn is self.mw.pynguin:
             if self.mw.pynguins:
@@ -203,19 +313,26 @@ class Pynguin(object):
         '''
         if self is not self.mw.pynguin:
             self.promote(self)
+            #self.waitforit()
 
-        for pyn in self.mw.pynguins:
-            if pyn is not self:
-                self.remove(pyn)
+        pynguins = self.mw.pynguins
+        pynguins.remove(self)
+        while pynguins:
+            pyn = pynguins.pop()
+            self.remove(pyn)
+            #self.waitforit()
+        pynguins.append(self)
 
     def _promote(self, pyn):
         self.mw.pynguin = pyn
         self.mw.setup_interpreter_locals()
-    def promote(self, pyn):
+    def promote(self, pyn=None):
         '''make the given pynguin the main pynguin, and update the
             console locals to make the new main pynguins method the
             built-in commands.
         '''
+        if pyn is None:
+            pyn = self
         self.qmove(self._promote, (pyn,))
         self.mw.setup_interpreter_locals(pyn)
 
@@ -228,9 +345,6 @@ class Pynguin(object):
         self.pendown()
         self.fillrule('winding')
         self.gitem._current_line = None
-
-        if self._is_helper == 2:
-            self._is_helper = True
 
         self.gitem.ready = True
 
@@ -324,13 +438,8 @@ class Pynguin(object):
         return x, y
 
     @classmethod
-    def _empty_move_queue(cls):
-        while True:
-            try:
-                move, args, pyn = cls._moves.get(block=False)
-                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-            except queue.Empty:
-                break
+    def _empty_move_queue(cls, lock=False):
+        cls._all_moves.clear(lock)
 
     def _sync_items(self):
         '''Sometimes, after running code is interrupted (like by Ctrl-C)
@@ -353,12 +462,10 @@ class Pynguin(object):
 
     @classmethod
     def _process_moves(cls):
-        '''regular timer tick to make sure graphics are being updated
-
-            Apply the queued commands for the graphical display item
+        '''Apply the queued commands for the graphical display item
             This must be done from the main thread
         '''
-        drawspeed = cls.drawspeed
+
         delay = cls.delay
         etime = cls._checktime.elapsed()
         #logger.info('_r')
@@ -371,63 +478,95 @@ class Pynguin(object):
                 cls.mw.interpretereditor.cmdthread.terminate()
                 #logger.info('CC2')
 
-        elif not drawspeed or etime > delay:
+        elif etime > delay:
             ied = cls.mw.interpretereditor
+            runmoves = 0
             while True:
-                #logger.debug('_____rpm')
-                try:
-                    move, args, pyn = cls._moves.get(block=False)
-                except queue.Empty:
+                runmoves += 1
+                if runmoves >= 100:
                     break
+
+                try:
+                    move, args, pyn = cls._all_moves.get()
+                except queue.Empty:
+                    cls._throttledown += 1
+                    if cls._throttledown > 200:
+                        cls.delay = 300
+                    elif cls._throttledown > 20:
+                        cls.delay = 10
+
+                    if cls.delay:
+                        cls.mw.killTimer(cls.mw._movetimer)
+                        cls.mw._movetimer = cls.mw.startTimer(cls.delay)
+
+                    #logger.info(cls._throttledown)
+                    #logger.info(etime)
+                    break
+                except cls._all_moves.QQDelaying:
+                    pass
                 else:
+                    if cls.delay:
+                        cls.mw.killTimer(cls.mw._movetimer)
+                        cls.mw._movetimer = cls.mw.startTimer(0)
+
+                    cls._throttledown = 0
+                    cls.delay = 0
+
                     if pyn.defunct:
                         logger.info('defunct')
-                        continue
-
-                    try:
-                        move(*args)
-                    except Exception:
-                        import sys
-                        tb = sys.exc_info()[2]
-                        import traceback
-                        tb = traceback.format_exc()
-                        logger.info(tb)
-                        ied.write(tb)
-                        ied.write('\n')
-                        if ied.cmdthread is not None:
-                            ied.cmdthread.terminate()
-                            ied.cmdthread = None
-                        cls._empty_move_queue()
-                        ied.write('>>> ')
-
-                #print 'dt', self.gitem._drawn, self.gitem._turned
-
-                if not drawspeed:
-                    delay -= 1
-                    if delay < 0:
-                        QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-                        delay = cls.min_delay
-                        break
-                elif cls._drawn > 0 and cls._turned > 0:
-                    #logging.debug('dt %s %s' % (cls._drawn, cls._turned))
-                    continue
-                else:
-                    cls._drawn = cls.drawspeed
-                    cls._turned = cls.turnspeed
-                    break
-
-                if cls.drawspeed:
-                    break
+                    else:
+                        try:
+                            move(*args)
+                        except Exception:
+                            import sys
+                            tb = sys.exc_info()[2]
+                            import traceback
+                            tb = traceback.format_exc()
+                            logger.info(tb)
+                            ied.write(tb)
+                            ied.write('\n')
+                            if ied.cmdthread is not None:
+                                ied.cmdthread.terminate()
+                                ied.cmdthread = None
+                            cls._empty_move_queue()
+                            ied.write('>>> ')
 
             cls._checktime.restart()
 
         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
+    def _qdelay(self, n):
+        if self._delaying is not None:
+            raise RuntimeError
+        else:
+            self._delaying = n
+
     def wait(self, s):
-        import time
         for ms in range(int(s*1000)):
             time.sleep(0.001)
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
+
+    @classmethod
+    def wait_for_empty_q(cls):
+        n = 0
+        while cls._all_moves.qqsize():
+            logger.info(cls._all_moves.qqsize())
+            cls._process_moves()
+        #logger.info('READY')
+
+    def _waitforit(self, flag):
+        self._wfi = flag
+
+    def waitforit(self):
+        flag = ''.join(random.sample(string.ascii_letters, 15))
+        self.qmove(self._waitforit, (flag,))
+        self._log('waiting for:', flag)
+        while self._wfi is not flag:
+            if self.ControlC:
+                break
+            self.mw.interpretereditor.spin(1, 0)
+        self._log('found:', flag)
+        self._wfi = None
 
     def _gitem_new_line(self):
         if self.gitem is not None:
@@ -504,6 +643,8 @@ class Pynguin(object):
             d += drawspeed
 
             self.qmove(self._gitem_move, (step,))
+            if self.drawspeed:
+                self.qmove(self._qdelay, (100*(40-self.drawspeed),))
 
             QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
@@ -517,6 +658,9 @@ class Pynguin(object):
 
     def qmove(self, func, args=None):
         '''queue up a command for later application'''
+
+        if self.defunct:
+            raise Pynguin.Defunct
 
         if self.ControlC:
             Pynguin.ControlC += 1
@@ -599,6 +743,8 @@ class Pynguin(object):
             a += self.turnspeed
 
             self.qmove(self._gitem_turn, (step,))
+            if self.turnspeed:
+                self.qmove(self._qdelay, (100*(80-self.turnspeed),))
 
     def left(self, degrees):
         '''left(angle) # in degrees | aka: lt(angle)
@@ -841,13 +987,11 @@ class Pynguin(object):
         self.qmove(self._clear)
 
     def _full_reset(self):
-        if self._moves:
-            self._empty_move_queue()
+        #self._empty_move_queue()
 
-        self.reset()
         self._remove_other_pynguins()
-
         self.mw.setup_interpreter_locals()
+        self.reset()
 
     def reset(self, full=False):
         '''reset()
@@ -863,13 +1007,16 @@ class Pynguin(object):
 
         if full:
             if self is not self.mw.pynguin:
-                self.mw.pynguin.reset(full=True)
-            else:
-                for pyn in self.mw.pynguins:
-                    if pyn is not self and not pyn._is_helper:
-                        if pyn.gitem is not None:
-                            pyn.reset()
-                self.qmove(self._full_reset)
+                self.promote()
+                self.waitforit()
+
+            for pyn in self.mw.pynguins:
+                if pyn is not self and pyn.gitem is not None:
+                    pyn.reset()
+                    #self.waitforit()
+
+            self.qmove(self._full_reset)
+            self.waitforit()
 
         else:
             if self.avatar() == 'hidden':
@@ -879,7 +1026,7 @@ class Pynguin(object):
                     self.avatar('pynguin')
 
             self.clear()
-            self.label = ''
+            self.label('')
             self.goto(0, 0)
             self.turnto(0)
             self.pendown()
@@ -891,6 +1038,8 @@ class Pynguin(object):
             self.mw.zoom100()
             self.mw.scene.view.centerOn(0, 0)
             self.mw._centerview()
+            self.waitforit()
+
 
     def _remove_other_pynguins(self):
         '''remove the graphical avatar items for all the pynguins
@@ -901,14 +1050,21 @@ class Pynguin(object):
 
         while pynguins:
             pyn = pynguins.pop()
+            pyn.defunct = True
             self.scene.removeItem(pyn.gitem)
+
             if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
-                self.scene.removeItem(pyn.gitem.litem)
+                liscene = pyn.gitem.litem.scene()
+                if liscene is not None:
+                    liscene.removeItem(pyn.gitem.litem)
+
             if hasattr(pyn, '_pyn'):
                 _pyn = pyn._pyn
                 self.scene.removeItem(_pyn.gitem)
                 if hasattr(_pyn.gitem, 'litem') and _pyn.gitem.litem is not None:
-                    self.scene.removeItem(_pyn.gitem.litem)
+                    liscene = pyn.gitem.litem.scene()
+                    if liscene is not None:
+                        liscene.removeItem(pyn.gitem.litem)
 
         pynguins.append(self)
 
@@ -1043,11 +1199,7 @@ class Pynguin(object):
     def colorat(self):
         self._colorat_return = None
         self.qmove(self._colorat)
-        i = 0
-        while self._colorat_return is None:
-            if self.ControlC:
-                break
-            self.mw.interpretereditor.spin(1, 0.001)
+        self.waitforit()
         rval = self._colorat_return
         self._colorat_return = None
         if rval is util.NOTHING:
@@ -1239,10 +1391,14 @@ class Pynguin(object):
             if imageid is None:
                 _, imageid = os.path.split(filepath)
             self.mw._sync_avatar_menu(imageid, filepath)
-    def setImageid(self, imageid, sync=None):
+    def setImageid(self, imageid, filepath=None, sync=None):
         '''change the visible (avatar) image'''
         self._imageid = imageid
-        self.qmove(self._setImageid, (imageid, None, sync))
+        self.qmove(self._setImageid, (imageid, filepath, sync))
+        if self.name:
+            name = self.name
+            self.label('')
+            self.label(name)
     def avatar(self, imageid=None, filepath=None, sync=None):
         '''set or return the pynguin's avatar image
 
@@ -1267,16 +1423,14 @@ class Pynguin(object):
         '''
 
         if filepath is not None and imageid is not None:
-            self._imageid = imageid
-            self.qmove(self._setImageid, (imageid, filepath, sync))
+            self.setImageid(imageid, filepath, sync)
         elif filepath is not None and imageid is None:
             # load from non-svg image
-            self._imageid = imageid
-            self.qmove(self._setImageid, (imageid, filepath, sync))
+            self.setImageid(imageid, filepath, sync)
         elif imageid is not None:
             avatars = list(self.mw.avatars.values())
             if imageid in avatars:
-                self.setImageid(imageid, sync)
+                self.setImageid(imageid, None, sync)
             else:
                 msg = 'Avatar "%s" not available. Avatars available are: %s' % (imageid, ', '.join(avatars))
                 raise ValueError(msg)
@@ -1284,7 +1438,9 @@ class Pynguin(object):
             return self._imageid
 
     def _speed(self, s):
-        self.mw.set_speed(s)
+        self.drawspeed = 2 * s
+        self.turnspeed = 4 * s
+
     def speed(self, s):
         '''Set speed of animation for all pynguins.
 
@@ -1296,10 +1452,22 @@ class Pynguin(object):
                     'fast': 20,
                     'instant': 0}
         choice = choices.get(s)
+
         if choice is None:
             raise ValueError("Speed choices are %s" % list(choices.keys()))
+
         else:
-            self.qmove(self._speed, (choice,))
+            if hasattr(self, '_pyn'):
+                pyn = self._pyn
+            else:
+                pyn = self
+
+            self.qmove(pyn._speed, (choice,))
+
+            if self is self.mw.pynguin:
+                settings = QtCore.QSettings()
+                settings.setValue('pynguin/speed', s)
+                self.mw.sync_speed_menu(choice)
 
     def _circle(self, crect):
         '''instant circle'''
@@ -1360,6 +1528,8 @@ class Pynguin(object):
         self.qmove(self._extend_circle, (crect, circumference/90., 'start'))
         for n in range(2, 90):
             self.qmove(self._extend_circle, (crect, circumference/90.))
+            if 40-self.drawspeed:
+                self.qmove(self._qdelay, (100*(40-self.drawspeed),))
         self.qmove(self._extend_circle, (crect, 0, 'finish'))
 
         if center:
@@ -1696,9 +1866,15 @@ class PynguinGraphicsItem(GraphicsItem):
         self.ready = False
 
     def setlabel(self, text):
-        if self.litem is not None:
-            self.scene().removeItem(self.litem.item)
-            self.scene().removeItem(self.litem)
+        litem = self.litem
+        if litem is not None:
+            item = litem.item
+            iscene = item.scene()
+            if iscene is not None:
+                iscene.removeItem(item)
+            liscene = litem.scene()
+            if liscene is not None:
+                liscene.removeItem(litem)
 
         if text:
             self.litem = PynguinLabelItem(self)
@@ -1795,6 +1971,13 @@ class PynguinGraphicsItem(GraphicsItem):
                 x, y = pos.x(), pos.y()
                 pynguin.goto(x, y)
                 self._notrack = False
+
+            ps = pynguin.mw.pynguins
+            if pynguin not in ps and pynguin._is_helper not in ps:
+                # There is a visible pynguin onscreen which the user
+                # has grabbed and moved, but that pynguin is not in
+                # the pynguin list for some reason. Add it back in.
+                ps.append(pynguin)
 
     def mouseReleaseEvent(self, ev):
         self._track()

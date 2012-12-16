@@ -185,9 +185,14 @@ class Interpreter(HighlightedTextEdit):
     def cleanup_ControlC(self):
         pynguin.Pynguin.ControlC = False
         self.cmdthread = None
+
+        to_remove = []
         for pyn in self.mw.pynguins:
             if not hasattr(pyn, 'gitem') or pyn.gitem is None:
-                self.mw.pynguins.remove(pyn)
+                to_remove.append(pyn)
+
+        for pyn in to_remove:
+            self.mw.pynguins.remove(pyn)
 
     def testthreaddone(self):
         self.cleanup_ControlC()
@@ -421,6 +426,9 @@ class Interpreter(HighlightedTextEdit):
             else:
                 pynguin.Pynguin.ControlC = False
                 self.cmdthread = None
+
+                self.mw.pynguin._empty_move_queue(lock=True)
+
                 logger.info('No thread running')
                 settings = QtCore.QSettings()
                 quiet = settings.value('console/quietinterrupt', False, bool)

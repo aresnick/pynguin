@@ -180,6 +180,9 @@ class MainWindow(QtGui.QMainWindow):
         self._watchdocs = {}
         self._writing_external = None
 
+        self._movetimer = self.startTimer(0)
+
+
     def setup_interpreter_locals(self, pyn=None):
         '''insert some values in to the interpreter.
 
@@ -486,9 +489,12 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.actionWordwrap.setChecked(True)
             self.wordwrap()
 
-        speed = settings.value('pynguin/speed', 10, int)
-        self.set_speed(speed)
-        self.sync_speed_menu(speed)
+        default = 'fast'
+        speed = settings.value('pynguin/speed', default)
+        try:
+            self.pynguin.speed(speed)
+        except ValueError:
+            self.pynguin.speed(default)
 
         # remember the saved avatar
         imageid = settings.value('pynguin/avatar', 'pynguin')
@@ -877,6 +883,9 @@ Check configuration!''')
         fpd = self._related_dir(fp)
         _, dirname = os.path.split(fpd)
 
+        if not os.path.exists(fpd):
+            os.mkdir(fpd)
+
         mselect = self.ui.mselect
         count = mselect.count()
         for n in range(count):
@@ -974,6 +983,17 @@ Check configuration!''')
         else:
             return self._savestate()
 
+    def _make_related_dir(self, fp):
+        fpd = self._related_dir(fp)
+        if not os.path.exists(fpd):
+            os.mkdir(fpd)
+        elif os.path.exists(fpd) and not self.overwrite(fpd):
+            return False
+        elif os.listdir(fpd):
+            import shutil
+            shutil.rmtree(fpd)
+            os.mkdir(fpd)
+
     def saveas(self):
         if self._fdir is None:
             fdir = os.path.abspath(os.path.curdir)
@@ -991,15 +1011,7 @@ Check configuration!''')
             fp = self._correct_filename(fp)
             dirname, fname = os.path.split(fp)
             if not savesingle:
-                fpd = self._related_dir(fp)
-                if not os.path.exists(fpd):
-                    os.mkdir(fpd)
-                elif os.path.exists(fpd) and not self.overwrite(fpd):
-                    return False
-                elif os.listdir(fpd):
-                    import shutil
-                    shutil.rmtree(fpd)
-                    os.mkdir(fpd)
+                self._make_related_dir(fp)
 
             self._filepath = fp
             self._fdir = dirname
@@ -1641,7 +1653,7 @@ Check configuration!''')
             else:
                 self.interpretereditor.write('not starting...\n')
                 self.interpretereditor.write('code already running\n')
-                self.interpretereditor.write('>>> ')
+                #self.interpretereditor.write('>>> ')
 
         self.interpretereditor.setFocus()
         return error
@@ -1655,7 +1667,7 @@ Check configuration!''')
 
         ie = self.interpretereditor
         if not ie.cmdthread is None:
-            ie.write('not starting...\n')
+            ie.write('not starting...2\n')
             ie.write('code already running\n')
             return
 
@@ -1673,25 +1685,35 @@ Check configuration!''')
                 idx = count - i - 1
             docid = str(self.ui.mselect.itemData(idx))
             if docid in self.editor.documents:
-                if not ie.spin(0):
-                    Pynguin._stop_testall = True
+                while ie.cmdthread is not None:
+                    ie.spin(5)
+                    if Pynguin._stop_testall:
+                        break
+                    Pynguin.wait_for_empty_q()
+                    if self.pynguin.ControlC:
+                        Pynguin._stop_testall = True
+                        break
                 self.editor.switchto(docid)
                 self.editor.setFocus()
-                if reset:
+                if reset and not Pynguin._stop_testall:
                     ie.addcmd('reset()')
                     ie.spin(5)
-                    self.interpretereditor.go()
-                if not ie.spin(0):
-                    Pynguin._stop_testall = True
+                    ie.go()
+                Pynguin.wait_for_empty_q()
+                #if not ie.spin(0):
+                    #Pynguin._stop_testall = True
 
                 if Pynguin._stop_testall:
                     ie.clearline()
                     ie.write('Stopped\n')
-                    ie.write('>>> ')
+                    ie.spin(5)
+                    ie.checkprompt()
+                    #ie.write('>>> ')
                     ie.setFocus()
                     break
 
                 ie.clearline()
+                ie.spin(5, delay=0.1)
                 if self.testcode():
                     break
                 ie.spin(5, delay=0.1)
@@ -1713,8 +1735,11 @@ Check configuration!''')
                             ie.write('>>> ')
                         ie.spin(5)
 
-                    else:
+                    elif not Pynguin._stop_testall:
                         ie.go()
+                        logger.info('GO')
+                        Pynguin.wait_for_empty_q()
+                        logger.info('END WAIT')
 
         ie.clearline()
 
@@ -1984,30 +2009,24 @@ Check configuration!''')
         if action is not None:
             action.setChecked(True)
 
-            settings = QtCore.QSettings()
-            settings.setValue('pynguin/speed', speed)
-
-    def set_speed(self, speed):
-        '''speed setting. Sets the speed for _all_ pynguins!'''
-        Pynguin._drawspeed_pending = 2 * speed
-        Pynguin._turnspeed_pending = 4 * speed
-
-        self.sync_speed_menu(speed)
-
     def speedMenuEvent(self, ev=None):
         if ev is None:
             ev = self.speedgroup.checkedAction()
 
         speed = self.speeds[ev]
-        self.set_speed(speed)
+        self.sync_speed_menu(speed)
         choices = { 5: 'slow',
                     10: 'medium',
                     20: 'fast',
                     0: 'instant'}
+
+        if self.interpretereditor.cmdthread is not None:
+            self.pynguin._speed(speed)
+
         choice = choices.get(speed)
         cmd = "speed('%s')\n" % choice
         self.interpretereditor.addcmd(cmd)
-
+        self.pynguin.speed(choice)
 
     def wordwrap(self):
         checked = self.ui.actionWordwrap.isChecked()

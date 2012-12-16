@@ -1,6 +1,7 @@
-def race(horses):
-    import random
+def startline(horses):
     xmin, ymin, xmax, ymax = viewcoords()
-    while all_less([horse.x for horse in horses], xmax-50):
-        h = random.choice(horses)
-        h.forward(1)
+    x = xmin + 20
+    y = ymin + 100
+    for horse in horses:
+        horse.goto(x, y)
+        y += 100

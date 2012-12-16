@@ -26,6 +26,9 @@ from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
 from . import highlightedtextedit
 from . import numberedtextedit
 
+import logging
+logger = logging.getLogger('PynguinLogger')
+
 uidir = 'data/ui'
 
 class TextEditor(QtGui.QMainWindow):
@@ -263,7 +266,10 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                 curs.setPosition(pos, 0)
                 self.setTextCursor(curs)
                 if k == Tab:
-                    self.insertPlainText(spaces4)
+                    offtabstop = firstnonspace % 4
+                    logger.info(firstnonspace)
+                    logger.info(offtabstop)
+                    self.insertPlainText(' ' * (4-offtabstop))
                 else:
                     txt = blk.text()
                     if txt[:4] == '    ':

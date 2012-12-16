@@ -1,10 +1,15 @@
 def go():
-    mode('pynguin')
+    if mode() != 'pynguin':
+        mode('pynguin')
+
     notrack()
 
     reap()
-    clear()
+    reset()
+
+    avatar('hidden')
+    speed('instant')
 
     horses = setup()
     race(horses)
-    winner(horses)
+    return winner(horses)

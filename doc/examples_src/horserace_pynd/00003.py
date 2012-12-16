@@ -1,17 +1,11 @@
-def draw_track():
-    avatar('hidden')
-    xmin, ymin, xmax, ymax = viewcoords()
-    startx = xmin + 40
-    finishx = xmax - 40
-
-    goto(startx, ymax-10)
-    turnto(-90)
-    write('start')
-    lineto(startx, ymin)
-
-    goto(finishx, ymax-10)
-    turnto(-90)
-    x, y = xy()
-    draw_finish()
-    goto(x-60, y)
-    write('finish')
+def make_horses():
+    names = ['pynguin', 'robot', 'arrow', 'turtle']
+    horses = []
+    for name in names:
+        np = Pynguin()
+        np.name = name
+        np.speed('fast')
+        np.avatar(name)
+        np.penup()
+        horses.append(np)
+    return horses

@@ -52,15 +52,21 @@ class ModeBase(Pynguin):
     def _gitem_setup(self):
         self._pyn_setup()
         Pynguin._gitem_setup(self)
+        self.qmove(self._pyn_setup2)
         #self.qmove(self._pyn_setup)
         self.turnto(0)
         #QtCore.QTimer.singleShot(20, self._pyn_setup)
-        QtCore.QTimer.singleShot(20, self._pyn_setup2)
-        self.wait(0.2)
+        #QtCore.QTimer.singleShot(20, self._pyn_setup2)
+        c = 0
+        while not hasattr(self, 'gitem'):
+            self.wait(0.1)
+            c += 1
+            if c > 10:
+                break
         self.gitem.ready = True
 
     def _pyn_setup(self):
-        self._pyn = Pynguin(helper=2)
+        self._pyn = Pynguin(helper_for=self)
 
     def _pyn_setup2(self):
         Pynguin.avatar(self, 'hidden', sync=False)
@@ -289,6 +295,7 @@ class ModeBase(Pynguin):
 
     def colorat(self):
         return self._pyn.colorat()
+
 
 class ModeLogo(ModeBase):
 

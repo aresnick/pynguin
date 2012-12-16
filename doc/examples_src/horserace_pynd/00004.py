@@ -1,15 +1,17 @@
-def draw_finish():
+def draw_track():
+    avatar('hidden')
     xmin, ymin, xmax, ymax = viewcoords()
-    x, y = xy()
-    goto(x, y+40)
+    startx = xmin + 40
+    finishx = xmax - 40
 
-    while y > ymin-40:
-        fill(color='white')
-        square(20)
-        square(-20)
-        fd(20)
-        fill(color='black')
-        square(20)
-        square(-20)
-        fd(20)
-        x, y = xy()
+    goto(startx, ymax-10)
+    turnto(-90)
+    write('start')
+    lineto(startx, ymin)
+
+    goto(finishx, ymax-10)
+    turnto(-90)
+    x, y = xy()
+    draw_finish()
+    goto(x-60, y)
+    write('finish')

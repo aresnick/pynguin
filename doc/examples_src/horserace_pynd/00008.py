@@ -1,8 +1,7 @@
-def winner(horses):
-    finder = sorted([(horse.x, horse) for horse in horses])
-    pos, won = finder[-1]
-    name = won._imageid
-    goto(-100, 0)
-    turnto(0)
-    msg = name + ' won!'
-    write(msg)
+def race(horses):
+    import random
+    xmin, ymin, xmax, ymax = viewcoords()
+    while all_less([horse.x for horse in horses], xmax-50):
+        h = random.choice(horses)
+        h.forward(1)
+        h.waitforit()
