@@ -253,6 +253,13 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
             selend = curs.selectionEnd()
             curs.setPosition(selstart, 0)
             startblk = curs.block()
+            txt = startblk.text()
+            firstnonspace = 0
+            for c in txt[self.col0:]:
+                if c != ' ':
+                    break
+                firstnonspace += 1
+
             curs.setPosition(selend, 0)
             endblk = curs.block()
             if selend == endblk.position():
@@ -265,19 +272,20 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
                 pos = blk.position()
                 curs.setPosition(pos, 0)
                 self.setTextCursor(curs)
+
                 if k == Tab:
                     offtabstop = firstnonspace % 4
-                    logger.info(firstnonspace)
-                    logger.info(offtabstop)
                     self.insertPlainText(' ' * (4-offtabstop))
                 else:
                     txt = blk.text()
                     if txt[:4] == '    ':
                         for char in range(4):
                             curs.deleteChar()
+
                 if blk == endblk:
                     break
                 blk = blk.next()
+
             endpos = blk.position() + blk.length() - 1
             curs.setPosition(startpos, 0)
             curs.setPosition(endpos, 1)
@@ -285,9 +293,17 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
 
         elif col == 0:
             if k == Tab:
-                self.insertPlainText(spaces4)
+                offtabstop = firstnonspace % 4
+                spcs = 4-offtabstop
+                self.insertPlainText(' ' * spcs)
+                curs.setPosition(blk0+self.col0+firstnonspace+spcs)
+                self.setTextCursor(curs)
             elif k == Backtab:
-                if txt[:4] == '    ':
+                offtabstop = firstnonspace % 4
+                if offtabstop:
+                    for char in range(offtabstop):
+                        curs.deleteChar()
+                elif txt[:4] == '    ':
                     for char in range(4):
                         curs.deleteChar()
             elif k == Backspace:
@@ -313,13 +329,22 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
 
         elif 0 < col < firstnonspace:
             if k == Tab:
+                offtabstop = firstnonspace % 4
                 curs.setPosition(blk0+self.col0+firstnonspace, 0)
                 self.setTextCursor(curs)
-                self.insertPlainText(spaces4)
+                spcs = 4 - offtabstop
+                self.insertPlainText(' ' * spcs)
             elif k == Backtab:
-                curs.setPosition(blk0+self.col0+firstnonspace-4, 0)
+                offtabstop = firstnonspace % 4
+                if firstnonspace < 4:
+                    cursto = 0
+                    rmvchars = offtabstop
+                else:
+                    cursto = firstnonspace-4
+                    rmvchars = 4 - offtabstop
+                curs.setPosition(blk0+self.col0+cursto, 0)
                 self.setTextCursor(curs)
-                for char in range(4):
+                for char in range(rmvchars):
                     curs.deleteChar()
             elif k == Home:
                 curs.setPosition(blk0+self.col0+firstnonspace, 0)

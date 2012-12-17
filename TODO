@@ -23,8 +23,6 @@ color(None) for transparent line?
 remember fill color?
 Ability to keep handle on drawn items, move them, use them as avatar.
 Test/Run all sometimes gets stuck trying to start
-Tab/Shift-Tab on improperly indented selection does not repair indentation
-    (Shift-Tab on 2-space indentation will not reduce indentation to 0)
 reset() should go back to original (saved) color
 pressing Enter at beginning of already indented line should keep indentation
 Adding ModeTurtle is including helper in pynguins?
