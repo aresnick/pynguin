@@ -1223,10 +1223,12 @@ Check configuration!''')
                 try:
                     exec(data, self.interpreter_locals)
                 except Exception as e:
+                    print()
                     print('problem', e)
                     print('in...')
                     line1 = data.split('\n')[0]
                     print(str(line1))
+                    self.interpretereditor.checkprompt()
 
     def _loadhistory(self, data):
         history = str(data).split('\n')
