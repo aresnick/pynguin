@@ -118,6 +118,8 @@ def choose_color(r=None, g=None, b=None, a=None):
                 ci = int(r)
                 c = QtGui.QColor.fromRgba(ci)
             except ValueError:
+                if not QtGui.QColor.isValidColor(r):
+                    raise ValueError
                 c = QtGui.QColor(r)
             r, g, b, a = c.red(), c.green(), c.blue(), c.alpha()
         else:
