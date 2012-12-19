@@ -41,7 +41,10 @@ Changes in pynguin-0.13:
         - Each turtle's speed can now be set individually
 
     Canvas
-        - Remembers main pynguin pen color and fill color
+        - Added a dialog for pen, background, and fill default colors
+            - sets these colors on program startup
+            - uses these colors for reset()
+            - also used when adding new pynguins
         - Can now track any pynguin
 
     UI

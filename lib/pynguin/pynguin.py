@@ -250,6 +250,9 @@ class Pynguin(object):
         speed = settings.value('pynguin/speed', 'fast')
         self.speed(speed)
 
+        self._set_color_to_default()
+        self._set_fillcolor_to_default()
+
     def _remove(self, pyn):
         if pyn is self:
             self._clear()
@@ -1019,21 +1022,22 @@ class Pynguin(object):
             self.waitforit()
 
         else:
+            settings = QtCore.QSettings()
             if self.avatar() == 'hidden':
-                settings = QtCore.QSettings()
                 reset_forces_visible = settings.value('pynguin/reset_forces_visible', True, bool)
                 if reset_forces_visible:
                     self.avatar('pynguin')
 
             self.clear()
+            self._set_bgcolor_to_default()
             self.label('')
             self.goto(0, 0)
             self.turnto(0)
             self.pendown()
             self.width(2)
-            self.color(255, 255, 255)
+            self._set_color_to_default()
             self.nofill()
-            self.fillcolor(100, 220, 110)
+            self._set_fillcolor_to_default()
             self.fillrule('winding')
             self.mw.zoom100()
             self.mw.scene.view.centerOn(0, 0)
@@ -1114,26 +1118,29 @@ class Pynguin(object):
         return the color being used for drawing -- makes getting
             randomly selected colors easier.
         '''
-        r, g, b, a = choose_color(r, g, b, a)
         if r is g is b is None:
             return self.ritem.color
+
+        r, g, b, a = choose_color(r, g, b, a)
         self.ritem.color = (r, g, b, a)
         self.qmove(self._gitem_new_line)
         self.qmove(self._color, (r, g, b, a))
 
-        if self is self.mw.pynguin:
-            settings = QtCore.QSettings()
-            ncolor = QtGui.QColor(r, g, b, a)
-            settings.setValue('pynguin/color', ncolor.rgba())
-
         return r, g, b, a
+
+    def _set_color_to_default(self):
+        settings = QtCore.QSettings()
+        default = conf.default_color
+        rgba = int(settings.value('pynguin/color', default))
+        c = QtGui.QColor.fromRgba(rgba)
+        r, g, b, a = c.getRgb()
+        self.color(r, g, b, a)
+
 
     def bgcolor(self, r=None, g=None, b=None):
         settings = QtCore.QSettings()
         if r is g is b is None:
-            default = '#8282a0'
-            c = settings.value('view/bgcolor', default)
-            color = QtGui.QColor(c)
+            color = self.scene.backgroundBrush().color()
             r, g, b, _ = color.getRgb()
             return r, g, b
         else:
@@ -1141,7 +1148,12 @@ class Pynguin(object):
             ncolor = QtGui.QColor(r, g, b)
         brush = QtGui.QBrush(ncolor)
         self.mw.scene.setBackgroundBrush(brush)
-        settings.setValue('view/bgcolor', ncolor.name())
+
+    def _set_bgcolor_to_default(self):
+        settings = QtCore.QSettings()
+        default = conf.default_bgcolor
+        c = settings.value('view/bgcolor', default)
+        self.bgcolor(c)
 
     def _colorat(self):
         scene = self.scene
@@ -1250,12 +1262,15 @@ class Pynguin(object):
         self.ritem.fillcolor = (r, g, b, a)
         self.qmove(self._fillcolor, (r, g, b, a))
 
-        if self is self.mw.pynguin:
-            settings = QtCore.QSettings()
-            ncolor = QtGui.QColor(r, g, b, a)
-            settings.setValue('pynguin/fillcolor', ncolor.rgba())
-
         return r, g, b, a
+
+    def _set_fillcolor_to_default(self):
+        settings = QtCore.QSettings()
+        default = conf.default_fillcolor
+        rgba = int(settings.value('pynguin/fillcolor', default))
+        c = QtGui.QColor.fromRgba(rgba)
+        r, g, b, a = c.getRgb()
+        self.fillcolor(r, g, b, a)
 
     def _gitem_fillmode(self, start):
         if start:

@@ -441,6 +441,13 @@ class MainWindow(QtGui.QMainWindow):
             autocall = ui.testall_autocall.isChecked()
             settings.setValue('editor/testall_autocall', autocall)
 
+            bgcolor = ui._bgcolor
+            settings.setValue('view/bgcolor', bgcolor.name())
+            color = ui._color
+            settings.setValue('pynguin/color', color.rgba())
+            fillcolor = ui._fillcolor
+            settings.setValue('pynguin/fillcolor', fillcolor.rgba())
+
             reset_forces_visible = ui.reset_forces_visible.isChecked()
             settings.setValue('pynguin/reset_forces_visible', reset_forces_visible)
             allow_start_hidden = ui.allow_start_hidden.isChecked()
@@ -466,21 +473,9 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings()
         self.settings = settings
 
-        default = '#8282a0'
-        c = settings.value('view/bgcolor', default)
-        self.pynguin.bgcolor(c)
-
-        default = 4294967295 # white
-        rgba = int(settings.value('pynguin/color', default))
-        c = QtGui.QColor.fromRgba(rgba)
-        r, g, b, a = c.getRgb()
-        self.pynguin.color(r, g, b, a)
-
-        default = 4284800110 # (100, 220, 110, 255)
-        rgba = int(settings.value('pynguin/fillcolor', default))
-        c = QtGui.QColor.fromRgba(rgba)
-        r, g, b, a = c.getRgb()
-        self.pynguin.fillcolor(r, g, b, a)
+        self.pynguin._set_bgcolor_to_default()
+        self.pynguin._set_color_to_default()
+        self.pynguin._set_fillcolor_to_default()
 
         fontsize = settings.value('editor/fontsize', 16, int)
         self.editor.setfontsize(fontsize)

@@ -40,48 +40,67 @@ class Settings(QtGui.QDialog):
 
     def setcurrent(self):
         settings = QtCore.QSettings()
+        ui = self.ui
 
         savesingle = settings.value('file/savesingle', True, bool)
         if savesingle:
-            self.ui.savesingle.setChecked(True)
+            ui.savesingle.setChecked(True)
         else:
-            self.ui.savefolder.setChecked(True)
+            ui.savefolder.setChecked(True)
 
         reloadexternal = settings.value('file/reloadexternal', True, bool)
-        self.ui.reloadexternal.setChecked(reloadexternal)
+        ui.reloadexternal.setChecked(reloadexternal)
         autorun = settings.value('file/autorun', False, bool)
-        self.ui.autorun.setChecked(autorun)
+        ui.autorun.setChecked(autorun)
 
 
         bfp = settings.value('file/backupfolderpath', '')
-        self.ui.backupfolderpath.setText(bfp)
+        ui.backupfolderpath.setText(bfp)
         bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
-        self.ui.backupfilename.setText(bfn)
+        ui.backupfilename.setText(bfn)
         brate = settings.value('file/backuprate', 3, int)
-        self.ui.backuprate.setValue(brate)
+        ui.backuprate.setValue(brate)
         bkeep = settings.value('file/backupkeep', 5, int)
-        self.ui.backupkeep.setValue(bkeep)
+        ui.backupkeep.setValue(bkeep)
 
 
         reset = settings.value('editor/testrun_reset', True, bool)
-        self.ui.testrun_reset.setChecked(reset)
+        ui.testrun_reset.setChecked(reset)
         mainfirst = settings.value('editor/mainfirst', True, bool)
         if mainfirst:
-            self.ui.editor_mainfirst.setChecked(True)
+            ui.editor_mainfirst.setChecked(True)
         else:
-            self.ui.editor_mainlast.setChecked(True)
+            ui.editor_mainlast.setChecked(True)
         rev = settings.value('editor/testall_reverse', False, bool)
-        self.ui.testall_reverse.setChecked(rev)
+        ui.testall_reverse.setChecked(rev)
         autocall = settings.value('editor/testall_autocall', False, bool)
-        self.ui.testall_autocall.setChecked(autocall)
+        ui.testall_autocall.setChecked(autocall)
 
+        # Background color
+        default = conf.default_bgcolor
+        c = settings.value('view/bgcolor', default)
+        color = QtGui.QColor(c)
+        self.set_bgcolor_swatch(color)
+        ui._bgcolor = color
+        # Pen color
+        default = conf.default_color
+        rgba = int(settings.value('pynguin/color', default))
+        color = QtGui.QColor.fromRgba(rgba)
+        self.set_pencolor_swatch(color)
+        ui._color = color
+        # Fill color
+        default = conf.default_fillcolor
+        rgba = int(settings.value('pynguin/fillcolor', default))
+        color = QtGui.QColor.fromRgba(rgba)
+        self.set_fillcolor_swatch(color)
+        ui._fillcolor = color
 
         reset_forces_visible = settings.value('pynguin/reset_forces_visible', True, bool)
-        self.ui.reset_forces_visible.setChecked(reset_forces_visible)
+        ui.reset_forces_visible.setChecked(reset_forces_visible)
         allow_start_hidden = settings.value('pynguin/allow_start_hidden', False, bool)
-        self.ui.allow_start_hidden.setChecked(allow_start_hidden)
+        ui.allow_start_hidden.setChecked(allow_start_hidden)
         quietinterrupt = settings.value('console/quietinterrupt', False, bool)
-        self.ui.quietinterrupt.setChecked(quietinterrupt)
+        ui.quietinterrupt.setChecked(quietinterrupt)
 
     def backupbrowse(self):
         filepath = QtGui.QFileDialog.getExistingDirectory(
@@ -103,6 +122,92 @@ class Settings(QtGui.QDialog):
     def defaultsettings(self):
         self.parent.clear_settings()
         self.setcurrent()
+
+    def bgcolorbrowse(self):
+        settings = QtCore.QSettings()
+        default = conf.default_bgcolor
+        c = settings.value('view/bgcolor', default)
+        color = QtGui.QColor(c)
+        color = self.colorbrowse(color, False)
+        self.set_bgcolor_swatch(color)
+        self.ui._bgcolor = color
+
+    def set_bgcolor_swatch(self, c):
+        btn = self.ui.bgcolor
+        pix = QtGui.QPixmap(150, 30)
+        pix.fill(c)
+        i = QtGui.QIcon(pix)
+        btn.setIcon(i)
+        btn.setIconSize(QtCore.QSize(150, 30))
+
+    def pencolorbrowse(self):
+        settings = QtCore.QSettings()
+        default = conf.default_color
+        rgba = int(settings.value('pynguin/color', default))
+        color = QtGui.QColor.fromRgba(rgba)
+        color = self.colorbrowse(color, True)
+        self.set_pencolor_swatch(color)
+        self.ui._color = color
+
+    def set_pencolor_swatch(self, c):
+        btn = self.ui.pencolor
+        pix = QtGui.QPixmap(150, 30)
+        pix.fill(c)
+        i = QtGui.QIcon(pix)
+        btn.setIcon(i)
+        btn.setIconSize(QtCore.QSize(150, 30))
+
+    def fillcolorbrowse(self):
+        settings = QtCore.QSettings()
+        default = conf.default_fillcolor
+        rgba = int(settings.value('pynguin/fillcolor', default))
+        color = QtGui.QColor.fromRgba(rgba)
+        color = self.colorbrowse(color, True)
+        self.set_fillcolor_swatch(color)
+        self.ui._fillcolor = color
+
+    def set_fillcolor_swatch(self, c):
+        btn = self.ui.fillcolor
+        pix = QtGui.QPixmap(150, 30)
+        pix.fill(c)
+        i = QtGui.QIcon(pix)
+        btn.setIcon(i)
+        btn.setIconSize(QtCore.QSize(150, 30))
+
+    def colorbrowse(self, color, alpha=True):
+        if alpha:
+            ncolor = QtGui.QColorDialog.getColor(color,
+                                    self,
+                                    'Select Color',
+                                    QtGui.QColorDialog.ShowAlphaChannel)
+        else:
+            ncolor = QtGui.QColorDialog.getColor(color,
+                                    self,
+                                    'Select Color')
+
+        if ncolor.isValid():
+            r, g, b, a = ncolor.getRgb()
+            return QtGui.QColor(r, g, b, a)
+        else:
+            return False
+
+    def set_colors_to_current(self):
+        pyn = self.parent.pynguin
+
+        r, g, b = pyn.bgcolor()
+        color = QtGui.QColor(r, g, b)
+        self.set_bgcolor_swatch(color)
+        self.ui._bgcolor = color
+
+        r, g, b, a = pyn.color()
+        color = QtGui.QColor.fromRgb(r, g, b, a)
+        self.set_pencolor_swatch(color)
+        self.ui._color = color
+
+        r, g, b, a = pyn.fillcolor()
+        color = QtGui.QColor.fromRgb(r, g, b, a)
+        self.set_fillcolor_swatch(color)
+        self.ui._fillcolor = color
 
     #def accept(self):
         #'Verify'
