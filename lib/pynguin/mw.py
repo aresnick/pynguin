@@ -1676,6 +1676,9 @@ Check configuration!''')
         count = self.ui.mselect.count()
         Pynguin._stop_testall = False
         for i in range(count):
+            if Pynguin._stop_testall:
+                break
+
             if not rev:
                 idx = i
             else:
