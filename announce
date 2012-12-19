@@ -30,6 +30,8 @@ Changes in pynguin-0.13:
 
     Other fixes
         - Preserves name label when changing avatar
+        - Tries harder to go as fast as possible for "instant" setting
+            - throttles back on CPU when not running user code
 
     Pynguin API
         - Logo-mode coordinates and angles now available
