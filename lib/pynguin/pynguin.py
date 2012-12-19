@@ -1029,7 +1029,8 @@ class Pynguin(object):
                     self.avatar('pynguin')
 
             self.clear()
-            self._set_bgcolor_to_default()
+            if self is self.mw.pynguin:
+                self._set_bgcolor_to_default()
             self.label('')
             self.goto(0, 0)
             self.turnto(0)
