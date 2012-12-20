@@ -208,6 +208,8 @@ class Interpreter(HighlightedTextEdit):
             self.checkprompt()
         else:
             self.write('... ')
+            self.write(' ' * self._indent_level)
+            self._indent_level = 0
 
 
     def go(self):
@@ -298,6 +300,16 @@ class Interpreter(HighlightedTextEdit):
             self.append('')
 
             if self.cmdthread is None:
+                i = 0
+                for i, c in enumerate(txt):
+                    if c != ' ':
+                        break
+                if txt.endswith(':'):
+                    for kw in 'def', 'class', 'if', 'while':
+                        if kw in txt:
+                            i += 4
+                            break
+                self._indent_level = i
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
                 self.watcherthread = WatcherThread(self.cmdthread)
