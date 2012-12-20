@@ -168,8 +168,6 @@ class Pynguin(object):
 
     _name = ''
 
-    respond_to_mouse_click = True
-
     mw = None # set by MainWindow before any Pynguin get instantiated
     rend = None # set by MainWindow before any Pynguin get instantiated
 

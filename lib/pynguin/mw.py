@@ -340,12 +340,11 @@ class MainWindow(QtGui.QMainWindow):
         evpos = ev.pos()
         scpos = self.scene.view.mapToScene(evpos)
         for pyn in self.pynguins:
-            if pyn.respond_to_mouse_click:
-                if pyn is self.pynguin and 'onclick' in self.interpreter_locals:
-                    onclick = self.interpreter_locals['onclick']
-                else:
-                    onclick = pyn.onclick
-                onclick(scpos.x(), scpos.y())
+            if pyn is self.pynguin and 'onclick' in self.interpreter_locals:
+                onclick = self.interpreter_locals['onclick']
+            else:
+                onclick = pyn.onclick
+            onclick(scpos.x(), scpos.y())
         ev.ignore()
 
     def recenter(self):
