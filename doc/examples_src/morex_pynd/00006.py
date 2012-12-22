@@ -3,5 +3,6 @@ def colorstars(n=25):
     for s in range(n):
         sz = random.randrange(10, 70)
         goto('random')
+        turnto('random')
         color('random')
         star(5, sz)
