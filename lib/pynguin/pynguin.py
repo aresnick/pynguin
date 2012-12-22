@@ -127,13 +127,18 @@ class QQ(object):
         for pyn in self._pynguins:
             pyn._delaying = None
 
+            q = self._queues.get(pyn)
+            logger.info('CLEAR')
+            logger.info(pyn)
+            logger.info(q.qsize())
             while True:
                 try:
-                    q = self._queues.get(pyn)
                     if q is not None:
                         mv = q.get(block=False)
                         if not lock:
                             processEvents(AllEvents)
+                    else:
+                        break
                 except queue.Empty:
                     break
 
@@ -551,7 +556,7 @@ class Pynguin(object):
     def wait_for_empty_q(cls):
         n = 0
         while cls._all_moves.qqsize():
-            logger.info(cls._all_moves.qqsize())
+            #logger.info(cls._all_moves.qqsize())
             cls._process_moves()
         #logger.info('READY')
 
