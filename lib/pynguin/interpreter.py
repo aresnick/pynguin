@@ -436,22 +436,7 @@ class Interpreter(HighlightedTextEdit):
                 self.ctrl_c_thread_running()
 
             else:
-                pynguin.Pynguin.ControlC = False
-                self.cmdthread = None
-
-                self.mw.pynguin._empty_move_queue(lock=True)
-
-                logger.info('No thread running')
-                settings = QtCore.QSettings()
-                quiet = settings.value('console/quietinterrupt', False, bool)
-
-                self.movetoend()
-                if not quiet:
-                    self.write('\nKeyboardInterrupt\n')
-                else:
-                    self.write('\n')
-                self.interpreter.resetbuffer()
-                self.write('>>> ')
+                self.ctrl_c_no_thread_running()
 
         elif (mdf & Control and k==A) or k == Home:
             self.movetostart()
@@ -482,12 +467,32 @@ class Interpreter(HighlightedTextEdit):
         pynguin.Pynguin.ControlC = True
         pynguin.Pynguin._stop_testall = True
         #logger.debug('CCT')
-        self.mw.pynguin._empty_move_queue()
+        self.mw.pynguin._empty_move_queue(lock=True)
         for pyn in self.mw.pynguins:
             pyn._sync_items()
         #logger.debug('synced')
         self.needmore = False
         self.interpreter.resetbuffer()
+
+    def ctrl_c_no_thread_running(self):
+        logger.info('No thread running')
+
+        pynguin.Pynguin.ControlC = False
+        pynguin.Pynguin._stop_testall = True
+        self.cmdthread = None
+
+        self.mw.pynguin._empty_move_queue(lock=True)
+
+        settings = QtCore.QSettings()
+        quiet = settings.value('console/quietinterrupt', False, bool)
+
+        self.movetoend()
+        if not quiet:
+            self.write('\nKeyboardInterrupt\n')
+        else:
+            self.write('\n')
+        self.interpreter.resetbuffer()
+        self.write('>>> ')
 
     def scrolldown(self):
         '''force the console to scroll all the way down, and put
