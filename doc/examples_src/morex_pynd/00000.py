@@ -17,4 +17,4 @@ def star(n=5, sz=100):
 
     for side in range(n):
         fd(sz)
-        lt(angle)
+        rt(angle)
