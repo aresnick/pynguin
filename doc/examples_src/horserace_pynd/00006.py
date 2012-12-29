@@ -1,5 +1,7 @@
-def all_less(lst, val):
-    for var in lst:
-        if var > val:
-            return False
-    return True
+def startline(horses):
+    xmin, ymin, xmax, ymax = viewcoords()
+    x = xmin + 20
+    y = ymin + 100
+    for horse in horses:
+        horse.goto(x, y)
+        y += 100

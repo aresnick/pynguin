@@ -59,6 +59,10 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = False
 
         self._mainthread = QtCore.QThread.currentThread()
+        #logger.info('THREADS')
+        #logger.info(self._mainthread)
+        #import threading
+        #logger.info(threading.current_thread())
 
         uifile = 'pynguin.ui'
         uipath = os.path.join(uidir, uifile)
@@ -165,6 +169,8 @@ class MainWindow(QtGui.QMainWindow):
         self.fillgroup.addAction(self.ui.actionNofill)
         self.fillgroup.setExclusive(True)
         self.fillgroup.triggered.connect(self.setFill)
+
+        self._bgcolor = None
 
         self.setup_settings()
         self.setup_recent()
@@ -1698,7 +1704,16 @@ Check configuration!''')
                     ie.addcmd('reset()')
                     ie.spin(5)
                     ie.go()
-                Pynguin.wait_for_empty_q()
+
+                while ie.cmdthread is not None:
+                    ie.spin(5)
+                    if Pynguin._stop_testall:
+                        break
+                    Pynguin.wait_for_empty_q()
+                    if self.pynguin.ControlC:
+                        Pynguin._stop_testall = True
+                        break
+
                 #if not ie.spin(0):
                     #Pynguin._stop_testall = True
 

@@ -25,6 +25,7 @@ from math import atan2, degrees, radians, hypot, cos, sin, pi
 PI = pi
 import random
 import string
+from threading import Lock
 import logging
 logger = logging.getLogger('PynguinLogger')
 
@@ -63,6 +64,7 @@ class QQ(object):
         self._pynguins = []
         self.nq = 0
         self.qq = 0
+        self._lock = Lock()
 
     def append(self, pyn, q):
         if pyn in self._pynguins:
@@ -124,23 +126,27 @@ class QQ(object):
                     raise queue.Empty
 
     def clear(self, lock):
+        self._lock.acquire()
+
         for pyn in self._pynguins:
             pyn._delaying = None
 
             q = self._queues.get(pyn)
-            logger.info('CLEAR')
-            logger.info(pyn)
-            logger.info(q.qsize())
+            if q is None:
+                continue
+            #logger.info('CLEAR')
+            #logger.info(pyn)
+            #logger.info(q.qsize())
             while True:
+                #logger.info(q)
                 try:
-                    if q is not None:
-                        mv = q.get(block=False)
-                        if not lock:
-                            processEvents(AllEvents)
-                    else:
-                        break
+                    mv = q.get(block=False)
+                    if not lock:
+                        processEvents(AllEvents)
                 except queue.Empty:
                     break
+
+        self._lock.release()
 
     def qqsize(self):
         sz = 0
@@ -230,9 +236,11 @@ class Pynguin(object):
                 raise TooManyPynguins('Exceeded maximum of 150 pynguins.')
 
         if self.mw.pynguin is None:
+            #self._log('_setup no mw.pynguin')
             self._gitem_setup()
 
         else:
+            #self._log('qmove _gitem_setup')
             self.qmove(self._gitem_setup)
 
             cc = 0
@@ -241,6 +249,7 @@ class Pynguin(object):
                 if self.ControlC:
                     raise KeyboardInterrupt
                 elif cc >= 50:
+                    #self._log('_setup timeout')
                     self._gitem_setup()
                 cc += 1
 
@@ -256,7 +265,12 @@ class Pynguin(object):
         self._set_color_to_default()
         self._set_fillcolor_to_default()
 
+        self.pendown()
+        self.fillrule('winding')
+
     def _remove(self, pyn):
+        pyn.defunct = True
+
         if pyn is self:
             self._clear()
         else:
@@ -265,10 +279,9 @@ class Pynguin(object):
 
         pyn._setImageid('hidden', sync=False)
         if pyn.gitem is not None:
-            self.scene.removeItem(pyn.gitem)
-            if pyn.gitem.litem is not None:
-                liscene = pyn.gitem.litem.scene()
-                liscene.removeItem(pyn.gitem.litem)
+            self._gitem_setlabel('')
+            scene = pyn.gitem.scene()
+            scene.removeItem(pyn.gitem)
         pyn.gitem = None
 
         if pyn in self.mw.pynguins:
@@ -287,8 +300,6 @@ class Pynguin(object):
             self.mw.pynguin = mainpyn
             self.mw.setup_interpreter_locals()
 
-        pyn.defunct = True
-
     def remove(self, pyn=None):
         '''take the given pynguin (or this one if none specified)
             out of the scene.
@@ -306,6 +317,9 @@ class Pynguin(object):
 
         if pyn is None:
             pyn = self
+
+        if pyn in self.mw.pynguins:
+            self.mw.pynguins.remove(pyn)
 
         self._log('rmv', pyn)
         if hasattr(pyn, '_pyn'):
@@ -348,8 +362,6 @@ class Pynguin(object):
         self.scene.addItem(self.gitem)
         Pynguin._zvalue += 1
         self.gitem.setZValue(9999999 - self._zvalue)
-        self.pendown()
-        self.fillrule('winding')
         self.gitem._current_line = None
 
         self.gitem.ready = True
@@ -478,6 +490,7 @@ class Pynguin(object):
         if cls.ControlC:
             cls.ControlC += 1
             cls._empty_move_queue()
+            #logger.info('CC _pm %s' % cls.ControlC)
             #logger.info('CCnomove %s' % cls.mw.interpretereditor.cmdthread)
             if cls.mw.interpretereditor.cmdthread is not None:
                 #logger.info('CC1')
@@ -567,12 +580,14 @@ class Pynguin(object):
         flag = ''.join(random.sample(string.ascii_letters, 15))
         self.qmove(self._waitforit, (flag,))
         self._log('waiting for:', flag)
-        while self._wfi is not flag:
+        while self._wfi != flag:
             if self.ControlC:
+                logger.info('WFI Break')
                 break
             self.mw.interpretereditor.spin(1, 0)
         self._log('found:', flag)
         self._wfi = None
+        # lock this!
 
     def _gitem_new_line(self):
         if self.gitem is not None:
@@ -675,23 +690,21 @@ class Pynguin(object):
         if args is None:
             args = ()
 
+        #logger.info('qmove %s' % func)
         thread = QtCore.QThread.currentThread()
+        #logger.info(thread)
+        #import threading
+        #logger.info(threading.current_thread())
         if thread == self.mw._mainthread:
+            #logger.info('QMOVE MAIN THREAD')
+            #logger.info(func)
+            #logger.info(args)
             # Coming from main thread. Could be an onclick handler
             #   or a menu-item action
             func(*args)
             return
 
-        while True:
-            try:
-                #logger.debug('qb')
-                self._moves.put_nowait((func, args, self))
-                #logger.debug('qp')
-            except queue.Full:
-                #logger.debug('Full')
-                QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
-            else:
-                break
+        self._moves.put_nowait((func, args, self))
 
     def forward(self, distance):
         '''forward(distance) # in pixels | aka: fd(distance)
@@ -985,7 +998,8 @@ class Pynguin(object):
 
     def _clear(self):
         for item in self.drawn_items:
-            self.scene.removeItem(item)
+            scene = item.scene()
+            scene.removeItem(item)
         self.drawn_items = []
         self._gitem_new_line()
 
@@ -1019,7 +1033,7 @@ class Pynguin(object):
             for pyn in self.mw.pynguins:
                 if pyn is not self and pyn.gitem is not None:
                     pyn.reset()
-                    #self.waitforit()
+                    self.waitforit()
 
             self.qmove(self._full_reset)
             self.waitforit()
@@ -1046,6 +1060,7 @@ class Pynguin(object):
             self.mw.zoom100()
             self.mw.scene.view.centerOn(0, 0)
             self.mw._centerview()
+            logger.info('RWFI')
             self.waitforit()
 
 
@@ -1070,9 +1085,9 @@ class Pynguin(object):
                 _pyn = pyn._pyn
                 self.scene.removeItem(_pyn.gitem)
                 if hasattr(_pyn.gitem, 'litem') and _pyn.gitem.litem is not None:
-                    liscene = pyn.gitem.litem.scene()
+                    liscene = _pyn.gitem.litem.scene()
                     if liscene is not None:
-                        liscene.removeItem(pyn.gitem.litem)
+                        liscene.removeItem(_pyn.gitem.litem)
 
         pynguins.append(self)
 
@@ -1138,7 +1153,8 @@ class Pynguin(object):
         rgba = int(settings.value('pynguin/color', default))
         c = QtGui.QColor.fromRgba(rgba)
         r, g, b, a = c.getRgb()
-        self.color(r, g, b, a)
+        if self.ritem.color != (r, g, b, a):
+            self.color(r, g, b, a)
 
 
     def bgcolor(self, r=None, g=None, b=None):
@@ -1149,9 +1165,11 @@ class Pynguin(object):
             return r, g, b
         else:
             r, g, b, a = choose_color(r, g, b)
-            ncolor = QtGui.QColor(r, g, b)
-        brush = QtGui.QBrush(ncolor)
-        self.mw.scene.setBackgroundBrush(brush)
+            if (r, g, b) != self.mw._bgcolor:
+                self.mw._bgcolor = (r, g, b)
+                ncolor = QtGui.QColor(r, g, b)
+                brush = QtGui.QBrush(ncolor)
+                self.mw.scene.setBackgroundBrush(brush)
 
     def _set_bgcolor_to_default(self):
         settings = QtCore.QSettings()
@@ -1274,7 +1292,8 @@ class Pynguin(object):
         rgba = int(settings.value('pynguin/fillcolor', default))
         c = QtGui.QColor.fromRgba(rgba)
         r, g, b, a = c.getRgb()
-        self.fillcolor(r, g, b, a)
+        if self.ritem.fillcolor != (r, g, b, a):
+            self.fillcolor(r, g, b, a)
 
     def _gitem_fillmode(self, start):
         if start:
@@ -1900,6 +1919,8 @@ class PynguinGraphicsItem(GraphicsItem):
             self.scene().addItem(self.litem)
             self.litem._settext(text)
             self.set_transform()
+        else:
+            self.litem = None
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)

@@ -25,6 +25,7 @@ pressing Enter at beginning of already indented line should keep indentation
 Adding ModeTurtle is including helper in pynguins?
 Adding ModeLogo is making a phantom pynguin!
 find in editor pages
+segfault occasionally when using labels... argh!
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.

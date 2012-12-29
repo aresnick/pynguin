@@ -305,11 +305,9 @@ class Interpreter(HighlightedTextEdit):
                     if c != ' ':
                         break
                 if txt.endswith(':'):
-                    for kw in 'def', 'class', 'if', 'while':
-                        if kw in txt:
-                            i += 4
-                            break
+                    i += 4
                 self._indent_level = i
+
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
                 self.watcherthread = WatcherThread(self.cmdthread)

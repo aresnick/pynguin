@@ -40,7 +40,7 @@ Changes in pynguin-0.13:
         - xyh() uses xy() and h() to retrieve values
         - color() takes an optional alpha channel value for transparency
             - color('ralpha') chooses a random color with random alpha
-        - Each turtle's speed can now be set individually
+        - Each pynguin's speed can now be set individually
 
     Canvas
         - Added a dialog for pen, background, and fill default colors
