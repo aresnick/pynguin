@@ -50,7 +50,7 @@ pynguin_functions = [
     'speed', 'track', 'notrack', 'bgcolor', 'mode', 'colorat']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'ModeLogo', 'ModeTurtle', 'pynguins',
-    'PI', 'history', 'util',]
+    'PI', 'history', 'util', 'log']
 
 class TooManyPynguins(RuntimeError):
     pass
@@ -170,10 +170,8 @@ class Pynguin(object):
 
     _drawspeed_pending = None
     _turnspeed_pending = None
-    drawspeed = 1
-    turnspeed = 4
-    _drawn = drawspeed
-    _turned = turnspeed
+    drawspeed = 0
+    turnspeed = 0
 
     _zvalue = 0
 
@@ -270,6 +268,7 @@ class Pynguin(object):
 
     def _remove(self, pyn):
         pyn.defunct = True
+        self._all_moves.remove(pyn)
 
         if pyn is self:
             self._clear()
@@ -286,8 +285,6 @@ class Pynguin(object):
 
         if pyn in self.mw.pynguins:
             self.mw.pynguins.remove(pyn)
-
-        self._all_moves.remove(pyn)
 
         if pyn is self.mw.pynguin:
             if self.mw.pynguins:
@@ -325,6 +322,7 @@ class Pynguin(object):
         if hasattr(pyn, '_pyn'):
             self._log('plus')
             self.remove(pyn._pyn)
+        pyn.waitforit()
         self.qmove(self._remove, (pyn,))
 
     def reap(self):
@@ -535,6 +533,8 @@ class Pynguin(object):
                         logger.info('defunct')
                     else:
                         try:
+                            #logger.info(move)
+                            #logger.info(args)
                             move(*args)
                         except Exception:
                             import sys
@@ -579,13 +579,13 @@ class Pynguin(object):
     def waitforit(self):
         flag = ''.join(random.sample(string.ascii_letters, 15))
         self.qmove(self._waitforit, (flag,))
-        self._log('waiting for:', flag)
+        #self._log('waiting for:', flag)
         while self._wfi != flag:
             if self.ControlC:
                 logger.info('WFI Break')
                 break
             self.mw.interpretereditor.spin(1, 0)
-        self._log('found:', flag)
+        #self._log('found:', flag)
         self._wfi = None
         # lock this!
 
@@ -597,8 +597,6 @@ class Pynguin(object):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
-        Pynguin._drawn -= abs(distance)
-
         ang = item.ang
         rad = ang * (PI / 180)
         dx = distance * cos(rad)
@@ -734,7 +732,6 @@ class Pynguin(object):
     bk = backward
 
     def _item_left(self, item, degrees):
-        Pynguin._turned -= (abs(degrees))
         item.rotate(-degrees)
     def _gitem_turn(self, degrees):
         self._item_left(self.gitem, degrees)
@@ -763,6 +760,9 @@ class Pynguin(object):
 
             self.qmove(self._gitem_turn, (step,))
             if self.turnspeed:
+                #logger.info('DELAY')
+                #logger.info('SELF %s' % self)
+                #logger.info('TS %s' % self.turnspeed)
                 self.qmove(self._qdelay, (100*(80-self.turnspeed),))
 
     def left(self, degrees):
@@ -1069,25 +1069,30 @@ class Pynguin(object):
             other than the main one.
         '''
         pynguins = self.mw.pynguins
-        pynguins.remove(self)
+        if self in pynguins:
+            pynguins.remove(self)
 
         while pynguins:
             pyn = pynguins.pop()
             pyn.defunct = True
-            self.scene.removeItem(pyn.gitem)
+            scene = pyn.gitem.scene()
+            if scene is not None:
+                scene.removeItem(pyn.gitem)
 
-            if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
-                liscene = pyn.gitem.litem.scene()
-                if liscene is not None:
-                    liscene.removeItem(pyn.gitem.litem)
+            #if hasattr(pyn.gitem, 'litem') and pyn.gitem.litem is not None:
+                #liscene = pyn.gitem.litem.scene()
+                #if liscene is not None:
+                    #liscene.removeItem(pyn.gitem.litem)
 
             if hasattr(pyn, '_pyn'):
                 _pyn = pyn._pyn
-                self.scene.removeItem(_pyn.gitem)
-                if hasattr(_pyn.gitem, 'litem') and _pyn.gitem.litem is not None:
-                    liscene = _pyn.gitem.litem.scene()
-                    if liscene is not None:
-                        liscene.removeItem(_pyn.gitem.litem)
+                scene = _pyn.gitem.scene()
+                if scene is not None:
+                    scene.removeItem(_pyn.gitem)
+                #if hasattr(_pyn.gitem, 'litem') and _pyn.gitem.litem is not None:
+                    #liscene = _pyn.gitem.litem.scene()
+                    #if liscene is not None:
+                        #liscene.removeItem(_pyn.gitem.litem)
 
         pynguins.append(self)
 
@@ -1420,7 +1425,7 @@ class Pynguin(object):
         gitem._fillmode = ogitem._fillmode
         gitem._fillrule = ogitem._fillrule
         gitem._current_line = ogitem._current_line
-        gitem.litem = ogitem.litem
+        #gitem.litem = ogitem.litem
         scene.removeItem(ogitem)
         scene.addItem(gitem)
         self.gitem = gitem
@@ -1856,8 +1861,8 @@ class RItem(object):
 
 
 class GraphicsItem(QtGui.QGraphicsItem):
-    def __init__(self):
-        QtGui.QGraphicsItem.__init__(self)
+    def __init__(self, parent=None):
+        QtGui.QGraphicsItem.__init__(self, parent)
         self._pen = True
         self.ang = 0
 
@@ -1906,21 +1911,28 @@ class PynguinGraphicsItem(GraphicsItem):
     def setlabel(self, text):
         litem = self.litem
         if litem is not None:
-            item = litem.item
-            iscene = item.scene()
-            if iscene is not None:
-                iscene.removeItem(item)
-            liscene = litem.scene()
-            if liscene is not None:
-                liscene.removeItem(litem)
-
-        if text:
-            self.litem = PynguinLabelItem(self)
-            self.scene().addItem(self.litem)
-            self.litem._settext(text)
-            self.set_transform()
+            #item = litem.item
+            #iscene = item.scene()
+            #if iscene is not None:
+                #iscene.removeItem(item)
+            #else:
+                #logger.info('LII No Scene')
+            #liscene = litem.scene()
+            #if liscene is not None:
+                #liscene.removeItem(litem)
+            #else:
+                #logger.info('LI No Scene')
+            litem._settext(text)
         else:
-            self.litem = None
+            self.litem = PynguinLabelItem(self)
+            scene = self.scene()
+            #if self.litem in scene.items():
+                #logger.info('IN SCENE')
+            #else:
+                #scene.addItem(self.litem)
+            scene.addItem(self.litem)
+            self.litem._settext(text)
+        self.set_transform()
 
     def setPos(self, pos):
         GraphicsItem.setPos(self, pos)
@@ -2023,7 +2035,7 @@ class PynguinGraphicsItem(GraphicsItem):
         self._track()
 
 
-class PynguinLabelItem(GraphicsItem):
+class PynguinLabelItem(QtGui.QGraphicsTextItem):
     def __init__(self, parent):
         self.parent = parent
         offx, offy = 0, 40
@@ -2035,7 +2047,7 @@ class PynguinLabelItem(GraphicsItem):
         self._text = ''
         self._zvalue = 99999
 
-        GraphicsItem.__init__(self)
+        QtGui.QGraphicsTextItem.__init__(self, parent)
 
         self._setup()
         self.set_transform()
@@ -2046,21 +2058,15 @@ class PynguinLabelItem(GraphicsItem):
 
     def _settext(self, text):
         self._text = text
-        font = QtGui.QFont('Arial', 22)
-        item = QtGui.QGraphicsTextItem(self.parent)
-        item.setPlainText(text)
-        item.setZValue(self._zvalue)
-        self.item = item
-        br = item.boundingRect()
+        self.setPlainText(text)
+        self.setZValue(self._zvalue)
+        br = self.boundingRect()
         self.cpt = br.center()
         offpt = self.offpt
         offx, offy = offpt.x(), offpt.y()
         pcpt = self.parent.cpt
         px, py = pcpt.x(), pcpt.y()
-        item.setTransformOriginPoint(-px, -py)
-
-    def boundingRect(self):
-        return self.item.boundingRect()
+        self.setTransformOriginPoint(-px, -py)
 
     def set_transform(self):
         pcpt = self.parent.cpt
@@ -2079,4 +2085,4 @@ class PynguinLabelItem(GraphicsItem):
         trans.translate(-scale*cx, -scale*cy)
         trans.translate(offx, offy)
         trans.scale(self.scale, self.scale)
-        self.item.setTransform(trans)
+        self.setTransform(trans)

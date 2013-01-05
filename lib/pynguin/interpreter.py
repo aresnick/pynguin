@@ -42,6 +42,9 @@ class Console(code.InteractiveConsole):
         settings = QtCore.QSettings()
         quiet = settings.value('console/quietinterrupt', False, bool)
         exc_type, exc_value, exc_traceback = sys.exc_info()
+        logger.info(exc_type)
+        logger.info(exc_value)
+        logger.info(exc_traceback)
         if exc_type is KeyboardInterrupt and quiet:
             pass
         else:

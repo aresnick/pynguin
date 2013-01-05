@@ -210,6 +210,7 @@ class MainWindow(QtGui.QMainWindow):
                         p=pyn,
                         pynguins=self.pynguins,
                         history=self.history,
+                        log=logger.info,
                         util=util,)
 
         for fname in pynguin_functions:
