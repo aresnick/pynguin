@@ -281,6 +281,7 @@ class Pynguin(object):
             self._gitem_setlabel('')
             scene = pyn.gitem.scene()
             scene.removeItem(pyn.gitem)
+        pyn.ogitem = pyn.gitem
         pyn.gitem = None
 
         if pyn in self.mw.pynguins:
@@ -315,6 +316,7 @@ class Pynguin(object):
         if pyn is None:
             pyn = self
 
+        self.mw._defunct_pynguins.append(pyn)
         if pyn in self.mw.pynguins:
             self.mw.pynguins.remove(pyn)
 
@@ -340,6 +342,8 @@ class Pynguin(object):
             self.remove(pyn)
             #self.waitforit()
         pynguins.append(self)
+
+        self.qmove(self._clear_defunct_pynguins_later)
 
     def _promote(self, pyn):
         self.mw.pynguin = pyn
@@ -1013,6 +1017,12 @@ class Pynguin(object):
         self.mw.setup_interpreter_locals()
         self.reset()
 
+        self.qmove(self._clear_defunct_pynguins_later)
+
+    def _clear_defunct_pynguins_later(self):
+        self.mw._defunct_pynguins = self.mw._defunct_pynguins[-50:]
+        logger.info('YS %s'%len(self.mw._defunct_pynguins))
+
     def reset(self, full=False):
         '''reset()
 
@@ -1063,7 +1073,6 @@ class Pynguin(object):
             logger.info('RWFI')
             self.waitforit()
 
-
     def _remove_other_pynguins(self):
         '''remove the graphical avatar items for all the pynguins
             other than the main one.
@@ -1075,6 +1084,7 @@ class Pynguin(object):
         while pynguins:
             pyn = pynguins.pop()
             pyn.defunct = True
+            self.mw._defunct_pynguins.append(pyn)
             scene = pyn.gitem.scene()
             if scene is not None:
                 scene.removeItem(pyn.gitem)
@@ -1365,7 +1375,8 @@ class Pynguin(object):
         self.qmove(self._gitem_fillrule, (fr,))
 
     def _setImageid(self, imageid, filepath=None, sync=None):
-        ogitem = self.gitem
+        self.ogitem = self.gitem
+        ogitem = self.ogitem
         if ogitem is None:
             return
         pos = ogitem.pos()

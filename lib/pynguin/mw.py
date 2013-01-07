@@ -125,6 +125,7 @@ class MainWindow(QtGui.QMainWindow):
         Pynguin.mw = self
         Pynguin.rend = self.rend
         self.pynguins = []
+        self._defunct_pynguins = []
         self.pynguin = None
         self.pynguin = self.new_pynguin()
 

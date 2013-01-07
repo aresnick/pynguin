@@ -195,6 +195,7 @@ class Interpreter(HighlightedTextEdit):
                 to_remove.append(pyn)
 
         for pyn in to_remove:
+            self.mw._defunct_pynguins.append(pyn)
             self.mw.pynguins.remove(pyn)
 
     def testthreaddone(self):
