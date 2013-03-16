@@ -194,6 +194,7 @@
     <addaction name="actionZoom_in"/>
     <addaction name="actionZoom_out"/>
     <addaction name="actionZoom_to_100"/>
+    <addaction name="actionZoom_to_fit"/>
     <addaction name="separator"/>
     <addaction name="actionTrack"/>
     <addaction name="actionPan_left"/>
@@ -709,6 +710,14 @@
   <action name="actionResetPynguin">
    <property name="text">
     <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionZoom_to_fit">
+   <property name="text">
+    <string>Zoom to fit</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+0</string>
    </property>
   </action>
  </widget>
@@ -1434,6 +1443,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionZoom_to_fit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>zoomfit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1478,5 +1503,6 @@
   <slot>set_mode_pynguin()</slot>
   <slot>reset_pynguin()</slot>
   <slot>clear_canvas()</slot>
+  <slot>zoomfit()</slot>
  </slots>
 </ui>

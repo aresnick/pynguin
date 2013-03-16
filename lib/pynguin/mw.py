@@ -249,6 +249,15 @@ class MainWindow(QtGui.QMainWindow):
     def zoom100(self):
         self._scale = 1
         self.zoom(0)
+        self.scene.view.ensureVisible(self.pynguin.gitem)
+    def zoomfit(self):
+        'Zoom to fit the whole drawing'
+
+        fitrect = self.scene.itemsBoundingRect()
+        self.scene.view.fitInView(fitrect, QtCore.Qt.KeepAspectRatio)
+        tr = self.scene.view.transform()
+        self._scale = tr.m11()
+        self.zoom(0)
 
     def mousemove(self, ev):
         QtGui.QGraphicsView.mouseMoveEvent(self.scene.view, ev)
