@@ -284,19 +284,8 @@ class Pynguin(object):
         pyn.ogitem = pyn.gitem
         pyn.gitem = None
 
-        if pyn in self.mw.pynguins:
-            self.mw.pynguins.remove(pyn)
-
-        if pyn is self.mw.pynguin:
-            if self.mw.pynguins:
-                # need to promote another pynguin to be the main one
-                mainpyn = self.mw.pynguins[0]
-            else:
-                #nobody left ... create a new one
-                mname = pyn._modename
-                mainpyn = self.mw.new_pynguin(mname, show_cmd=False)
-            self.mw.pynguin = mainpyn
-            self.mw.setup_interpreter_locals()
+        if pyn in self.mw._pynguins:
+            self.mw._pynguins.remove(pyn)
 
     def remove(self, pyn=None):
         '''take the given pynguin (or this one if none specified)
@@ -325,6 +314,18 @@ class Pynguin(object):
             self._log('plus')
             self.remove(pyn._pyn)
         pyn.waitforit()
+
+        if pyn is self.mw.pynguin:
+            if self.mw.pynguins:
+                # need to promote another pynguin to be the main one
+                mainpyn = self.mw.pynguins[0]
+            else:
+                #nobody left ... create a new one
+                mname = pyn._modename
+                mainpyn = self.mw.new_pynguin(mname, show_cmd=False)
+            self.mw.pynguin = mainpyn
+            self.mw.setup_interpreter_locals()
+
         self.qmove(self._remove, (pyn,))
 
     def reap(self):
@@ -367,6 +368,8 @@ class Pynguin(object):
         self.gitem.setZValue(9999999 - self._zvalue)
         self.gitem._current_line = None
 
+        if not self._is_helper:
+            self.mw._pynguins.append(self)
         self.gitem.ready = True
 
     def _set_item_pos(self, item, pos):
@@ -1021,6 +1024,11 @@ class Pynguin(object):
         self.qmove(self._clear_defunct_pynguins_later)
 
     def _clear_defunct_pynguins_later(self):
+        '''Go through occasionally and clear out the _defunct_pynguins
+            list. Tracking defunct pynguins should only be necessary
+            for a limited time. If we do not clear out this list from
+            time to time it gets unwieldy.
+        '''
         self.mw._defunct_pynguins = self.mw._defunct_pynguins[-50:]
         logger.info('YS %s'%len(self.mw._defunct_pynguins))
 
@@ -1046,6 +1054,7 @@ class Pynguin(object):
                     pyn.reset()
                     self.waitforit()
 
+            self.mw.pynguins[:] = [self]
             self.qmove(self._full_reset)
             self.waitforit()
 
@@ -1078,12 +1087,12 @@ class Pynguin(object):
         '''remove the graphical avatar items for all the pynguins
             other than the main one.
         '''
-        pynguins = self.mw.pynguins
-        if self in pynguins:
-            pynguins.remove(self)
+        _pynguins = self.mw._pynguins
+        if self in _pynguins:
+            _pynguins.remove(self)
 
-        while pynguins:
-            pyn = pynguins.pop()
+        while _pynguins:
+            pyn = _pynguins.pop()
             pyn.defunct = True
             self.mw._defunct_pynguins.append(pyn)
             scene = pyn.gitem.scene()
@@ -1105,7 +1114,7 @@ class Pynguin(object):
                     #if liscene is not None:
                         #liscene.removeItem(_pyn.gitem.litem)
 
-        pynguins.append(self)
+        _pynguins.append(self)
 
     def _pendown(self, down=True):
         self.gitem._pen = down
@@ -1202,7 +1211,7 @@ class Pynguin(object):
         if current_line in items:
             items.remove(current_line)
 
-        pyns = self.mw.pynguins[:]
+        pyns = self.mw._pynguins[:]
         hiding = []
         while pyns:
             pyn = pyns.pop()
@@ -2039,11 +2048,15 @@ class PynguinGraphicsItem(GraphicsItem):
                 self._notrack = False
 
             ps = pynguin.mw.pynguins
+            _ps = pynguin.mw._pynguins
             if pynguin not in ps and pynguin._is_helper not in ps:
                 # There is a visible pynguin onscreen which the user
                 # has grabbed and moved, but that pynguin is not in
                 # the pynguin list for some reason. Add it back in.
                 ps.append(pynguin)
+
+            if pynguin not in _ps and pynguin_is_helper not in _ps:
+                _ps.append(pynguin)
 
     def mouseReleaseEvent(self, ev):
         self._track()

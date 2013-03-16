@@ -124,7 +124,8 @@ class MainWindow(QtGui.QMainWindow):
 
         Pynguin.mw = self
         Pynguin.rend = self.rend
-        self.pynguins = []
+        self.pynguins = [] # User-code-facing list of pynguins
+        self._pynguins = [] # Actual list of existing pynguins
         self._defunct_pynguins = []
         self.pynguin = None
         try:

@@ -446,6 +446,8 @@ class Interpreter(HighlightedTextEdit):
             else:
                 self.ctrl_c_no_thread_running()
 
+            self.sync_pynguins_lists()
+
         elif (mdf & Control and k==A) or k == Home:
             self.movetostart()
             passthru = False
@@ -501,6 +503,15 @@ class Interpreter(HighlightedTextEdit):
             self.write('\n')
         self.interpreter.resetbuffer()
         self.write('>>> ')
+
+    def sync_pynguins_lists(self):
+        for p in self.mw._pynguins:
+            if p not in self.mw.pynguins:
+                logger.info('removing %s' % p)
+                p.remove()
+
+        if self.mw.pynguin not in self.mw.pynguins:
+            self.mw.pynguins.append(self.mw.pynguin)
 
     def scrolldown(self):
         '''force the console to scroll all the way down, and put
