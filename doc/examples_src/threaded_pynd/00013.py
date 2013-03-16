@@ -26,6 +26,8 @@ def bugs(auto=True):
     file.
     '''
 
+    mode('pynguin')
+    home()
     make(0)
     reap()
     clear()
