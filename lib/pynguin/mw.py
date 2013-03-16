@@ -2020,8 +2020,8 @@ Check configuration!''')
                     (self.ui.actionInstant, 0))
         self.speeds = bidict(choices)
 
-    def sync_speed_menu(self, speed):
-        action = self.speeds.inv.get(speed)
+    def sync_speed_menu(self, speed_value):
+        action = self.speeds.inv.get(speed_value)
         if action is not None:
             action.setChecked(True)
 

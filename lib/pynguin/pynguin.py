@@ -1505,9 +1505,9 @@ class Pynguin(object):
                     'medium': 10,
                     'fast': 20,
                     'instant': 0}
-        choice = choices.get(s)
+        speed_value = choices.get(s)
 
-        if choice is None:
+        if speed_value is None:
             raise ValueError("Speed choices are %s" % list(choices.keys()))
 
         else:
@@ -1516,12 +1516,12 @@ class Pynguin(object):
             else:
                 pyn = self
 
-            self.qmove(pyn._speed, (choice,))
+            self.qmove(pyn._speed, (speed_value,))
 
             if self is self.mw.pynguin:
                 settings = QtCore.QSettings()
                 settings.setValue('pynguin/speed', s)
-                self.mw.sync_speed_menu(choice)
+                self.mw.sync_speed_menu(speed_value)
 
     def _circle(self, crect):
         '''instant circle'''
