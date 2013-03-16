@@ -1,5 +1,6 @@
 def go():
     mode('pynguin')
+    home()
     notrack()
     reap()
     reset()
