@@ -249,7 +249,12 @@ class MainWindow(QtGui.QMainWindow):
     def zoom100(self):
         self._scale = 1
         self.zoom(0)
-        self.scene.view.ensureVisible(self.pynguin.gitem)
+        pynguin = self.pynguin
+        if hasattr(pynguin, '_pyn'):
+            gitem = pynguin._pyn.gitem
+        else:
+            gitem = pynguin.gitem
+        self.scene.view.ensureVisible(gitem)
     def zoomfit(self):
         'Zoom to fit the whole drawing'
 
