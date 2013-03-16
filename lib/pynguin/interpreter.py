@@ -434,6 +434,12 @@ class Interpreter(HighlightedTextEdit):
         elif mdf & Control and k==C:
             #send keyboard interrupt
             logger.info('Ctrl-C pressed')
+
+            import threading
+            if hasattr(threading, 'threads'):
+                for pyn in threading.threads:
+                    threading.threads[pyn] = 0
+
             if self.cmdthread is not None and self.cmdthread.isAlive():
                 self.ctrl_c_thread_running()
 
