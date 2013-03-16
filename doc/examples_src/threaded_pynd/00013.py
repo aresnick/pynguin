@@ -26,7 +26,7 @@ def bugs(auto=True):
     file.
     '''
 
-    mode('pynguin')
+    p = mode('pynguin')
     home()
     make(0)
     reap()

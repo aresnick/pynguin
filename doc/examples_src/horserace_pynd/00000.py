@@ -1,9 +1,6 @@
 def go():
-    if mode() != 'pynguin':
-        mode('pynguin')
-
+    mode('pynguin')
     notrack()
-
     reap()
     reset()
 

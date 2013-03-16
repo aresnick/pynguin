@@ -5,6 +5,8 @@ def bugs():
     next corner over.
     '''
 
+    p = mode('pynguin')
+    home()
     reap()
     clear()
 

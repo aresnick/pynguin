@@ -196,7 +196,7 @@ class Pynguin(object):
         logger.info(strargs)
 
     def __init__(self, pos=None, ang=None, helper_for=False):
-        '''helper not False means this pynguin is being used by one
+        '''helper_for not False means this pynguin is being used by one
             of the alternate modes in mode.py
 
             _is_helper should be a link to the pynguin this one
@@ -1786,6 +1786,8 @@ class Pynguin(object):
 
         if mname is None:
             return self._modename
+        elif mname == self._modename:
+            return self
 
         from . import mode
         if mname not in mode.modes:

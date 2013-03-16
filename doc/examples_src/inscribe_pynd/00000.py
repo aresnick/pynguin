@@ -17,6 +17,7 @@ def angs(n=10, quiet=False):
         if a triangle is found that
         is not a right triangle.
     '''
+
     mode('pynguin')
     reset()
 

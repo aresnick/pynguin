@@ -1,8 +1,7 @@
 def tournament(n=3):
     import time
 
-    if mode() != 'pynguin':
-        mode('pynguin')
+    mode('pynguin')
 
     winners = {}
     while not tourn_winner(winners, n):
