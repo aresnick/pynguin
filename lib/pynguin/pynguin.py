@@ -357,6 +357,7 @@ class Pynguin(object):
             pyn = self
         self.qmove(self._promote, (pyn,))
         self.mw.setup_interpreter_locals(pyn)
+        self.waitforit()
 
     def _gitem_setup(self):
         self.gitem = PynguinGraphicsItem(self.rend, 'pynguin', self) #display only
