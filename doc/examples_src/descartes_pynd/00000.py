@@ -1,11 +1,9 @@
 def show_all():
     mode('pynguin')
     notrack()
+    home()
 
     import time
-
-    home()
-    notrack()
 
     xmin, ymin, xmax, ymax = viewcoords()
 

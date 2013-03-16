@@ -1,6 +1,7 @@
 def show_all():
     mode('pynguin')
     notrack()
+    home()
 
     import time
 
