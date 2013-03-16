@@ -127,7 +127,12 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguins = []
         self._defunct_pynguins = []
         self.pynguin = None
-        self.pynguin = self.new_pynguin()
+        try:
+            self.pynguin = self.new_pynguin()
+        except:
+            settings = QtCore.QSettings()
+            settings.clear()
+            self.pynguin = self.new_pynguin()
 
         self._scale = 1
         trans = QtGui.QTransform()
