@@ -68,6 +68,7 @@ def run():
     win = MainWindow(app)
     splash.win = win
     win.show()
+    splash.raise_()
     app.exec_()
 
 def dumpfile():
