@@ -19,7 +19,7 @@
 
 import sys
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 
 # Need to use logging when debugging, since stdout and stderr
@@ -60,7 +60,13 @@ from .splash import Splash
 
 
 def run():
+    translator = QtCore.QTranslator()
+    localename = QtCore.QLocale.system().name()
+    translation = 'data/translations/pynguin_' + localename
+    translator.load(translation)
+
     app = QtGui.QApplication(sys.argv)
+    app.installTranslator(translator)
 
     splash = Splash(app)
     splash.show()
@@ -69,6 +75,7 @@ def run():
     splash.win = win
     win.show()
     splash.raise_()
+
     app.exec_()
 
 def dumpfile():
