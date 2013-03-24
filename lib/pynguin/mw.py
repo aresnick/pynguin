@@ -1396,6 +1396,7 @@ Check configuration!''')
 
     def export(self):
         '''save the current drawing'''
+
         if self._fdir is None:
             fdir = os.path.abspath(os.path.curdir)
         else:
@@ -1436,25 +1437,46 @@ Check configuration!''')
         scene.setSceneRect(scene.sceneRect().united(ibr))
 
         src = scene.sceneRect()
-        szf = src.size()
-        sz = QtCore.QSize(szf.width(), szf.height())
+
+        if ext == '.svg':
+            self.export_svg(fp, src)
+        else:
+            self.export_bitmap(fp, src)
+
+        for pynguin in self.pynguins:
+            pynguin.gitem.show()
+
+    def export_svg(self, fp, src):
+        from PyQt4 import QtSvg
+
+        svgen = QtSvg.QSvgGenerator()
+        svgen.setFileName(fp)
+        svgen.setSize(src.size().toSize())
+        svgen.setTitle('Pynguin')
+        painter = QtGui.QPainter(svgen)
+        self.scene.render(painter)
+        painter.end()
+
+    def export_bitmap(self, fp, src):
+        '''For .png .jpg or .tga'''
+
+        sz = src.size().toSize()
         self._i = i = QtGui.QImage(sz, QtGui.QImage.Format_ARGB32)
         p = QtGui.QPainter(i)
         ir = i.rect()
         irf = QtCore.QRectF(0, 0, src.width(), src.height())
 
-        scene.render(p, irf, src)
+        self.scene.render(p, irf, src)
         if not i.save(fp):
+            root, fn = os.path.split(fp)
+            fnroot, ext = os.path.splitext(fn)
             if ext not in ('.png', '.jpg', '.jpeg', '.tga'):
-                msg = 'Unsupported format.\n\nTry using filename.png'
+                msg = 'Unsupported format.\n\nTry using %s.png' % fnroot
             else:
                 msg = 'Cannot export image.'
             QtGui.QMessageBox.warning(self,
                                 'Unable to save',
                                 msg)
-
-        for pynguin in self.pynguins:
-            pynguin.gitem.show()
 
     def newdoc(self):
         '''Add a new (blank) page to the document editor'''
