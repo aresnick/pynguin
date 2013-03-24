@@ -24,6 +24,9 @@ Changes in pynguin-0.14:
     Other fixes
 
     Pynguin API
+        - Added .font() to change font for use with write()
+        - Added move parameter for write()
+        - Added align and valign parameters for write()
 
     Canvas
         - Added SVG Export

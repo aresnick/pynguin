@@ -190,6 +190,8 @@ class Pynguin(object):
     _delaying = None
     _wfi = None
 
+    _font = QtGui.QFont('Arial', 22)
+
     def _log(self, *args):
         argstrings = [str(a) for a in args]
         strargs = ' '.join(argstrings)
@@ -929,25 +931,79 @@ class Pynguin(object):
             y = random.randrange(int(ymin), int(ymax))
             self.lineto(x, y)
 
-    def _write(self, text):
-        font = QtGui.QFont('Arial', 22)
-        item = self.gitem.scene().addSimpleText(text, font)
+    def _setfont(self, font):
+        self._font = font
+
+    def font(self, family=None, size=-1, weight=-1, italic=False):
+        '''Set or return the font to use with write()
+
+        The font returned is a QFont and can have additional
+            modifications made.
+        '''
+
+        if family is None:
+            return self._font
+        font = QtGui.QFont(family, size, weight, italic)
+        self.qmove(self._setfont, (font,))
+
+    def _write(self, text, move, align, valign):
+        item = self.gitem.scene().addSimpleText(text, self._font)
+
+        itemrect = item.boundingRect()
+        textlength = itemrect.width()
+        textheight = itemrect.height()
+
         item.setZValue(self._zvalue)
         Pynguin._zvalue += 1
+
         item.setPen(self.gitem.pen)
         item.setBrush(self.gitem.pen.color())
+
         x, y = self.gitem.x(), self.gitem.y()
         item.translate(x, y)
         item.rotate(self.gitem.ang)
+
+        if align == 'left':
+            fd = textlength
+        elif align == 'center':
+            fd = textlength/2
+            item.translate(-fd, 0)
+        elif align == 'right':
+            fd = 0
+            item.translate(-textlength, 0)
+
+        if valign == 'top':
+            pass
+        elif valign == 'middle':
+            item.translate(0, -textheight/2)
+        elif valign == 'bottom':
+            item.translate(0, -textheight)
+
         self.drawn_items.append(item)
 
-    def write(self, text):
+        if move:
+            self._gitem_new_line()
+            self._item_forward(self.ritem, fd, False)
+            self._item_forward(self.gitem, fd, False)
+
+    def write(self, text, move=False, align='left', valign='bottom'):
         '''write(text)
 
         Draw a text message at the current location.
+
+        If move is True, move the pynguin to the space after the
+            last character written.
+
+        align can be 'left', 'center', or 'right' (default 'left').
+        valign can be 'bottom', 'middle', or 'top' (default 'bottom').
         '''
+
+        if (align not in ('left', 'center', 'right') or
+                valign not in ('bottom', 'middle', 'top')):
+            raise ValueError('Unknown alignment')
+
         strtxt = str(text)
-        self.qmove(self._write, (strtxt,))
+        self.qmove(self._write, (strtxt, move, align, valign))
 
     def dbg(self):
         'test function for drawing on to the background plane'
