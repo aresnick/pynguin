@@ -18,51 +18,21 @@ Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.13:
-    Now uses (requires) Python 3
-        - Tested with Python 3.2.3
-
+Changes in pynguin-0.14:
     Important fixes
-        - New approach for threading of user code
-            - should provide safer, more reliable, termination of user code
-            - can now reliably stop code like ... while 1: pass
-        - Preserves fill state and color when changing avatar
 
     Other fixes
-        - Preserves name label when changing avatar
-        - Tries harder to go as fast as possible for "instant" setting
-            - throttles back on CPU when not running user code
 
     Pynguin API
-        - Logo-mode coordinates and angles now available
-            - Switch mode using Pynguin -> Mode -> Logo
-            - or create new instance with mlogo=ModeLogo()
-        - Python turtle-mode coordinates and angles now available
-            - Switch mode using Pynguin -> Mode -> Turtle
-            - or create new instance with mturtle=ModeTurtle()
-        - xy(x, y) re-uses goto(x, y) code
-        - xyh() uses xy() and h() to retrieve values
-        - color() takes an optional alpha channel value for transparency
-            - color('ralpha') chooses a random color with random alpha
-        - Each pynguin's speed can now be set individually
 
     Canvas
-        - Added a dialog for pen, background, and fill default colors
-            - sets these colors on program startup
-            - uses these colors for reset()
-            - also used when adding new pynguins
-        - Can now track any pynguin
-        - Can zoom to fit entire drawing
+        - Added SVG Export
 
     UI
-        - Added new Pynguin menu for avatar and mode selection
-        - Added alpha value selector to pen and fill color dialogs
+        - Added ability to use translations
 
     Integrated Editor
 
     Integrated Console
 
     Examples
-        - All ported to Python 3
-        - Added examples using colors with alpha channel values
-        - Added finish line to horserace
