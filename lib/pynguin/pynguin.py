@@ -605,8 +605,9 @@ class Pynguin(object):
             if item == marker:
                 break
             else:
-                scene = item.scene()
-                scene.removeItem(item)
+                if item:
+                    scene = item.scene()
+                    scene.removeItem(item)
                 items.pop()
 
         x, y, ang = pos
