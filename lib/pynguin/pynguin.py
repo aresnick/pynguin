@@ -1747,6 +1747,72 @@ class Pynguin(object):
             # animated circles
             self._slowcircle(crect, r, center)
 
+    def _arc(self, crect, start_angle, arc_length):
+        '''instant arc'''
+
+        p1 = crect.center()
+        ppath = QtGui.QPainterPath(p1)
+
+        gitem = self.gitem
+
+        if gitem._fillmode:
+            ppath.setFillRule(gitem._fillrule)
+
+        ppath.arcMoveTo(crect, 90-start_angle)
+        ppath.arcTo(crect, 90-start_angle, -arc_length)
+        line = gitem.scene().addPath(ppath, gitem.pen)
+
+        if gitem._fillmode:
+            line.setBrush(gitem.brush)
+
+        line.setZValue(self._zvalue)
+        Pynguin._zvalue += 1
+        self.drawn_items.append(line)
+        self._gitem_new_line()
+
+        gitem.expand()
+
+    def arc(self, r, extent, center=False):
+        '''Draw an arc of radius r and central angle extent.
+
+        If center is True, draw the arc centered on the current
+            location.
+        '''
+
+        ritem = self.ritem
+        cpt = ritem.pos()
+        x, y = self.xy()
+
+        if not center:
+            radians = (((PI*2)/360.) * ritem.ang)
+            tocenter = radians + PI/2
+
+            dx = r * cos(tocenter)
+            dy = r * sin(tocenter)
+
+            tocpt = QtCore.QPointF(dx, dy)
+            cpt = cpt + tocpt
+
+        ul = cpt - QtCore.QPointF(r, r)
+        sz = QtCore.QSizeF(2*r, 2*r)
+
+        crect = QtCore.QRectF(ul, sz)
+
+        self._check_drawspeed_change()
+        pen = self.pen
+        if pen:
+            self.qmove(self._arc, (crect, ritem.ang, extent))
+
+        if not center:
+            self.goto(x+dx, y+dy)
+            self.rt(extent-90)
+            self.penup()
+            self.fd(r)
+            self.rt(90)
+
+        if pen:
+            self.pendown()
+
     def square(self, side, center=False):
         '''square(side, center=False) # length of side in pixels
 
