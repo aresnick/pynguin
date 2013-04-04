@@ -274,6 +274,7 @@ class Interpreter(HighlightedTextEdit):
         E = QtCore.Qt.Key_E
         D = QtCore.Qt.Key_D
         H = QtCore.Qt.Key_H
+        Z = QtCore.Qt.Key_Z
 
         lblk = self._doc.lastBlock()
         cpos = self.textCursor().position()
@@ -311,6 +312,9 @@ class Interpreter(HighlightedTextEdit):
                 if txt.endswith(':'):
                     i += 4
                 self._indent_level = i
+
+                self.mw.pynguin._gitem_new_line()
+                self.mw.pynguin._mark_undo()
 
                 self.cmdthread = CmdThread(self, txt)
                 self.cmdthread.start()
@@ -435,6 +439,11 @@ class Interpreter(HighlightedTextEdit):
             # Paste
             self.paste()
             scrolldown = False
+
+        elif mdf & Control and k==Z:
+            self.mw.pynguin._undo()
+            scrolldown = True
+            passthru = False
 
         elif mdf & Control and k==C:
             #send keyboard interrupt

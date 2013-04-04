@@ -33,6 +33,7 @@ Changes in pynguin-0.14:
 
     UI
         - Added ability to use translations
+        - Added (basic) undo capability (ctrl-z)
 
     Integrated Editor
 

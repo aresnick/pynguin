@@ -219,6 +219,7 @@ class Pynguin(object):
         self.ritem = RItem() #real location, angle, etc.
         self.gitem = None # Gets set up later in the main thread
         self.drawn_items = []
+        self._undo_markers = []
         self._setup()
         self._init_move(pos, ang)
 
@@ -564,11 +565,57 @@ class Pynguin(object):
 
         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
+    def _mark_undo(self):
+        pyn = self
+        if hasattr(pyn, 'gitem') and hasattr(pyn.gitem, 'pos'):
+            markers = pyn._undo_markers
+
+            pos = pyn.gitem.pos()
+            x, y = pos.x(), pos.y()
+            ang = pyn.gitem.ang
+            items = pyn.drawn_items
+            item = items[-1] if items else None
+            marker = ((x, y, ang), item)
+
+            if not markers or (markers[-1] != marker):
+                pyn._undo_markers.append(marker)
+
+
     def _qdelay(self, n):
         if self._delaying is not None:
             raise RuntimeError
         else:
             self._delaying = n
+
+    def _undo(self):
+        markers = self._undo_markers
+        if not markers:
+            print('Nothing to undo.')
+            QtCore.QTimer.singleShot(50, self.mw.interpretereditor.checkprompt)
+            return
+
+        #self._log(markers)
+        pos, marker = markers.pop()
+        #self._log(pos, marker)
+        items = self.drawn_items
+        #self._log(items)
+        while True:
+            item = items[-1] if items else None
+            #self._log(item)
+            if item == marker:
+                break
+            else:
+                scene = item.scene()
+                scene.removeItem(item)
+                items.pop()
+
+        x, y, ang = pos
+        pos = QtCore.QPointF(x, y)
+        self._item_goto(self.ritem, pos)
+        self._gitem_goto(pos)
+
+        self._item_setangle(self.ritem, ang)
+        self._gitem_setangle(ang)
 
     def wait(self, s):
         for ms in range(int(s*1000)):
@@ -726,6 +773,7 @@ class Pynguin(object):
         '''
         self._item_forward(self.ritem, distance, False)
         self._gitem_breakup_move(distance)
+
     fd = forward
 
     def backward(self, distance):
