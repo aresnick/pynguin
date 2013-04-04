@@ -416,9 +416,14 @@ class Interpreter(HighlightedTextEdit):
             #erase from cursor to beginning of line
             self.erasetostart()
 
+        elif mdf & Control and k==X:
+            # Cut
+            self.cut() # No action. Disabled.
+            scrolldown = False
+
         elif mdf & Control and mdf & Shift and k==X:
             # Cut
-            self.cut()
+            self.cut() # No action. Disabled.
             scrolldown = False
 
         elif mdf & Control and mdf & Shift and k==C:
@@ -567,15 +572,7 @@ class Interpreter(HighlightedTextEdit):
         menu.removeAction(undo)
         menu.removeAction(redo)
         menu.removeAction(sep0)
-
         menu.removeAction(cut)
-        cutaction = QtGui.QAction('Cut', menu)
-        cutshortcut = QtGui.QKeySequence(QtCore.Qt.CTRL +
-                                            QtCore.Qt.SHIFT +
-                                            QtCore.Qt.Key_X)
-        cutaction.setShortcut(cutshortcut)
-        cutaction.triggered.connect(self.cut)
-        menu.insertAction(paste, cutaction)
 
         menu.removeAction(copy)
         copyaction = QtGui.QAction('Copy', menu)
@@ -597,6 +594,9 @@ class Interpreter(HighlightedTextEdit):
 
         menu.removeAction(delete)
         menu.exec_(ev.globalPos())
+
+    def cut(self):
+        logger.info("cut disabled")
 
     def insertFromMimeData(self, data):
         self.scrolldown()
