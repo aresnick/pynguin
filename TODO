@@ -28,7 +28,7 @@ find in editor pages
 segfault occasionally when using labels... argh!
 pynguins list needs a runtime analog so that running code sees the current
     list of pynguins and display code can see its own list.
-
+Don't allow editing/deleting previous lines in terminal
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
