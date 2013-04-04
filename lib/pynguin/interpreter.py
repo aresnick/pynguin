@@ -548,6 +548,13 @@ class Interpreter(HighlightedTextEdit):
             HighlightedTextEdit.mouseReleaseEvent(self, ev)
 
     def contextMenuEvent(self, ev):
+        '''right-click to pop up the context menu.
+        Adjust displayed shortcut key combo since this is an interactive
+            shell and ctrl-c is needed for stopping running code.
+
+        Connection of actual typed shortcuts is in keyPressEvent()
+        '''
+
         menu = self.createStandardContextMenu()
         actions = menu.actions()
         undo = actions[0]
