@@ -607,8 +607,14 @@ class Pynguin(object):
             else:
                 if item:
                     scene = item.scene()
-                    scene.removeItem(item)
-                items.pop()
+                    if scene is not None:
+                        scene.removeItem(item)
+                    else:
+                        break
+                elif items:
+                    items.pop()
+                else:
+                    break
 
         x, y, ang = pos
         pos = QtCore.QPointF(x, y)
@@ -1112,7 +1118,8 @@ class Pynguin(object):
     def _clear(self):
         for item in self.drawn_items:
             scene = item.scene()
-            scene.removeItem(item)
+            if scene is not None:
+                scene.removeItem(item)
         self.drawn_items = []
         self._gitem_new_line()
 
