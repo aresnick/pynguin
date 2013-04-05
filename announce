@@ -37,6 +37,7 @@ Changes in pynguin-0.14:
         - Added (basic) undo capability (ctrl-z)
 
     Integrated Editor
+        - Added shortcut (ctrl-w) for removing doc pages
         - Stop asking for confirmation to remove empty doc page
         - Stop autosave from modifying empty doc page
 

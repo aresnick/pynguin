@@ -529,6 +529,9 @@
    <property name="text">
     <string>Remove current page</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="actionNew_page">
    <property name="text">
