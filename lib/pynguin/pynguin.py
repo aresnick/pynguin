@@ -1829,6 +1829,8 @@ class Pynguin(object):
             xn, yn = self.xyforward(r)
             self.goto(xn, yn)
             self.turnto(ritem.ang + 90)
+        else:
+            self.right(extent)
 
     def square(self, side, center=False):
         '''square(side, center=False) # length of side in pixels
