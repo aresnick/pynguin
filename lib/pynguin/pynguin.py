@@ -1692,10 +1692,15 @@ class Pynguin(object):
             self.qmove(self._extend_circle, (circumference/90.,))
             if 40-self.drawspeed:
                 self.qmove(self._qdelay, (100*(40-self.drawspeed),))
+
         if extent >= 360:
             self.qmove(self._circle, (crect, True))
         else:
-            self.qmove(self._arc, (crect, self.ang+90, extent, True))
+            if center:
+                ang = self.ang + 90
+            else:
+                ang = self.ang
+            self.qmove(self._arc, (crect, ang, extent, True))
 
         if center:
             self.penup()
@@ -1798,6 +1803,7 @@ class Pynguin(object):
         cpt = ritem.pos()
         x, y = self.xy()
 
+        # Direction of drawing makes more sense this way
         if not center and r < 0:
             extent = -extent
 
@@ -1806,11 +1812,16 @@ class Pynguin(object):
         self._check_drawspeed_change()
         pen = self.pen
         if self.drawspeed==0 and pen:
-            self.qmove(self._arc, (crect, ritem.ang, extent))
+            if center:
+                ang = ritem.ang + 90
+            else:
+                ang = ritem.ang
+            self.qmove(self._arc, (crect, ang, extent))
         else:
             self._slowcircle(crect, r, extent, center)
 
         if not center:
+            # Go to the end of the newly-drawn arc
             c = crect.center()
             cx, cy = c.x(), c.y()
             self.goto(cx, cy)
