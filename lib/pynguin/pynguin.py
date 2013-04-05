@@ -2268,7 +2268,7 @@ class PynguinGraphicsItem(GraphicsItem):
                 # the pynguin list for some reason. Add it back in.
                 ps.append(pynguin)
 
-            if pynguin not in _ps and pynguin_is_helper not in _ps:
+            if pynguin not in _ps and pynguin._is_helper not in _ps:
                 _ps.append(pynguin)
 
     def mouseReleaseEvent(self, ev):
