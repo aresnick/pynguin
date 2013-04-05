@@ -1638,9 +1638,17 @@ class Pynguin(object):
                 settings.setValue('pynguin/speed', s)
                 self.mw.sync_speed_menu(speed_value)
 
-    def _circle(self, crect):
+    def _circle(self, crect, finish=False):
         '''instant circle'''
+
         gitem = self.gitem
+        if finish:
+            cl = gitem._current_line
+            self.drawn_items.pop()
+            scene = gitem.scene()
+            scene.removeItem(cl)
+            self._gitem_new_line()
+
         self._gitem_new_line()
         scene = gitem.scene()
         circle = scene.addEllipse(crect, gitem.pen)
@@ -1651,26 +1659,11 @@ class Pynguin(object):
         self.drawn_items.append(circle)
         gitem.expand()
 
-    def _extend_circle(self, crect, distance, signal=None):
+    def _extend_circle(self, distance, signal=None):
         '''individual steps for animated circle drawing
         '''
         gitem = self.gitem
-        scene = gitem.scene()
-        cl = gitem._current_line
-        if cl is not None and signal=='finish':
-            # circle complete.
-            # replace the circle drawn using line segments
-            # with a real ellipse item
-            self.drawn_items.pop()
-            scene.removeItem(cl)
-            self._gitem_new_line()
-            circle = scene.addEllipse(crect, self.gitem.pen)
-            if gitem._fillmode:
-                circle.setBrush(gitem.brush)
-            circle.setZValue(self._zvalue)
-            Pynguin._zvalue += 1
-            self.drawn_items.append(circle)
-        elif signal == 'start':
+        if signal == 'start':
             # first segment
             self._item_left(gitem, -2)
             self._item_forward(gitem, distance)
@@ -1679,7 +1672,7 @@ class Pynguin(object):
             self._item_left(gitem, -4)
             self._item_forward(gitem, distance)
 
-    def _slowcircle(self, crect, r, center):
+    def _slowcircle(self, crect, r, extent=360, center=False):
         '''Animated circle drawing
         '''
         self.qmove(self._gitem_new_line)
@@ -1694,12 +1687,15 @@ class Pynguin(object):
                 self.pendown()
 
         circumference = 2 * PI * r
-        self.qmove(self._extend_circle, (crect, circumference/90., 'start'))
-        for n in range(2, 90):
-            self.qmove(self._extend_circle, (crect, circumference/90.))
+        self.qmove(self._extend_circle, (circumference/90., 'start'))
+        for n in range(2, int(extent/4)):
+            self.qmove(self._extend_circle, (circumference/90.,))
             if 40-self.drawspeed:
                 self.qmove(self._qdelay, (100*(40-self.drawspeed),))
-        self.qmove(self._extend_circle, (crect, 0, 'finish'))
+        if extent >= 360:
+            self.qmove(self._circle, (crect, True))
+        else:
+            self.qmove(self._arc, (crect, self.ang, extent, True))
 
         if center:
             self.penup()
@@ -1708,6 +1704,7 @@ class Pynguin(object):
             self._gitem_breakup_turn(180)
             if pen:
                 self.pendown()
+
         self.qmove(self._gitem_goto, (pos0,))
         self.qmove(self._gitem_setangle, (ang0,))
 
@@ -1724,20 +1721,7 @@ class Pynguin(object):
         ritem = self.ritem
         cpt = ritem.pos()
 
-        if not center:
-            radians = (((PI*2)/360.) * ritem.ang)
-            tocenter = radians + PI/2
-
-            dx = r * cos(tocenter)
-            dy = r * sin(tocenter)
-
-            tocpt = QtCore.QPointF(dx, dy)
-            cpt = cpt + tocpt
-
-        ul = cpt - QtCore.QPointF(r, r)
-        sz = QtCore.QSizeF(2*r, 2*r)
-
-        crect = QtCore.QRectF(ul, sz)
+        crect = self._circle_rect(r, cpt, ritem.ang, center)
 
         self._check_drawspeed_change()
         if self.drawspeed == 0:
@@ -1746,15 +1730,21 @@ class Pynguin(object):
                 self.qmove(self._circle, (crect,))
         else:
             # animated circles
-            self._slowcircle(crect, r, center)
+            self._slowcircle(crect, r, 360, center)
 
-    def _arc(self, crect, start_angle, arc_length):
+    def _arc(self, crect, start_angle, arc_length, finish=False):
         '''instant arc'''
+
+        gitem = self.gitem
+        if finish:
+            cl = gitem._current_line
+            self.drawn_items.pop()
+            scene = gitem.scene()
+            scene.removeItem(cl)
+            self._gitem_new_line()
 
         p1 = crect.center()
         ppath = QtGui.QPainterPath(p1)
-
-        gitem = self.gitem
 
         if gitem._fillmode:
             ppath.setFillRule(gitem._fillrule)
@@ -1773,19 +1763,11 @@ class Pynguin(object):
 
         gitem.expand()
 
-    def arc(self, r, extent, center=False):
-        '''Draw an arc of radius r and central angle extent.
-
-        If center is True, draw the arc centered on the current
-            location.
-        '''
-
-        ritem = self.ritem
-        cpt = ritem.pos()
-        x, y = self.xy()
+    def _circle_rect(self, r, cpt, ang, center):
+        '''return the bounding rect for the circle'''
 
         if not center:
-            radians = (((PI*2)/360.) * ritem.ang)
+            radians = (((PI*2)/360.) * ang)
             tocenter = radians + PI/2
 
             dx = r * cos(tocenter)
@@ -1799,20 +1781,39 @@ class Pynguin(object):
 
         crect = QtCore.QRectF(ul, sz)
 
+        return crect
+
+    def arc(self, r, extent, center=False):
+        '''Draw an arc of radius r and central angle extent.
+
+        If center is True, draw the arc centered on the current
+            location.
+        '''
+
+        ritem = self.ritem
+        cpt = ritem.pos()
+        x, y = self.xy()
+
+        if r < 0:
+            extent = -extent
+
+        crect = self._circle_rect(r, cpt, ritem.ang, center)
+
         self._check_drawspeed_change()
         pen = self.pen
-        if pen:
+        if self.drawspeed==0 and pen:
             self.qmove(self._arc, (crect, ritem.ang, extent))
+        else:
+            self._slowcircle(crect, r, extent, center)
 
         if not center:
-            self.goto(x+dx, y+dy)
-            self.rt(extent-90)
-            self.penup()
-            self.fd(r)
-            self.rt(90)
-
-        if pen:
-            self.pendown()
+            c = crect.center()
+            cx, cy = c.x(), c.y()
+            self.goto(cx, cy)
+            self.turnto(ritem.ang + extent - 90)
+            xn, yn = self.xyforward(r)
+            self.goto(xn, yn)
+            self.turnto(ritem.ang + 90)
 
     def square(self, side, center=False):
         '''square(side, center=False) # length of side in pixels
