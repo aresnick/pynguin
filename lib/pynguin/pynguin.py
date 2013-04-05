@@ -1695,13 +1695,17 @@ class Pynguin(object):
         if extent >= 360:
             self.qmove(self._circle, (crect, True))
         else:
-            self.qmove(self._arc, (crect, self.ang, extent, True))
+            self.qmove(self._arc, (crect, self.ang+90, extent, True))
 
         if center:
             self.penup()
             self._gitem_breakup_turn(-90)
             self._gitem_breakup_move(r)
-            self._gitem_breakup_turn(180)
+            if extent >= 360:
+                self._gitem_breakup_turn(180)
+            else:
+                ang = self._closest_turn(ang0)
+                self._gitem_breakup_turn(ang)
             if pen:
                 self.pendown()
 
@@ -1794,7 +1798,7 @@ class Pynguin(object):
         cpt = ritem.pos()
         x, y = self.xy()
 
-        if r < 0:
+        if not center and r < 0:
             extent = -extent
 
         crect = self._circle_rect(r, cpt, ritem.ang, center)
