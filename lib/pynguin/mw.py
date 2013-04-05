@@ -1496,24 +1496,40 @@ Check configuration!''')
     def removedoc(self):
         '''throw away the currently displayed editor document'''
 
+        mselect = self.ui.mselect
+        textdocuments = self.editor.textdocuments
+        documents = self.editor.documents
+        idx = mselect.currentIndex()
+        docname = str(mselect.itemText(idx))
+        docid = str(mselect.itemData(idx))
+        tdoc = textdocuments[docid]
+        doc = documents[docid]
+        empty = not doc
+
         if hasattr(self.editor._doc, '_title'):
             external = True
             fp = self.editor._doc._filepath
         else:
             external = False
 
-        if not external:
+        modified = tdoc.isModified()
+
+        if not modified and empty:
+            affirm = True
+        elif external and not modified:
+            affirm = True
+        else:
             ret = QtGui.QMessageBox.warning(self, 'Are you sure?',
                     'This page will be removed permanently.\n'
                     'Are you sure you want to remove this page?',
                     QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
                     QtGui.QMessageBox.No,
                     QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+            affirm = ret==QtGui.QMessageBox.Yes
 
-        if not external and ret in (QtGui.QMessageBox.No,
-                                        QtGui.QMessageBox.Cancel):
+        if not affirm:
             return
-        elif external or ret == QtGui.QMessageBox.Yes:
+        else:
             mselect = self.ui.mselect
             idx = mselect.currentIndex()
             docname = str(mselect.itemText(idx))
@@ -1525,8 +1541,10 @@ Check configuration!''')
                 self.editor._doc.setPlainText('')
                 self.newdoc()
 
-            if docname in self.editor.documents:
-                del self.editor.documents[docname]
+            if docid in self.editor.textdocuments:
+                doc = self.editor.textdocuments[docid]
+                del self.editor.documents[docid]
+                del self.editor.textdocuments[docid]
 
             self._modified = True
             self.setWindowModified(True)
@@ -1558,6 +1576,10 @@ Check configuration!''')
         and make sure the code does not end with
         lines that have only indentation
         '''
+
+        if not code:
+            return ''
+
         lines = code.split('\n')
         lines.reverse()
         blankend = True

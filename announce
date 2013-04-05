@@ -37,7 +37,10 @@ Changes in pynguin-0.14:
         - Added (basic) undo capability (ctrl-z)
 
     Integrated Editor
+        - Stop asking for confirmation to remove empty doc page
+        - Stop autosave from modifying empty doc page
 
     Integrated Console
 
     Examples
+        - Added arc examples
