@@ -313,7 +313,6 @@ class Interpreter(HighlightedTextEdit):
                     i += 4
                 self._indent_level = i
 
-                self.mw.pynguin._gitem_new_line()
                 self.mw.pynguin._mark_undo()
 
                 self.cmdthread = CmdThread(self, txt)

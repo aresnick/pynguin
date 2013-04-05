@@ -565,27 +565,34 @@ class Pynguin(object):
 
         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
-    def _mark_undo(self):
-        pyn = self
-        if hasattr(pyn, 'gitem') and hasattr(pyn.gitem, 'pos'):
-            markers = pyn._undo_markers
+    def _qdelay(self, n):
+        if self._delaying is not None:
+            raise RuntimeError
+        else:
+            self._delaying = n
 
+    def _mark_undo(self):
+        markers = self._undo_markers
+
+        if hasattr(self, '_pyn'):
+            pyn = self._pyn
+        else:
+            pyn = self
+
+        pyn._gitem_new_line()
+
+        if hasattr(pyn, 'gitem') and hasattr(pyn.gitem, 'pos'):
+            #logger.info(markers)
             pos = pyn.gitem.pos()
             x, y = pos.x(), pos.y()
             ang = pyn.gitem.ang
             items = pyn.drawn_items
             item = items[-1] if items else None
             marker = ((x, y, ang), item)
+            #logger.info(marker)
 
             if not markers or (markers[-1] != marker):
-                pyn._undo_markers.append(marker)
-
-
-    def _qdelay(self, n):
-        if self._delaying is not None:
-            raise RuntimeError
-        else:
-            self._delaying = n
+                markers.append(marker)
 
     def _undo(self):
         markers = self._undo_markers
@@ -597,7 +604,11 @@ class Pynguin(object):
         #self._log(markers)
         pos, marker = markers.pop()
         #self._log(pos, marker)
-        items = self.drawn_items
+        if hasattr(self, '_pyn'):
+            pyn = self._pyn
+        else:
+            pyn = self
+        items = pyn.drawn_items
         #self._log(items)
         while True:
             item = items[-1] if items else None
@@ -609,7 +620,9 @@ class Pynguin(object):
                     scene = item.scene()
                     if scene is not None:
                         scene.removeItem(item)
+                        items.pop()
                     else:
+                        #logger.info('no scene')
                         break
                 elif items:
                     items.pop()
@@ -618,11 +631,11 @@ class Pynguin(object):
 
         x, y, ang = pos
         pos = QtCore.QPointF(x, y)
-        self._item_goto(self.ritem, pos)
-        self._gitem_goto(pos)
+        pyn._item_goto(pyn.ritem, pos)
+        pyn._gitem_goto(pos)
 
-        self._item_setangle(self.ritem, ang)
-        self._gitem_setangle(ang)
+        pyn._item_setangle(pyn.ritem, ang)
+        pyn._gitem_setangle(ang)
 
     def wait(self, s):
         for ms in range(int(s*1000)):
