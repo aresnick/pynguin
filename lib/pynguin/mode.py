@@ -250,6 +250,9 @@ class ModeBase(Pynguin):
     def circle(self, r, center=False):
         self._pyn.circle(r, center)
 
+    def arc(self, r, extent, center=False, move=True):
+        self._pyn.arc(r, extent, center, move)
+
     def square(self, side, center=False):
         self._pyn.square(side, center)
 
