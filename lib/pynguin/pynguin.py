@@ -1792,11 +1792,15 @@ class Pynguin(object):
 
         return crect
 
-    def arc(self, r, extent, center=False):
+    def arc(self, r, extent, center=False, move=True):
         '''Draw an arc of radius r and central angle extent.
 
         If center is True, draw the arc centered on the current
             location.
+
+        If move is True (the default) the pynguin will end up
+            at the end of the drawn arc (if not centered) or
+            turned by angle extent (if centered).
         '''
 
         ritem = self.ritem
@@ -1820,7 +1824,7 @@ class Pynguin(object):
         else:
             self._slowcircle(crect, r, extent, center)
 
-        if not center:
+        if not center and move:
             # Go to the end of the newly-drawn arc
             c = crect.center()
             cx, cy = c.x(), c.y()
@@ -1829,7 +1833,7 @@ class Pynguin(object):
             xn, yn = self.xyforward(r)
             self.goto(xn, yn)
             self.turnto(ritem.ang + 90)
-        else:
+        elif center and move:
             self.right(extent)
 
     def square(self, side, center=False):
