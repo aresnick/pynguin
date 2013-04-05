@@ -42,7 +42,7 @@ pynguin_functions = [
     'forward', 'fd', 'backward', 'bk', 'left',
     'lt', 'right', 'rt', 'reset', 'home',
     'penup', 'pendown', 'color', 'width',
-    'circle', 'fill', 'nofill', 'fillcolor',
+    'circle', 'arc', 'fill', 'nofill', 'fillcolor',
     'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
