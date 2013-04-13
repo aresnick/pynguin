@@ -9,7 +9,8 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release ports Pynguin to Python 3.
+This release adds several user-requested features, including
+    circular arcs, SVG export, and undo.
 
 
 Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
@@ -24,7 +25,7 @@ Changes in pynguin-0.14:
     Other fixes
 
     Pynguin API
-        - Added .font() to change font for use with write()
+        - Added font() to change font for use with write()
         - Added move parameter for write()
         - Added align and valign parameters for write()
         - Added arc() for circular arcs
