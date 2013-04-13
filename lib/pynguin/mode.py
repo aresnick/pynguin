@@ -201,8 +201,11 @@ class ModeBase(Pynguin):
         logger.info('ang %s' % ang)
         self.turnto(self._ang_rsl(ang))
 
-    def write(self, txt):
-        self._pyn.write(txt)
+    def font(self, family=None, size=None, weight=None, italic=None):
+        return self._pyn.font(family, size, weight, italic)
+
+    def write(self, txt, move=False, align='left', valign='bottom'):
+        self._pyn.write(txt, move, align, valign)
 
     def home(self):
         Pynguin.home(self)

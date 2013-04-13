@@ -46,7 +46,7 @@ pynguin_functions = [
     'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
-    'avatar', 'remove', 'promote', 'reap',
+    'avatar', 'remove', 'promote', 'reap', 'font',
     'speed', 'track', 'notrack', 'bgcolor', 'mode', 'colorat']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'ModeLogo', 'ModeTurtle', 'pynguins',
@@ -1002,16 +1002,28 @@ class Pynguin(object):
     def _setfont(self, font):
         self._font = font
 
-    def font(self, family=None, size=-1, weight=-1, italic=False):
+    def font(self, family=None, size=None, weight=None, italic=None):
         '''Set or return the font to use with write()
 
         The font returned is a QFont and can have additional
             modifications made.
         '''
 
-        if family is None:
+
+        if family is size is weight is italic is None:
             return self._font
-        font = QtGui.QFont(family, size, weight, italic)
+
+        font = QtGui.QFont(self._font)
+
+        if family is not None:
+            font.setFamily(family)
+        if size is not None:
+            font.setPointSize(size)
+        if weight is not None:
+            font.setWeight(weight)
+        if italic is not None:
+            font.setItalic(italic)
+
         self.qmove(self._setfont, (font,))
 
     def _write(self, text, move, align, valign):
