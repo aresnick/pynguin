@@ -19,6 +19,7 @@
 
 import os
 import sys
+from keyword import kwlist
 
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.Qt import QFrame, QWidget, QHBoxLayout, QPainter
@@ -361,6 +362,8 @@ class HighlightedTextEdit(highlightedtextedit.HighlightedTextEdit):
 
 
 class PythonHighlighter(highlightedtextedit.PythonHighlighter):
+    keywords = kwlist
+
     def updateFonts(self, font):
         self.base_format.setFont(font)
         self.empty_format = QtGui.QTextCharFormat(self.base_format)
