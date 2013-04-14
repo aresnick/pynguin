@@ -489,8 +489,6 @@ class NumberBar(numberedtextedit.NumberBar):
 
 class LineTextWidget(numberedtextedit.LineTextWidget):
     def __init__(self, *args):
-        from PyQt4.Qt import QFrame
-
         QFrame.__init__(self, *args)
 
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
