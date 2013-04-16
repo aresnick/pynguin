@@ -566,12 +566,20 @@ class Pynguin(object):
         QtGui.QApplication.processEvents(QtCore.QEventLoop.AllEvents)
 
     def _qdelay(self, n):
+        '''Used by movement functions to insert delays in to movements
+            when speed is anything other than instant.
+        '''
+
         if self._delaying is not None:
             raise RuntimeError
         else:
             self._delaying = n
 
     def _mark_undo(self):
+        '''Set up a marker for the current position to use
+            when going back on undo.
+        '''
+
         markers = self._undo_markers
 
         if hasattr(self, '_pyn'):
@@ -595,6 +603,8 @@ class Pynguin(object):
                 markers.append(marker)
 
     def _undo(self):
+        'Go back to the most recent undo marker'
+
         markers = self._undo_markers
         if not markers:
             print('Nothing to undo.')
@@ -654,6 +664,10 @@ class Pynguin(object):
         self._wfi = flag
 
     def waitforit(self):
+        '''Block the user program until this command is
+            processed through the command queue.
+        '''
+
         flag = ''.join(random.sample(string.ascii_letters, 15))
         self.qmove(self._waitforit, (flag,))
         #self._log('waiting for:', flag)
@@ -667,6 +681,12 @@ class Pynguin(object):
         # lock this!
 
     def _gitem_new_line(self):
+        '''Break off the current QGraphicsItem line and start
+            a new line. Need to do this any time the objects
+            should be separate, like for fill color, or for
+            removing separately in undo.
+        '''
+
         if self.gitem is not None:
             self.gitem._current_line = None
 
@@ -674,6 +694,7 @@ class Pynguin(object):
         '''Move item ahead distance. If draw is True, also add a line
             to the item's scene. draw should only be true for gitem
         '''
+
         ang = item.ang
         rad = ang * (PI / 180)
         dx = distance * cos(rad)
