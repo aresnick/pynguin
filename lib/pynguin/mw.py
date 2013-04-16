@@ -1233,6 +1233,35 @@ Check configuration!''')
             if autorun:
                 self.interpreter.runcode(txt)
 
+    def _remove_toplevel(self, data):
+        '''When a page has both function definitions and top-level
+            code, we only want to exec the function defs and not
+            the top-level code when loading the file.
+
+            This function takes the page of code and will return
+            only the function and class defs with all other
+            top-level code stripped out.
+        '''
+
+        newdata = []
+
+        indef = False
+        for line in data.splitlines():
+            indented = line.startswith(' ')
+            blank = line.isspace()
+            if not line or blank:
+                pass
+            elif not indented:
+                if line.startswith('def ') or line.startswith('class '):
+                    indef = True
+                else:
+                    indef = False
+
+            if indef:
+                newdata.append(line)
+
+        return '\n'.join(newdata)
+
     def _loaddata(self, data):
         if hasattr(data, 'decode'):
             data = data.decode('utf-8')
@@ -1243,6 +1272,8 @@ Check configuration!''')
                 pass
             else:
                 try:
+                    data = self._remove_toplevel(data)
+                    logger.info(data)
                     exec(data, self.interpreter_locals)
                 except Exception as e:
                     print()
