@@ -9,8 +9,7 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release adds several user-requested features, including
-    circular arcs, SVG export, and undo.
+This release ...
 
 
 Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
@@ -19,30 +18,20 @@ Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.14:
+Changes in pynguin-0.15:
     Important fixes
 
     Other fixes
+        - fixed loading pages with mixed defs and top-level code
 
     Pynguin API
-        - Added font() to change font for use with write()
-        - Added move parameter for write()
-        - Added align and valign parameters for write()
-        - Added arc() for circular arcs
 
     Canvas
-        - Added SVG Export
 
     UI
-        - Added ability to use translations
-        - Added (basic) undo capability (ctrl-z)
 
     Integrated Editor
-        - Added shortcut (ctrl-w) for removing doc pages
-        - Stop asking for confirmation to remove empty doc page
-        - Stop autosave from modifying empty doc page
 
     Integrated Console
 
     Examples
-        - Added arc examples

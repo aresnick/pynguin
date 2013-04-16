@@ -7,7 +7,7 @@ import sys
 
 
 NAME = 'pynguin'
-VERSION = '0.14'
+VERSION = '0.15'
 
 DESC = 'Python turtle graphics application'
 
