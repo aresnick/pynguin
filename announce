@@ -9,7 +9,8 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release ...
+This release makes major changes to the editor to enable
+    line numbers and other improvements.
 
 
 Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
@@ -31,6 +32,8 @@ Changes in pynguin-0.15:
     UI
 
     Integrated Editor
+        - Replaced editor with QsciScintilla text widget
+        - Line numbers available now
 
     Integrated Console
 

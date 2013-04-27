@@ -37,7 +37,7 @@ from .pynguin import Pynguin, pynguin_functions, interpreter_protect
 from .mode import ModeLogo, ModeTurtle
 from . import util
 from .util import sign, get_datadir, get_docdir
-from .codearea import CodeArea
+from .ed3 import Editor
 from .interpreter import Interpreter, CmdThread, Console, WatcherThread
 from .about import AboutDialog
 from . import conf
@@ -96,18 +96,17 @@ class MainWindow(QtGui.QMainWindow):
         self.speedgroup.setExclusive(True)
         self.speedgroup.triggered.connect(self.speedMenuEvent)
 
-        self.editor = CodeArea(self)
         hbox = QHBoxLayout(self.ui.edframe)
         hbox.setSpacing(0)
         hbox.setMargin(0)
-        #hbox.addWidget(self.number_bar)
-        hbox.addWidget(self.editor)
+        self.editor_box = hbox
+        self.editor = Editor(self)
+        self.editor_box.addLayout(self.editor.box)
 
         self.interpretereditor = Interpreter(self)
         hbox = QHBoxLayout(self.ui.interpreterframe)
         hbox.setSpacing(0)
         hbox.setMargin(0)
-        #hbox.addWidget(self.number_bar)
         hbox.addWidget(self.interpretereditor)
         ilocals = {}
         self.interpreter_locals = ilocals
@@ -434,10 +433,8 @@ class MainWindow(QtGui.QMainWindow):
                 # Need to mark all docs as modified to make sure
                 # they get written out in the new kind of save file
                 mselect = self.ui.mselect
-                for n in range(mselect.count()):
-                    docid = str(mselect.itemData(n))
-                    textdoc = self.editor.textdocuments[docid]
-                    textdoc.setModified(True)
+                for doc in self.editor.documents.values():
+                    doc.setModified(True)
             settings.setValue('file/savesingle', savesingle)
 
             reloadexternal = ui.reloadexternal.isChecked()
@@ -504,12 +501,16 @@ class MainWindow(QtGui.QMainWindow):
         self.pynguin._set_color_to_default()
         self.pynguin._set_fillcolor_to_default()
 
-        fontsize = settings.value('editor/fontsize', 16, int)
+        fontsize = settings.value('editor/fontsize', 0, int)
         self.editor.setfontsize(fontsize)
         wrap = settings.value('editor/wordwrap', False, bool)
         if wrap:
             self.ui.actionWordwrap.setChecked(True)
             self.wordwrap()
+        numbers = settings.value('editor/linenumbers', True, bool)
+        if not numbers:
+            self.ui.actionShowLineNumbers.setChecked(False)
+            self.editor.line_numbers(False)
 
         default = 'fast'
         speed = settings.value('pynguin/speed', default)
@@ -564,7 +565,9 @@ class MainWindow(QtGui.QMainWindow):
             recmenu.addAction(fn, excb)
 
     def open_recent(self, fp):
-        if not self.maybe_save():
+        if fp.endswith('.py'):
+            pass
+        elif not self.maybe_save():
             return
         else:
             self._filepath = None
@@ -699,7 +702,7 @@ class MainWindow(QtGui.QMainWindow):
                 del_later.append(name)
         for name in del_later:
             del self.interpreter_locals[name]
-        self.editor.clear()
+        self.editor.clear_all()
         self.interpretereditor.clear()
         if newdoc:
             self.newdoc()
@@ -713,7 +716,7 @@ class MainWindow(QtGui.QMainWindow):
         if self._modified:
             return True
         else:
-            for tdoc in list(self.editor.textdocuments.values()):
+            for tdoc in list(self.editor.documents.values()):
                 if tdoc.isModified():
                     return True
 
@@ -749,7 +752,6 @@ class MainWindow(QtGui.QMainWindow):
         bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
         fp = os.path.join(bfp, bfn % '')
         if self.writeable(fp, savesingle=True):
-            self.editor.savecurrent()
             self._writefile01(fp, backup=True)
         else:
             QtGui.QMessageBox.warning(self,
@@ -790,10 +792,15 @@ Check configuration!''')
         mselect = self.ui.mselect
         for n in range(mselect.count()):
             docid = str(mselect.itemData(n))
-            code = str(self.editor.documents[docid])
+            doc = self.editor.documents[docid]
+            code = doc.text()
             arcname = '##%05d##__%s' % (n, docid)
             code = self.cleancode(code)
-            self.editor.documents[docid] = code
+            doc.beginUndoAction()
+            doc.selectAll()
+            doc.removeSelectedText()
+            doc.insert(code)
+            doc.endUndoAction()
             z.writestr(arcname, code.encode('utf-8'))
 
         historyname = '@@history@@'
@@ -825,17 +832,21 @@ Check configuration!''')
         mselect = self.ui.mselect
         for n in range(mselect.count()):
             docid = str(mselect.itemData(n))
-            textdoc = self.editor.textdocuments[docid]
-            code = str(self.editor.documents[docid])
+            doc = self.editor.documents[docid]
+            code = doc.text()
             code = self.cleancode(code)
-            self.editor.documents[docid] = code
+            doc.beginUndoAction()
+            doc.selectAll()
+            doc.removeSelectedText()
+            doc.insert(code)
+            doc.endUndoAction()
 
-            if not backup and hasattr(textdoc, '_filepath'):
-                efp = textdoc._filepath
+            if not backup and doc._filepath is not None:
+                efp = doc._filepath
                 manifest.append(efp)
 
                 logger.info('external: %s' % efp)
-                if not textdoc.isModified():
+                if not doc.isModified():
                     logger.info('UNCHANGED')
                     continue
 
@@ -846,9 +857,9 @@ Check configuration!''')
                 f = open(efp, 'w')
                 f.write(code)
                 f.close()
-                self._addwatcher(efp, textdoc)
+                self._addwatcher(efp, doc)
 
-                textdoc.setModified(False)
+                doc.setModified(False)
                 continue
 
             arcname = '%05d.py' % n
@@ -946,8 +957,6 @@ Check configuration!''')
 
         '''
 
-        self.editor.savecurrent()
-
         settings = QtCore.QSettings()
         savesingle = settings.value('file/savesingle', True, bool)
 
@@ -964,7 +973,7 @@ Check configuration!''')
             return False
 
         self._modified = False
-        for tdoc in list(self.editor.textdocuments.values()):
+        for tdoc in list(self.editor.documents.values()):
             tdoc.setModified(False)
         self.setWindowModified(False)
 
@@ -1175,8 +1184,6 @@ Check configuration!''')
             infos = z.infolist()
             info = infos[0]
 
-            logger.info('Opening file with version: "%s"' % info.comment)
-
             if not info.comment:
                 self._openfile00(fp, dump)
             else:
@@ -1205,8 +1212,8 @@ Check configuration!''')
             self._update_after_open(fp, add_to_recent)
 
     def _addwatcher(self, fp, doc):
-            self.watcher.addPath(fp)
-            self._watchdocs[str(fp)] = doc
+        self.watcher.addPath(fp)
+        self._watchdocs[str(fp)] = doc
 
     def _remwatcher(self, fp):
         self.watcher.removePath(fp)
@@ -1226,8 +1233,8 @@ Check configuration!''')
                     'Local copy has modifications:\n\n%s\n\nNot loading external changes.' % fp)
                 return
             txt = open(fp).read()
-            txt = txt.decode('utf-8')
-            doc.setPlainText(txt)
+            #txt = txt.decode('utf-8')
+            doc.setText(txt)
             doc.setModified(False)
             autorun = settings.value('file/autorun', False, bool)
             if autorun:
@@ -1511,8 +1518,11 @@ Check configuration!''')
 
     def newdoc(self):
         '''Add a new (blank) page to the document editor'''
-        self.editor.new()
-        self.editor.setFocus()
+        docid = self.editor.new()
+        self.editor.switchto(docid)
+        self.editor._doc.setFocus()
+        idx = self.ui.mselect.count() - 1
+        self.ui.mselect.setCurrentIndex(idx)
 
         self._modified = True
         self.setWindowModified(True)
@@ -1522,7 +1532,7 @@ Check configuration!''')
         docid = str(self.ui.mselect.itemData(idx))
         if docid in self.editor.documents:
             self.editor.switchto(docid)
-            self.editor.setFocus()
+            self.editor._doc.setFocus()
 
     def removedoc(self):
         '''throw away the currently displayed editor document'''
@@ -1693,18 +1703,17 @@ Check configuration!''')
         return None, None, None, None
 
     def testcode(self):
-        '''exec the code in the current editor window and load it in
+        '''Activated by the Test/Run button (testrun)
+
+            exec the code in the current editor window and load it in
             to the interpreter local namespace
 
             If the first line looks like a function definition, use
             it to feed a line to the interpreter set up to call the
             function.
         '''
-        self.editor.savecurrent()
-        docname = str(self.ui.mselect.currentText())
-        idx = self.ui.mselect.currentIndex()
-        docid = str(self.ui.mselect.itemData(idx))
-        code = str(self.editor.documents[docid])
+        doc = self.editor._doc
+        code = doc.text()
 
         code = self.cleancode(code)
 
@@ -2142,11 +2151,20 @@ Check configuration!''')
     def wordwrap(self):
         checked = self.ui.actionWordwrap.isChecked()
         if not checked:
-            self.editor.setWordWrapMode(QtGui.QTextOption.NoWrap)
+            self.editor.wrap(False)
         else:
-            self.editor.setWordWrapMode(QtGui.QTextOption.WrapAtWordBoundaryOrAnywhere)
+            self.editor.wrap()
         settings = QtCore.QSettings()
         settings.setValue('editor/wordwrap', checked)
+
+    def linenumbers(self):
+        checked = self.ui.actionShowLineNumbers.isChecked()
+        if checked:
+            self.editor.line_numbers(True)
+        else:
+            self.editor.line_numbers(False)
+        settings = QtCore.QSettings()
+        settings.setValue('editor/linenumbers', checked)
 
     def zoomineditor(self):
         self.editor.zoomin()
@@ -2155,10 +2173,10 @@ Check configuration!''')
         self.editor.zoomout()
 
     def comment(self):
-        self.editor.commentlines()
+        self.editor._doc.commentlines()
 
     def uncomment(self):
-        self.editor.commentlines(un=True)
+        self.editor._doc.commentlines(un=True)
 
     def about(self):
         AboutDialog(self.app).exec_()
