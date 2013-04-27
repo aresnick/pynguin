@@ -749,7 +749,7 @@ class MainWindow(QtGui.QMainWindow):
 
         bfp = settings.value('file/backupfolderpath', '')
         bfp = bfp or self._fdir
-        bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
+        bfn = settings.value('file/backupfilename', conf.BACKUP_FILENAME)
         fp = os.path.join(bfp, bfn % '')
         if self.writeable(fp, savesingle=True):
             self._writefile01(fp, backup=True)

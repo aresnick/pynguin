@@ -56,7 +56,7 @@ class Settings(QtGui.QDialog):
 
         bfp = settings.value('file/backupfolderpath', '')
         ui.backupfolderpath.setText(bfp)
-        bfn = settings.value('file/backupfilename', 'backup~%s.pyn')
+        bfn = settings.value('file/backupfilename', conf.BACKUP_FILENAME)
         ui.backupfilename.setText(bfn)
         brate = settings.value('file/backuprate', 3, int)
         ui.backuprate.setValue(brate)
