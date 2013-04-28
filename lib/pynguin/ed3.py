@@ -441,12 +441,6 @@ class SimplePythonEditor(QsciScintilla):
                     self.setSelection(lineno, indent, lineno, indent+1)
                     self.replaceSelectedText('')
 
-    def selectline(self, n):
-        '''highlight line number n'''
-
-        lineno = n - 1
-        self.setSelection(lineno, 0, lineno, 100)
-
     def paste(self):
         clipboard = QtGui.QApplication.clipboard()
         txt = clipboard.text()
