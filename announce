@@ -36,5 +36,6 @@ Changes in pynguin-0.15:
         - Line numbers available now
 
     Integrated Console
+        - Replaced QTextEdit with QsciScintilla text widget
 
     Examples

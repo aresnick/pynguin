@@ -24,8 +24,8 @@ import logging
 logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui
+from PyQt4.Qsci import QsciScintilla, QsciLexerPython
 
-from .editor import HighlightedTextEdit
 from . import pynguin
 from . import conf
 
@@ -79,9 +79,9 @@ class CmdThread(thread2a.Thread):
 
         #logger.debug('THREAD DONE')
 
-class Interpreter(HighlightedTextEdit):
+class Interpreter(QsciScintilla):
     def __init__(self, parent):
-        HighlightedTextEdit.__init__(self)
+        QsciScintilla.__init__(self)
         self.mw = parent
         self.history = []
         self._outputq = []
@@ -98,7 +98,7 @@ class Interpreter(HighlightedTextEdit):
         sys.stderr = self
         sys.stdin = self
 
-        self.setWordWrapMode(QtGui.QTextOption.WrapAnywhere)
+        self.setup()
 
         self.needmore = False
         self.cmdthread = None
@@ -109,6 +109,84 @@ class Interpreter(HighlightedTextEdit):
 
         self.col0 = 4
 
+    def setup(self):
+        # Set the default font
+        fontsize = 16
+        font = QtGui.QFont()
+        font.setFamily('Courier')
+        font.setBold(True)
+        font.setFixedPitch(True)
+        font.setPointSize(fontsize)
+        self._font = font
+        self.setFont(font)
+        self.setMarginsFont(font)
+
+        ## Margin 0 is used for prompts
+        #self.setMarginsBackgroundColor(QtGui.QColor("#444444"))
+        #self.setMarginsForegroundColor(QtGui.QColor('#999999'))
+        #self.setMarginType(QsciScintilla.SC_MARGIN_TEXT)
+        #fontmetrics = QtGui.QFontMetrics(self._font)
+        #self.setMarginWidth(0, fontmetrics.width(">>>"))
+
+        # Disable 2nd margin (line markers)
+        self.setMarginWidth(1, 0)
+
+        # Match parentheses
+        self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
+        self.setUnmatchedBraceBackgroundColor(QtGui.QColor('#000000'))
+        self.setUnmatchedBraceForegroundColor(QtGui.QColor('#FF4444'))
+        self.setMatchedBraceBackgroundColor(QtGui.QColor('#000000'))
+        self.setMatchedBraceForegroundColor(QtGui.QColor('#44FF44'))
+
+        # Current line visible with special background color
+        self.setCaretLineVisible(True)
+        self.setCaretForegroundColor(QtGui.QColor('#8888FF'))
+        self.setCaretLineBackgroundColor(QtGui.QColor("#222222"))
+
+        # Set Python lexer
+        lexer = QsciLexerPython(self)
+        lexer.setDefaultFont(font)
+        self.setLexer(lexer)
+        lexer.setDefaultPaper(QtGui.QColor("#000000"))
+        lexer.setPaper(QtGui.QColor("#000000"))
+        lexer.setAutoIndentStyle(QsciScintilla.AiOpening)
+        self.setstyle()
+
+        self.setIndentationsUseTabs(False)
+        self.setBackspaceUnindents(True)
+        self.setIndentationWidth(4)
+
+    def setstyle(self):
+        styles = dict(Default = 0, Comment = 1, Number = 2,
+                    DoubleQuotedString = 3, SingleQuotedString = 4,
+                    Keyword = 5,TripleSingleQuotedString = 6,
+                    TripleDoubleQuotedString = 7, ClassName = 8,
+                    FunctionMethodName = 9, Operator = 10,
+                    Identifier = 11, CommentBlock = 12,
+                    UnclosedString = 13, HighlightedIdentifier = 14,
+                    Decorator = 15)
+
+        style = dict(Default = '#FFFFFF',
+                        Comment = '#9999FF',
+                        Identifier = '#CCFF99',
+                        SingleQuotedString = '#FF6666',
+                        DoubleQuotedString = '#FF6666',
+                        TripleSingleQuotedString = '#FF6666',
+                        TripleDoubleQuotedString = '#FF6666',
+                        FunctionMethodName = '#77DDFF',
+                        ClassName = '#CC44FF',
+                        Number = '#44FFBB',
+
+                        )
+
+        lexer = self.lexer()
+        for k in styles.keys():
+            colorname = style.get(k, '#FFFFFF')
+            color = QtGui.QColor(colorname)
+            n = styles[k]
+            lexer.setColor(color, n)
+            lexer.setFont(self._font)
+
     def flush(self):
         # to suppress AttributeError ...
         # Not sure why that is happening and why it is not crashing, but...
@@ -117,7 +195,7 @@ class Interpreter(HighlightedTextEdit):
     def clear(self):
         self.history = []
         self._outputq = []
-        self._doc.clear()
+        QsciScintilla.clear(self)
         self.write('>>> ')
 
     def addcmd(self, cmd, force=False):
@@ -144,7 +222,7 @@ class Interpreter(HighlightedTextEdit):
         self.pt = None
 
         lenbefore = len(pt2)
-        pt = str(self.toPlainText())
+        pt = self.text()
         r = pt[lenbefore:]
         r = r.rstrip('\n')
         if not r:
@@ -169,20 +247,17 @@ class Interpreter(HighlightedTextEdit):
         '''
         while self._outputq:
             text = self._outputq.pop(0)
-            self.insertPlainText(text)
+            cline, ccol = self.getCursorPosition()
+            self.insert(text)
+            self.setCursorPosition(cline, ccol+len(text))
             QtCore.QTimer.singleShot(100, self.scrolldown)
 
         QtCore.QTimer.singleShot(10, self.writeoutputq)
 
     def checkprompt(self):
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        blktxt4 = cblk.text()[:4]
-        blen = cblk.length()
-        if blen==0 or (blen==1 and blktxt4==''):
-            self.write('>>> ')
-        elif blktxt4 != '>>> ':
-            self.write('\n')
+        cline, ccol = self.getCursorPosition()
+        txt = self.text(cline)
+        if not txt:
             self.write('>>> ')
 
     def cleanup_ControlC(self):
@@ -200,13 +275,11 @@ class Interpreter(HighlightedTextEdit):
 
     def testthreaddone(self):
         self.cleanup_ControlC()
-        logger.info('self.testthreaddone')
         QtCore.QTimer.singleShot(100, self.checkprompt)
 
 
     def threaddone(self):
         self.cleanup_ControlC()
-        logger.info('self.threaddone')
 
         if not self.needmore:
             self.checkprompt()
@@ -245,13 +318,23 @@ class Interpreter(HighlightedTextEdit):
 
         return True
 
+    def indentation(self, linen):
+        i = 0
+        txt = self.text(linen)[4:]
+        if txt.isspace():
+            return len(txt)
+
+        for i, c in enumerate(txt):
+            if c != ' ':
+                break
+        return i
+
     def keyPressEvent(self, ev):
         k = ev.key()
-        #logger.debug('Key: %s' % k)
         mdf = ev.modifiers()
 
         if self.reading and self.pt is None:
-            self.pt = str(self.toPlainText())
+            self.pt = self.text()
 
         Tab = QtCore.Qt.Key_Tab
         Backtab = QtCore.Qt.Key_Backtab
@@ -276,11 +359,6 @@ class Interpreter(HighlightedTextEdit):
         H = QtCore.Qt.Key_H
         Z = QtCore.Qt.Key_Z
 
-        lblk = self._doc.lastBlock()
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        cblkpos = cblk.position()
-
         passthru = True
         scrolldown = True
 
@@ -290,25 +368,20 @@ class Interpreter(HighlightedTextEdit):
 
             self.movetoend()
 
-            cpos = self.textCursor().position()
-            blk = self._doc.findBlock(cpos)
-            if not blk.text():
-                blk = self._doc.firstBlock()
-
-            txt = str(blk.text()[4:]).rstrip()
+            cline, ccol = self.getCursorPosition()
+            txt = self.text(cline)
+            txt = txt[4:].rstrip()
             if txt:
                 if self.history and not self.history[-1]:
+                    # last history entry is blank line
                     del self.history[-1]
                 self.history.append(txt)
             self.historyp = -1
 
-            self.append('')
+            self.append('\n')
 
             if self.cmdthread is None:
-                i = 0
-                for i, c in enumerate(txt):
-                    if c != ' ':
-                        break
+                i = self.indentation(cline)
                 if txt.endswith(':'):
                     i += 4
                 self._indent_level = i
@@ -325,17 +398,25 @@ class Interpreter(HighlightedTextEdit):
             else:
                 passthru = True
 
-        elif k in (Backspace, Left):
-            lblk = self._doc.lastBlock()
-            lpos = lblk.position()
-            llpos = lblk.position() + lblk.length() - 1
+        elif k in (Backspace, Tab, Backtab):
+            cline, ccol = self.getCursorPosition()
+            i = self.indentation(cline)
 
-            cpos = self.textCursor().position()
-            cblk = self._doc.findBlock(cpos)
-            cblkpos = cblk.position()
-
-            if cpos <= lpos + 4:
+            if ccol < 4:
                 passthru = False
+                self.scroll_left()
+            elif ccol <= i + 4:
+                passthru = False
+                spaces = ccol % 4
+                if not spaces:
+                    spaces = 4
+                if k != Tab:
+                    self.setSelection(cline, 4, cline, 4+spaces)
+                    self.replaceSelectedText('')
+                    self.setCursorPosition(cline, ccol-spaces)
+                else:
+                    self.insert(' ' * spaces)
+                    self.setCursorPosition(cline, 4+i+spaces)
             else:
                 passthru = True
 
@@ -362,11 +443,9 @@ class Interpreter(HighlightedTextEdit):
         elif k in (Up, Down):
             self.scrolldown()
 
-            cpos = self.textCursor().position()
-            cblk = self._doc.findBlock(cpos)
-            pos = cblk.position()
+            cline, ccol = self.getCursorPosition()
 
-            txt = str(cblk.text()[4:]).strip()
+            txt = self.text(cline)[4:].strip()
 
             if self.cmdthread is not None:
                 pass
@@ -401,43 +480,43 @@ class Interpreter(HighlightedTextEdit):
 
                 if changeline:
                     txt = self.history[self.historyp]
-                    endpos = pos + cblk.length() - 1
+                    endpos = len(self.text(cline))
 
                     if self.historyp == -1:
                         del self.history[-1]
 
-                    curs = self.textCursor()
-                    curs.setPosition(pos+4, 0)
-                    curs.setPosition(endpos, 1)
-                    curs.removeSelectedText()
-
-                    self.insertPlainText(txt)
+                    self.setSelection(cline, 4, cline, endpos)
+                    self.replaceSelectedText(txt)
 
             passthru = False
 
         elif mdf & Control and k==U:
             #erase from cursor to beginning of line
+            self.scroll_left()
             self.erasetostart()
 
         elif mdf & Control and k==X:
-            # Cut
-            self.cut() # No action. Disabled.
+            # Cut # No action. Disabled.
             scrolldown = False
+            passthru = False
 
         elif mdf & Control and mdf & Shift and k==X:
             # Cut
             self.cut() # No action. Disabled.
             scrolldown = False
+            passthru = False
 
         elif mdf & Control and mdf & Shift and k==C:
             # Copy
             self.copy()
             scrolldown = False
+            passthru = False
 
         elif mdf & Control and mdf & Shift and k==V:
             # Paste
             self.paste()
             scrolldown = False
+            passthru = False
 
         elif mdf & Control and k==Z:
             self.mw.pynguin._undo()
@@ -463,7 +542,9 @@ class Interpreter(HighlightedTextEdit):
 
         elif (mdf & Control and k==A) or k == Home:
             self.movetostart()
+            self.scroll_left()
             passthru = False
+            scrolldown = False
 
         elif mdf & Control and k==E:
             self.movetoend()
@@ -481,25 +562,18 @@ class Interpreter(HighlightedTextEdit):
             self.scrolldown()
 
         if passthru:
-            HighlightedTextEdit.keyPressEvent(self, ev)
-
-        logger.info('OUT')
+            QsciScintilla.keyPressEvent(self, ev)
 
     def ctrl_c_thread_running(self):
-        logger.info('Thread running')
         pynguin.Pynguin.ControlC = True
         pynguin.Pynguin._stop_testall = True
-        #logger.debug('CCT')
         self.mw.pynguin._empty_move_queue(lock=True)
         for pyn in self.mw.pynguins:
             pyn._sync_items()
-        #logger.debug('synced')
         self.needmore = False
         self.interpreter.resetbuffer()
 
     def ctrl_c_no_thread_running(self):
-        logger.info('No thread running')
-
         pynguin.Pynguin.ControlC = False
         pynguin.Pynguin._stop_testall = True
         self.cmdthread = None
@@ -520,45 +594,49 @@ class Interpreter(HighlightedTextEdit):
     def sync_pynguins_lists(self):
         for p in self.mw._pynguins:
             if p not in self.mw.pynguins:
-                logger.info('removing %s' % p)
                 p.remove()
 
         if self.mw.pynguin not in self.mw.pynguins:
             self.mw.pynguins.append(self.mw.pynguin)
 
     def scrolldown(self):
-        '''force the console to scroll all the way down, and put
-            the cursor after the last letter.
+        '''force the console to scroll all the way down.
+
+            If the cursor is already in the last line,
+                do not change location of the cursor.
+
+            If not, move the cursor to the last position
+                in the line.
         '''
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        lblk = self._doc.lastBlock()
-        if cblk != lblk:
-            lblk = self._doc.lastBlock()
-            lpos = lblk.position() + lblk.length() - 1
-            curs = self.textCursor()
-            curs.setPosition(lpos, 0)
-            self.setTextCursor(curs)
+
+        txt = self.text()
+        nlines = len(txt.split('\n'))
+        lastlinen = nlines - 1
+        lastline = self.text(lastlinen)
+
+        cline, ccol = self.getCursorPosition()
+
+        if cline != lastlinen:
+            self.setCursorPosition(lastlinen, len(lastline))
+
+        if ccol < 4:
+            self.setCursorPosition(lastlinen, 4)
 
         vbar = self.verticalScrollBar()
         vbar.setValue(vbar.maximum())
 
-    def mouseReleaseEvent(self, ev):
-        ccurs = self.textCursor()
-        hassel = ccurs.hasSelection()
+    def scroll_left(self):
+        hbar = self.horizontalScrollBar()
+        hbar.setValue(hbar.minimum())
 
-        curs = self.cursorForPosition(ev.pos())
-        col = curs.columnNumber()
-        cpos = curs.position()
-        blk = curs.block()
-        #blklen = blk.length()
-        blktext = str(blk.text())
-        promptblk = blktext.startswith('>>>') or blktext.startswith('...')
-        if not hassel and promptblk and col < 4:
-            curs.setPosition(cpos + 4-col)
-            self.setTextCursor(curs)
-        else:
-            HighlightedTextEdit.mouseReleaseEvent(self, ev)
+    def mouseReleaseEvent(self, ev):
+        QsciScintilla.mouseReleaseEvent(self, ev)
+
+        cline, ccol = self.getCursorPosition()
+        txt = self.text(cline)
+        if ccol < 4 and not self.hasSelectedText():
+            if txt.startswith('>>>') or txt.startswith('...'):
+                self.setCursorPosition(cline, 4)
 
     def contextMenuEvent(self, ev):
         '''right-click to pop up the context menu.
@@ -604,46 +682,34 @@ class Interpreter(HighlightedTextEdit):
         menu.exec_(ev.globalPos())
 
     def cut(self):
-        logger.info("cut disabled")
+        # cut disabled
+        pass
 
     def insertFromMimeData(self, data):
         self.scrolldown()
-        HighlightedTextEdit.insertFromMimeData(self, data)
+        QsciScintilla.insertFromMimeData(self, data)
 
     def movetostart(self):
         '''move the cursor to the start of the line (after the prompt)'''
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        pos = cblk.position()
-        curs = self.textCursor()
-        curs.setPosition(pos+4, 0)
-        self.setTextCursor(curs)
+        cline, ccol = self.getCursorPosition()
+        self.setCursorPosition(cline, 4)
 
     def movetoend(self):
         '''move the cursor to the end of the line'''
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        pos = cblk.position()
-        endpos = pos + cblk.length() - 1
-        curs = self.textCursor()
-        curs.setPosition(endpos, 0)
-        self.setTextCursor(curs)
+        cline, ccol = self.getCursorPosition()
+        self.setCursorPosition(cline, len(self.text(cline)))
 
     def erasetostart(self):
         '''erase from the current cursor position to the beginning
             of the line
         '''
-        cpos = self.textCursor().position()
-        cblk = self._doc.findBlock(cpos)
-        pos = cblk.position()
-        if pos == cpos:
+        cline, ccol = self.getCursorPosition()
+        if ccol == 4:
             # line is already empty
             return
-
-        curs = self.textCursor()
-        curs.setPosition(pos+4, 0)
-        curs.setPosition(cpos, 1)
-        curs.removeSelectedText()
+        self.setSelection(cline, 4, cline, ccol)
+        self.replaceSelectedText('')
+        self.setCursorPosition(cline, 4)
 
     def clearline(self):
         self.scrolldown()
