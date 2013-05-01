@@ -1799,10 +1799,11 @@ class Pynguin(object):
 
         gitem = self.gitem
         if finish:
-            cl = gitem._current_line
-            self.drawn_items.pop()
-            scene = gitem.scene()
-            scene.removeItem(cl)
+            if self.gitem._pen:
+                cl = gitem._current_line
+                self.drawn_items.pop()
+                scene = gitem.scene()
+                scene.removeItem(cl)
             self._gitem_new_line()
 
         p1 = crect.center()
@@ -1813,15 +1814,16 @@ class Pynguin(object):
 
         ppath.arcMoveTo(crect, 90-start_angle)
         ppath.arcTo(crect, 90-start_angle, -arc_length)
-        line = gitem.scene().addPath(ppath, gitem.pen)
+        if self.gitem._pen:
+            line = gitem.scene().addPath(ppath, gitem.pen)
 
-        if gitem._fillmode:
-            line.setBrush(gitem.brush)
+            if gitem._fillmode:
+                line.setBrush(gitem.brush)
 
-        line.setZValue(self._zvalue)
-        Pynguin._zvalue += 1
-        self.drawn_items.append(line)
-        self._gitem_new_line()
+            line.setZValue(self._zvalue)
+            Pynguin._zvalue += 1
+            self.drawn_items.append(line)
+            self._gitem_new_line()
 
         gitem.expand()
 

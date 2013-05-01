@@ -23,6 +23,7 @@ Changes in pynguin-0.15:
     Important fixes
 
     Other fixes
+        - fixed arc() with pen up
         - fixed loading pages with mixed defs and top-level code
 
     Pynguin API

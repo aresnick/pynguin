@@ -28,7 +28,6 @@ find in editor pages
 segfault occasionally when using labels... argh!
 pynguins list needs a runtime analog so that running code sees the current
     list of pynguins and display code can see its own list.
-arc with pen up
 adjust default backup file name for legacy installs
 move interpreter prompts to margin?
 elipses/eliptical arcs
