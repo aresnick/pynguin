@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2010-2012 Lee Harr
+# Copyright 2010-2013 Lee Harr
 #
 # This file is part of pynguin.
 # http://pynguin.googlecode.com/
