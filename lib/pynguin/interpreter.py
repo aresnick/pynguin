@@ -131,6 +131,8 @@ class Interpreter(QsciScintilla):
         # Disable 2nd margin (line markers)
         self.setMarginWidth(1, 0)
 
+        self.setWrapMode(QsciScintilla.SC_WRAP_CHAR)
+
         # Match parentheses
         self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
         self.setUnmatchedBraceBackgroundColor(QtGui.QColor('#000000'))
