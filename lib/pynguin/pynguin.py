@@ -2069,6 +2069,7 @@ class Pynguin(object):
         p.remove(self)
         p.avatar(av)
         p.color(self.color())
+        p.fillcolor(self.fillcolor())
         p.width(self.width())
 
         if is_main_pynguin:
