@@ -31,6 +31,7 @@ pynguins list needs a runtime analog so that running code sees the current
 adjust default backup file name for legacy installs
 move interpreter prompts to margin?
 elipses/eliptical arcs
+fill arc should do pie shape
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
