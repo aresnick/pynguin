@@ -794,12 +794,14 @@ Check configuration!''')
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
             code = doc.text()
+            cline, ccol = doc.getCursorPosition()
             arcname = '##%05d##__%s' % (n, docid)
             code = self.cleancode(code)
             doc.beginUndoAction()
             doc.selectAll()
             doc.removeSelectedText()
             doc.insert(code)
+            doc.setCursorPosition(cline, ccol)
             doc.endUndoAction()
             z.writestr(arcname, code.encode('utf-8'))
 
@@ -834,11 +836,13 @@ Check configuration!''')
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
             code = doc.text()
+            cline, ccol = doc.getCursorPosition()
             code = self.cleancode(code)
             doc.beginUndoAction()
             doc.selectAll()
             doc.removeSelectedText()
             doc.insert(code)
+            doc.setCursorPosition(cline, ccol)
             doc.endUndoAction()
 
             if not backup and doc._filepath is not None:
