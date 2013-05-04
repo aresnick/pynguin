@@ -442,6 +442,12 @@ class Interpreter(QsciScintilla):
             vbar.setValue(vbar.value()+vbar.pageStep())
             passthru = False
 
+        elif k == Left:
+            cline, ccol = self.getCursorPosition()
+            if ccol <= 4:
+                passthru = False
+                self.scroll_left()
+
         elif k in (Up, Down):
             self.scrolldown()
 
