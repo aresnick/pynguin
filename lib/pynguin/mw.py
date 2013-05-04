@@ -927,23 +927,23 @@ Check configuration!''')
         count = mselect.count()
         for n in range(count):
             docid = str(mselect.itemData(n))
-            textdoc = self.editor.textdocuments[docid]
-            if not hasattr(textdoc, '_filepath'):
+            doc = self.editor.documents[docid]
+            if doc._filepath is None:
                 arcname = '%05d.py' % n
-                textdoc._filepath = os.path.join('_@@', dirname, arcname)
-                textdoc.setModified(True)
-                logger.info('dfp %s' % textdoc._filepath)
+                doc._filepath = os.path.join('_@@', dirname, arcname)
+                doc.setModified(True)
+                logger.info('dfp %s' % doc._filepath)
             else:
-                logger.info('DFP %s' % textdoc._filepath)
+                logger.info('DFP %s' % doc._filepath)
 
         self._writefile01(fp)
 
         for n in range(count):
             docid = str(mselect.itemData(n))
-            textdoc = self.editor.textdocuments[docid]
-            if hasattr(textdoc, '_filepath'):
-                if textdoc._filepath.startswith('_@@'):
-                    del textdoc._filepath
+            doc = self.editor.documents[docid]
+            if hasattr(doc, '_filepath'):
+                if doc._filepath.startswith('_@@'):
+                    del doc._filepath
 
     def _savestate(self):
         '''write out the files in the editor window, and keep the list
