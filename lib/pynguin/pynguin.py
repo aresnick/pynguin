@@ -1725,7 +1725,7 @@ class Pynguin(object):
             self._item_left(gitem, -4)
             self._item_forward(gitem, distance)
 
-    def _slowcircle(self, crect, r, extent=360, center=False):
+    def _slowcircle(self, crect, r, extent=360, center=False, pie=False):
         '''Animated circle drawing
         '''
         self.qmove(self._gitem_new_line)
@@ -1753,7 +1753,7 @@ class Pynguin(object):
                 ang = self.ang + 90
             else:
                 ang = self.ang
-            self.qmove(self._arc, (crect, ang, extent, True))
+            self.qmove(self._arc, (crect, ang, extent, True, center, pie))
 
         if center:
             self.penup()
@@ -1794,7 +1794,7 @@ class Pynguin(object):
             # animated circles
             self._slowcircle(crect, r, 360, center)
 
-    def _arc(self, crect, start_angle, arc_length, finish=False):
+    def _arc(self, crect, start_angle, arc_length, finish=False, center=False, pie=False):
         '''instant arc'''
 
         gitem = self.gitem
@@ -1809,11 +1809,16 @@ class Pynguin(object):
         p1 = crect.center()
         ppath = QtGui.QPainterPath(p1)
 
-        if gitem._fillmode:
+        fillmode = gitem._fillmode
+        if fillmode:
             ppath.setFillRule(gitem._fillrule)
 
         ppath.arcMoveTo(crect, 90-start_angle)
         ppath.arcTo(crect, 90-start_angle, -arc_length)
+        if pie:
+            ppath.lineTo(p1)
+            ppath.closeSubpath()
+
         if self.gitem._pen:
             line = gitem.scene().addPath(ppath, gitem.pen)
 
@@ -1847,7 +1852,7 @@ class Pynguin(object):
 
         return crect
 
-    def arc(self, r, extent, center=False, move=True):
+    def arc(self, r, extent, center=False, move=True, pie=False):
         '''Draw an arc of radius r and central angle extent.
 
         If center is True, draw the arc centered on the current
@@ -1856,6 +1861,10 @@ class Pynguin(object):
         If move is True (the default) the pynguin will end up
             at the end of the drawn arc (if not centered) or
             turned by angle extent (if centered).
+
+        If pie is True radii will also be drawn from the ends of
+            the arc to the center of the circle it is an arc of.
+            If fill is on the full pie shaped wedge will be filled.
         '''
 
         ritem = self.ritem
@@ -1866,7 +1875,7 @@ class Pynguin(object):
         if not center and r < 0:
             extent = -extent
 
-        crect = self._circle_rect(r, cpt, ritem.ang, center)
+        crect = self._circle_rect(r, cpt, ritem.ang, center=center)
 
         self._check_drawspeed_change()
         pen = self.pen
@@ -1875,9 +1884,9 @@ class Pynguin(object):
                 ang = ritem.ang + 90
             else:
                 ang = ritem.ang
-            self.qmove(self._arc, (crect, ang, extent))
+            self.qmove(self._arc, (crect, ang, extent, False, center, pie))
         else:
-            self._slowcircle(crect, r, extent, center)
+            self._slowcircle(crect, r, extent, center, pie)
 
         if not center and move:
             # Go to the end of the newly-drawn arc
