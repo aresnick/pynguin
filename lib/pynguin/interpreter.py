@@ -342,6 +342,7 @@ class Interpreter(QsciScintilla):
         Backtab = QtCore.Qt.Key_Backtab
         Backspace = QtCore.Qt.Key_Backspace
         Left = QtCore.Qt.Key_Left
+        Right = QtCore.Qt.Key_Right
         Return = QtCore.Qt.Key_Return
         Enter = QtCore.Qt.Key_Enter
         Up = QtCore.Qt.Key_Up
@@ -402,9 +403,13 @@ class Interpreter(QsciScintilla):
 
         elif k in (Backspace, Tab, Backtab):
             cline, ccol = self.getCursorPosition()
+            lines = self.lines()
             i = self.indentation(cline)
 
-            if ccol < 4:
+            if cline < lines-1:
+                passthru = False
+                scrolldown = True
+            elif ccol <= 4 and k != Tab:
                 passthru = False
                 self.scroll_left()
             elif ccol <= i + 4:
@@ -419,8 +424,10 @@ class Interpreter(QsciScintilla):
                 else:
                     self.insert(' ' * spaces)
                     self.setCursorPosition(cline, 4+i+spaces)
-            else:
+            elif cline == lines-1:
                 passthru = True
+            else:
+                passthru = False
 
         elif mdf & Shift and k==Up:
             vbar = self.verticalScrollBar()
@@ -444,9 +451,20 @@ class Interpreter(QsciScintilla):
 
         elif k == Left:
             cline, ccol = self.getCursorPosition()
-            if ccol <= 4:
+            lines = self.lines()
+            if cline < lines-1:
+                passthru = False
+                scrolldown = True
+            elif ccol <= 4:
                 passthru = False
                 self.scroll_left()
+
+        elif k == Right:
+            cline, ccol = self.getCursorPosition()
+            lines = self.lines()
+            if cline < lines:
+                passthru = False
+                scrolldown = True
 
         elif k in (Up, Down):
             self.scrolldown()
