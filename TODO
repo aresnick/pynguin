@@ -32,6 +32,7 @@ adjust default backup file name for legacy installs
 move interpreter prompts to margin?
 elipses/eliptical arcs
 fill arc should do pie shape
+mode change is losing track of a pynguin
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
