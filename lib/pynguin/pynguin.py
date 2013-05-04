@@ -1084,7 +1084,6 @@ class Pynguin(object):
 
         if move:
             self._gitem_new_line()
-            self._item_forward(self.ritem, fd, False)
             self._item_forward(self.gitem, fd, False)
 
     def write(self, text, move=False, align='left', valign='bottom'):
@@ -1104,6 +1103,11 @@ class Pynguin(object):
             raise ValueError('Unknown alignment')
 
         strtxt = str(text)
+        if move:
+            fm = QtGui.QFontMetrics(self._font)
+            r = fm.boundingRect(strtxt)
+            fd = r.width()
+            self._item_forward(self.ritem, fd, False)
         self.qmove(self._write, (strtxt, move, align, valign))
 
     def dbg(self):
