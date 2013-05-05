@@ -462,7 +462,7 @@ class Interpreter(QsciScintilla):
         elif k == Right:
             cline, ccol = self.getCursorPosition()
             lines = self.lines()
-            if cline < lines:
+            if cline < lines-1:
                 passthru = False
                 scrolldown = True
 
