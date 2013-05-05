@@ -27,6 +27,12 @@ Changes in pynguin-0.15:
         - fixed loading pages with mixed defs and top-level code
 
     Pynguin API
+        - added pie option to arc
+            - draws pie wedges instead of just arcs
+            - arc(radius, extent, pie=True)
+        - added underline() method
+            - pynguin.underline() # start underline for write()
+            - pynguin.underline(False) # stop underline
 
     Canvas
 
@@ -40,3 +46,5 @@ Changes in pynguin-0.15:
         - Replaced QTextEdit with QsciScintilla text widget
 
     Examples
+        - added fraction example to demonstrate arc(..., pie=True)
+            - also demonstrates underline()
