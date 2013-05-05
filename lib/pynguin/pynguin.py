@@ -1047,6 +1047,12 @@ class Pynguin(object):
 
         self.qmove(self._setfont, (font,))
 
+    def _underline(self, on):
+        self._font.setUnderline(on)
+
+    def underline(self, on=True):
+        self.qmove(self._underline, (on,))
+
     def _write(self, text, move, align, valign):
         item = self.gitem.scene().addSimpleText(text, self._font)
 
