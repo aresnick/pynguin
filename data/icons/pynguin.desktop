@@ -6,5 +6,4 @@ Comment=Python turtle graphics
 Terminal=false
 Name=Pynguin
 GenericName=Python turtle graphics
-X-DBUS-StartupType=Multi
 Categories=Education;ComputerScience;
