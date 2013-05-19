@@ -66,7 +66,7 @@ DATA_FILES += [('share/icons/hicolor/48x48/apps',
 
 
 # Packages
-PACKAGES = ['pynguin']
+PACKAGES = ['pynguin', 'qsciedit']
 
 # Setup
 setup (

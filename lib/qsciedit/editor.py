@@ -17,9 +17,6 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
-import uuid
-
 from PyQt4 import QtGui, QtCore
 from PyQt4.Qsci import QsciScintilla, QsciLexerPython
 
@@ -27,246 +24,12 @@ import logging
 logger = logging.getLogger('PynguinLogger')
 
 
-class Editor:
-    def __init__(self, parent):
-        self.mw = parent
-        self.box = QtGui.QStackedLayout()
-        self.mselect = parent.ui.mselect
-        self.documents = {} # SimplePythonEditor instances
-        self.pages = {} # QStackedLayout pages
-        self._doc = None
-        self.docid = None
-        self.title = None
-        self._fontsize = 0
-        docid = self.new()
-        self.switchto(docid)
-
-    def new(self):
-        '''start a new blank document.'''
-
-        doc = SimplePythonEditor(self)
-        doc.zoomTo(self._fontsize)
-        docid = uuid.uuid4().hex
-        logger.info(docid)
-        self.documents[docid] = doc
-        page = self.box.addWidget(doc)
-        self.pages[docid] = page
-        doc.docid = docid
-        self.mselect.addItem('', docid)
-        self.settitle(doc)
-
-        return docid
-
-    def clear_all(self):
-        while self.box.count():
-            item = self.box.itemAt(0)
-            self.box.removeItem(item)
-        self.mselect.clear()
-
-    def add(self, txt):
-        docid = self.new()
-        doc = self.documents[docid]
-        doc.setText(txt)
-        doc.setModified(False)
-        self.settitle(doc)
-        self.switchto(docid)
-
-    def addexternal(self, fp):
-        '''Add an external python source file.'''
-        for docid, doc in list(self.documents.items()):
-            if doc._filepath == fp:
-                # this external file already added
-                self.switchto(docid)
-                return
-        txt = open(fp).read()
-        #txt = str(txt).decode('utf-8')
-        self.add(txt)
-        self._doc._filepath = fp
-        _, title = os.path.split(fp)
-        self.settitle()
-        return self._doc
-
-    def settitle(self, doc=None):
-        '''set the title for the current document.
-            Also updates the combobox document selector.
-
-            If this is an external file, use the file path
-                for the title.
-
-            Regular files use the first line to determine the title.
-            If first line looks like a function definition, use
-            the name/ signature of the function as the title,
-            otherwise use the whole line.
-        '''
-
-        if doc is None:
-            doc = self._doc
-
-        txt = doc.text(0).strip()
-
-        if doc._filepath is not None:
-            _, title = os.path.split(doc._filepath)
-        elif txt.startswith('def ') and txt.endswith(':'):
-            title = txt[4:-1]
-        elif txt=='':
-            title = 'Untitled'
-        else:
-            title = txt
-
-        if title == doc.title:
-            return
-
-        idx = 0
-        for idx in range(self.mselect.count()):
-            item_docid = self.mselect.itemData(idx)
-            if item_docid == doc.docid:
-                self.mselect.setItemText(idx, title)
-                break
-
-        doc.title = title
-
-    def switchto(self, docid):
-        '''switch to document docid'''
-
-        old_doc = self._doc
-        doc = self.documents[docid]
-        if doc == old_doc:
-            return
-
-        page = self.pages[docid]
-        self.box.setCurrentIndex(page)
-        self.mselect.setCurrentIndex(page)
-
-        self.docid = docid
-        self._doc = doc
-        self.settitle()
-
-    def shownext(self):
-        '''show the next document in the stack.'''
-
-        mselect = self.mselect
-        count = mselect.count()
-        idx = mselect.currentIndex()
-        if idx < count-1:
-            mselect.setCurrentIndex(idx+1)
-            docid = str(mselect.itemData(idx+1))
-            if docid in self.documents:
-                self.switchto(docid)
-                doc = self.documents[docid]
-                doc.setFocus()
-
-    def showprev(self):
-        '''show the previous document in the stack.'''
-
-        mselect = self.mselect
-        count = mselect.count()
-        idx = mselect.currentIndex()
-        if idx > 0:
-            mselect.setCurrentIndex(idx-1)
-            docid = str(mselect.itemData(idx-1))
-            if docid in self.documents:
-                self.switchto(docid)
-                doc = self.documents[docid]
-                doc.setFocus()
-
-    def promote(self):
-        '''move the current document up 1 place in the stack'''
-
-        mselect = self.mselect
-        idx = mselect.currentIndex()
-        title = mselect.itemText(idx)
-        docid = mselect.itemData(idx)
-        if idx > 0:
-            self.box.takeAt(idx)
-            page = self.pages[docid]
-            doc = self._doc
-            otherdocid = str(mselect.itemData(idx-1))
-            otherdoc = self.documents[otherdocid]
-            otherpage = self.pages[otherdocid]
-            self.pages[docid] = otherpage
-            self.pages[otherdocid] = page
-            self.box.insertWidget(idx-1, self._doc)
-
-            mselect.removeItem(idx)
-            mselect.insertItem(idx-1, title, docid)
-            self.mw._modified = True
-            self.mw.setWindowModified(True)
-
-            self._doc = None # Force switch
-            self.switchto(docid)
-
-    def demote(self):
-        '''move the current document down 1 place in the stack'''
-
-        mselect = self.mselect
-        idx = mselect.currentIndex()
-        title = mselect.itemText(idx)
-        docid = mselect.itemData(idx)
-        count = self.mselect.count()
-        if idx < count-1:
-            self.box.takeAt(idx)
-            page = self.pages[docid]
-            doc = self._doc
-            otherdocid = str(mselect.itemData(idx+1))
-            otherdoc = self.documents[otherdocid]
-            otherpage = self.pages[otherdocid]
-            self.pages[docid] = otherpage
-            self.pages[otherdocid] = page
-            self.box.insertWidget(idx+1, self._doc)
-
-            mselect.removeItem(idx)
-            mselect.insertItem(idx+1, title, docid)
-            self.mw._modified = True
-            self.mw.setWindowModified(True)
-
-            self._doc = None # Force switch
-            self.switchto(docid)
-
-    def setfontsize(self, size):
-        self._fontsize = size
-        for doc in self.documents.values():
-            doc.zoomTo(size)
-        settings = QtCore.QSettings()
-        settings.setValue('editor/fontsize', size)
-
-    def zoomin(self):
-        self.setfontsize(self._fontsize + 1)
-
-    def zoomout(self):
-        self.setfontsize(self._fontsize - 1)
-
-    def setFocus(self):
-        self._doc.setFocus()
-
-    def wrap(self, on=True):
-        for doc in self.documents.values():
-            if on:
-                doc.setWrapMode(QsciScintilla.SC_WRAP_WORD)
-            else:
-                doc.setWrapMode(QsciScintilla.SC_WRAP_NONE)
-
-    def line_numbers(self, on=True):
-        for doc in self.documents.values():
-            if on:
-                doc.show_line_numbers()
-            else:
-                doc.hide_line_numbers()
-
-    def selectline(self, n):
-        '''highlight line number n'''
-
-        lineno = n - 1
-        doc = self._doc
-        line = doc.text(lineno)
-        self._doc.setSelection(lineno, 0, lineno, len(line))
-
-
-class SimplePythonEditor(QsciScintilla):
+class PythonEditor(QsciScintilla):
     def __init__(self, parent=None):
-        super(SimplePythonEditor, self).__init__(parent.mw)
+        super(PythonEditor, self).__init__(parent)
 
-        self.editor = parent
-        self.mw = parent.mw
+        #self.editor = parent
+        self.mw = parent
 
         self.title = None
         self.docid = None
@@ -276,6 +39,17 @@ class SimplePythonEditor(QsciScintilla):
         self.setup()
 
     def setup(self):
+        self.setup_font()
+        self.setup_margin0()
+        self.setup_margin1()
+        self.setup_cursor()
+        self.setup_lexer()
+        self.setup_custom()
+
+    def setup_custom(self):
+        pass
+
+    def setup_font(self):
         # Set the default font
         fontsize = 16
         font = QtGui.QFont()
@@ -287,6 +61,7 @@ class SimplePythonEditor(QsciScintilla):
         self.setFont(font)
         self.setMarginsFont(font)
 
+    def setup_margin0(self):
         # Margin 0 is used for line numbers
         settings = QtCore.QSettings()
         numbers = settings.value('editor/linenumbers', True, bool)
@@ -297,6 +72,7 @@ class SimplePythonEditor(QsciScintilla):
         self.setMarginsBackgroundColor(QtGui.QColor("#444444"))
         self.setMarginsForegroundColor(QtGui.QColor('#999999'))
 
+    def setup_margin1(self):
         # Disable 2nd margin (line markers)
         self.setMarginWidth(1, 0)
 
@@ -307,14 +83,16 @@ class SimplePythonEditor(QsciScintilla):
         self.setMatchedBraceBackgroundColor(QtGui.QColor('#000000'))
         self.setMatchedBraceForegroundColor(QtGui.QColor('#44FF44'))
 
+    def setup_cursor(self):
         # Current line visible with special background color
         self.setCaretLineVisible(True)
         self.setCaretForegroundColor(QtGui.QColor('#8888FF'))
         self.setCaretLineBackgroundColor(QtGui.QColor("#222222"))
 
+    def setup_lexer(self):
         # Set Python lexer
         lexer = QsciLexerPython(self)
-        lexer.setDefaultFont(font)
+        lexer.setDefaultFont(self._font)
         self.setLexer(lexer)
         lexer.setDefaultPaper(QtGui.QColor("#000000"))
         lexer.setPaper(QtGui.QColor("#000000"))
@@ -332,6 +110,11 @@ class SimplePythonEditor(QsciScintilla):
         fontmetrics = QtGui.QFontMetrics(self._font)
         self.setMarginWidth(0, fontmetrics.width("00") + 6)
         self.setMarginLineNumbers(0, True)
+
+    def wrap(self):
+        self.setWrapMode(QsciScintilla.SC_WRAP_WORD)
+    def nowrap(self):
+        self.setWrapMode(QsciScintilla.SC_WRAP_NONE)
 
     def setstyle(self):
         styles = dict(Default = 0, Comment = 1, Number = 2,
@@ -418,11 +201,10 @@ class SimplePythonEditor(QsciScintilla):
             QsciScintilla.keyPressEvent(self, ev)
 
         self.editor.settitle()
+        self.update_window_modified()
 
-        if self.mw._modified or self.isModified():
-            self.mw.setWindowModified(True)
-        elif not self.mw._modified and not self.mw.check_modified():
-            self.mw.setWindowModified(False)
+    def update_window_modified(self):
+        self.mw.show_modified_status()
 
     def commentlines(self, un=False):
         if self.hasSelectedText():
@@ -455,10 +237,7 @@ class SimplePythonEditor(QsciScintilla):
             newtxt.append(line)
         txt = '\n'.join(newtxt)
 
-        if self.hasSelectedText():
-            self.replaceSelectedText(txt)
-        else:
-            self.insert(txt)
+        self.insert(txt)
 
     def contextMenuEvent(self, ev):
         '''Switch Redo to Ctrl-Shift-Z

@@ -37,7 +37,7 @@ from .pynguin import Pynguin, pynguin_functions, interpreter_protect
 from .mode import ModeLogo, ModeTurtle
 from . import util
 from .util import sign, get_datadir, get_docdir
-from .ed3 import Editor
+from .ed4 import Documents, Editor
 from .interpreter import Interpreter, CmdThread, Console, WatcherThread
 from .about import AboutDialog
 from . import conf
@@ -100,7 +100,7 @@ class MainWindow(QtGui.QMainWindow):
         hbox.setSpacing(0)
         hbox.setMargin(0)
         self.editor_box = hbox
-        self.editor = Editor(self)
+        self.editor = Documents(self, Editor)
         self.editor_box.addLayout(self.editor.box)
 
         self.interpretereditor = Interpreter(self)
@@ -709,11 +709,13 @@ class MainWindow(QtGui.QMainWindow):
         self._modified = False
         windowtitle = 'pynguin [*]'
         self.setWindowTitle(windowtitle)
-        self.setWindowModified(False)
+        self.show_modified_status()
         self._filepath = None
 
     def check_modified(self):
         if self._modified:
+            return True
+        elif self.editor._modified:
             return True
         else:
             for tdoc in list(self.editor.documents.values()):
@@ -721,6 +723,12 @@ class MainWindow(QtGui.QMainWindow):
                     return True
 
         return False
+
+    def show_modified_status(self):
+        if self.check_modified():
+            self.setWindowModified(True)
+        else:
+            self.setWindowModified(False)
 
     def maybe_save(self):
         if self.check_modified():
@@ -793,6 +801,7 @@ Check configuration!''')
         for n in range(mselect.count()):
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
+            modified = doc.isModified()
             code = doc.text()
             cline, ccol = doc.getCursorPosition()
             arcname = '##%05d##__%s' % (n, docid)
@@ -802,6 +811,7 @@ Check configuration!''')
             doc.removeSelectedText()
             doc.insert(code)
             doc.setCursorPosition(cline, ccol)
+            doc.setModified(modified)
             doc.endUndoAction()
             z.writestr(arcname, code.encode('utf-8'))
 
@@ -835,6 +845,7 @@ Check configuration!''')
         for n in range(mselect.count()):
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
+            modified = doc.isModified()
             code = doc.text()
             cline, ccol = doc.getCursorPosition()
             code = self.cleancode(code)
@@ -843,6 +854,7 @@ Check configuration!''')
             doc.removeSelectedText()
             doc.insert(code)
             doc.setCursorPosition(cline, ccol)
+            doc.setModified(modified)
             doc.endUndoAction()
 
             if not backup and doc._filepath is not None:
@@ -899,6 +911,8 @@ Check configuration!''')
         z.writestr(zipi, manifeststr.encode('utf-8'))
 
         z.close()
+        
+        self.show_modified_status()
 
     def _related_dir(self, fp=None):
         '''return the directory name related to path fp
@@ -979,7 +993,8 @@ Check configuration!''')
         self._modified = False
         for tdoc in list(self.editor.documents.values()):
             tdoc.setModified(False)
-        self.setWindowModified(False)
+        self.editor._modified = False
+        self.show_modified_status()
 
         self.addrecentfile(self._filepath)
 
@@ -1060,7 +1075,7 @@ Check configuration!''')
             fdir, fname = os.path.split(self._filepath)
             windowtitle = '%s [*] - Pynguin' % fname
             self.setWindowTitle(windowtitle)
-            self.setWindowModified(False)
+            self.show_modified_status()
 
         return retval
 
@@ -1156,7 +1171,7 @@ Check configuration!''')
         fdir, fname = os.path.split(fp)
         windowtitle = '%s [*] - Pynguin' % fname
         self.setWindowTitle(windowtitle)
-        self.setWindowModified(False)
+        self.show_modified_status()
 
         if add_to_recent:
             self.addrecentfile(self._filepath)
@@ -1205,7 +1220,7 @@ Check configuration!''')
                 if doc is not None:
                     self.addrecentfile(fp)
                     self._modified = True
-                    self.setWindowModified(True)
+                    self.show_modified_status()
                     self._addwatcher(fp, doc)
             else:
                 txt = open(fp).read()
@@ -1243,6 +1258,8 @@ Check configuration!''')
             autorun = settings.value('file/autorun', False, bool)
             if autorun:
                 self.interpreter.runcode(txt)
+                
+        self.show_modified_status()
 
     def _remove_toplevel(self, data):
         '''When a page has both function definitions and top-level
@@ -1529,7 +1546,7 @@ Check configuration!''')
         self.ui.mselect.setCurrentIndex(idx)
 
         self._modified = True
-        self.setWindowModified(True)
+        self.show_modified_status()
 
     def changedoc(self, idx):
         '''switch which document is visible in the document editor'''
@@ -1542,14 +1559,12 @@ Check configuration!''')
         '''throw away the currently displayed editor document'''
 
         mselect = self.ui.mselect
-        textdocuments = self.editor.textdocuments
         documents = self.editor.documents
         idx = mselect.currentIndex()
         docname = str(mselect.itemText(idx))
         docid = str(mselect.itemData(idx))
-        tdoc = textdocuments[docid]
         doc = documents[docid]
-        empty = not doc
+        empty = not doc.text()
 
         if hasattr(self.editor._doc, '_title'):
             external = True
@@ -1557,7 +1572,7 @@ Check configuration!''')
         else:
             external = False
 
-        modified = tdoc.isModified()
+        modified = doc.isModified()
 
         if not modified and empty:
             affirm = True
@@ -1583,16 +1598,15 @@ Check configuration!''')
                 self.changedoc(0)
                 mselect.setCurrentIndex(0)
             else:
-                self.editor._doc.setPlainText('')
+                self.editor._doc.setText('')
                 self.newdoc()
 
-            if docid in self.editor.textdocuments:
-                doc = self.editor.textdocuments[docid]
+            if docid in self.editor.documents:
+                doc = self.editor.documents[docid]
                 del self.editor.documents[docid]
-                del self.editor.textdocuments[docid]
 
             self._modified = True
-            self.setWindowModified(True)
+            self.show_modified_status()
 
             if external:
                 self._remwatcher(fp)

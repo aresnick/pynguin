@@ -24,7 +24,9 @@ import logging
 logger = logging.getLogger('PynguinLogger')
 
 from PyQt4 import QtCore, QtGui
-from PyQt4.Qsci import QsciScintilla, QsciLexerPython
+from PyQt4.Qsci import QsciScintilla
+
+from qsciedit import editor
 
 from . import pynguin
 from . import conf
@@ -79,10 +81,20 @@ class CmdThread(thread2a.Thread):
 
         #logger.debug('THREAD DONE')
 
-class Interpreter(QsciScintilla):
-    def __init__(self, parent):
-        QsciScintilla.__init__(self)
-        self.mw = parent
+class Interpreter(editor.PythonEditor):
+    def setup_margin0(self):
+        # Disable 1st margin
+        self.setMarginWidth(0, 0)
+
+    def show_line_numbers(self):
+        pass
+
+    def setup_custom(self):
+        self.editor = self
+        self._fontsize = 0
+        
+        self.wrap()
+
         self.history = []
         self._outputq = []
         self.historyp = -1
@@ -98,8 +110,6 @@ class Interpreter(QsciScintilla):
         sys.stderr = self
         sys.stdin = self
 
-        self.setup()
-
         self.needmore = False
         self.cmdthread = None
 
@@ -107,87 +117,8 @@ class Interpreter(QsciScintilla):
 
         self.write('>>> ')
 
-        self.col0 = 4
-
-    def setup(self):
-        # Set the default font
-        fontsize = 16
-        font = QtGui.QFont()
-        font.setFamily('Courier')
-        font.setBold(True)
-        font.setFixedPitch(True)
-        font.setPointSize(fontsize)
-        self._font = font
-        self.setFont(font)
-        self.setMarginsFont(font)
-
-        ## Margin 0 is used for prompts
-        #self.setMarginsBackgroundColor(QtGui.QColor("#444444"))
-        #self.setMarginsForegroundColor(QtGui.QColor('#999999'))
-        #self.setMarginType(QsciScintilla.SC_MARGIN_TEXT)
-        #fontmetrics = QtGui.QFontMetrics(self._font)
-        #self.setMarginWidth(0, fontmetrics.width(">>>"))
-
-        # Disable 2nd margin (line markers)
-        self.setMarginWidth(1, 0)
-
+    def wrap(self):
         self.setWrapMode(QsciScintilla.SC_WRAP_CHAR)
-
-        # Match parentheses
-        self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
-        self.setUnmatchedBraceBackgroundColor(QtGui.QColor('#000000'))
-        self.setUnmatchedBraceForegroundColor(QtGui.QColor('#FF4444'))
-        self.setMatchedBraceBackgroundColor(QtGui.QColor('#000000'))
-        self.setMatchedBraceForegroundColor(QtGui.QColor('#44FF44'))
-
-        # Current line visible with special background color
-        self.setCaretLineVisible(True)
-        self.setCaretForegroundColor(QtGui.QColor('#8888FF'))
-        self.setCaretLineBackgroundColor(QtGui.QColor("#222222"))
-
-        # Set Python lexer
-        lexer = QsciLexerPython(self)
-        lexer.setDefaultFont(font)
-        self.setLexer(lexer)
-        lexer.setDefaultPaper(QtGui.QColor("#000000"))
-        lexer.setPaper(QtGui.QColor("#000000"))
-        lexer.setAutoIndentStyle(QsciScintilla.AiOpening)
-        self.setstyle()
-
-        self.setIndentationsUseTabs(False)
-        self.setBackspaceUnindents(True)
-        self.setIndentationWidth(4)
-
-    def setstyle(self):
-        styles = dict(Default = 0, Comment = 1, Number = 2,
-                    DoubleQuotedString = 3, SingleQuotedString = 4,
-                    Keyword = 5,TripleSingleQuotedString = 6,
-                    TripleDoubleQuotedString = 7, ClassName = 8,
-                    FunctionMethodName = 9, Operator = 10,
-                    Identifier = 11, CommentBlock = 12,
-                    UnclosedString = 13, HighlightedIdentifier = 14,
-                    Decorator = 15)
-
-        style = dict(Default = '#FFFFFF',
-                        Comment = '#9999FF',
-                        Identifier = '#CCFF99',
-                        SingleQuotedString = '#FF6666',
-                        DoubleQuotedString = '#FF6666',
-                        TripleSingleQuotedString = '#FF6666',
-                        TripleDoubleQuotedString = '#FF6666',
-                        FunctionMethodName = '#77DDFF',
-                        ClassName = '#CC44FF',
-                        Number = '#44FFBB',
-
-                        )
-
-        lexer = self.lexer()
-        for k in styles.keys():
-            colorname = style.get(k, '#FFFFFF')
-            color = QtGui.QColor(colorname)
-            n = styles[k]
-            lexer.setColor(color, n)
-            lexer.setFont(self._font)
 
     def flush(self):
         # to suppress AttributeError ...
@@ -197,7 +128,7 @@ class Interpreter(QsciScintilla):
     def clear(self):
         self.history = []
         self._outputq = []
-        QsciScintilla.clear(self)
+        editor.PythonEditor.clear(self)
         self.write('>>> ')
 
     def addcmd(self, cmd, force=False):
@@ -588,7 +519,10 @@ class Interpreter(QsciScintilla):
             self.scrolldown()
 
         if passthru:
-            QsciScintilla.keyPressEvent(self, ev)
+            editor.PythonEditor.keyPressEvent(self, ev)
+
+    def update_window_modified(self):
+        pass
 
     def ctrl_c_thread_running(self):
         pynguin.Pynguin.ControlC = True
@@ -656,7 +590,7 @@ class Interpreter(QsciScintilla):
         hbar.setValue(hbar.minimum())
 
     def mouseReleaseEvent(self, ev):
-        QsciScintilla.mouseReleaseEvent(self, ev)
+        editor.PythonEditor.mouseReleaseEvent(self, ev)
 
         cline, ccol = self.getCursorPosition()
         txt = self.text(cline)
@@ -713,7 +647,7 @@ class Interpreter(QsciScintilla):
 
     def insertFromMimeData(self, data):
         self.scrolldown()
-        QsciScintilla.insertFromMimeData(self, data)
+        editor.PythonEditor.insertFromMimeData(self, data)
 
     def movetostart(self):
         '''move the cursor to the start of the line (after the prompt)'''
@@ -741,3 +675,13 @@ class Interpreter(QsciScintilla):
         self.scrolldown()
         self.movetoend()
         self.erasetostart()
+
+    def settitle(self):
+        pass
+
+    def zoomout(self):
+        self.setfontsize(self._fontsize - 1)
+
+    def setfontsize(self, size):
+        self._fontsize = size
+        self.zoomTo(size)
