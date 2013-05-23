@@ -70,6 +70,7 @@ def run():
 
     splash = Splash(app)
     splash.show()
+    app.processEvents()
 
     win = MainWindow(app)
     splash.win = win

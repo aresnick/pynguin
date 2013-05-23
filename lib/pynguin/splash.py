@@ -32,7 +32,7 @@ class Splash(QtGui.QSplashScreen):
         painter = QtGui.QPainter(img)
         rend.render(painter, 'splash')
         painter.end()
-        QtGui.QSplashScreen.__init__(self, img)
+        QtGui.QSplashScreen.__init__(self, img, QtCore.Qt.WindowStaysOnTopHint)
         self.setMask(img.mask())
         self.away_later()
 
