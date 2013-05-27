@@ -2214,6 +2214,10 @@ Check configuration!''')
             h = max(hr, hnew)
             w2, h2 = w/2, h/2
             scene.setSceneRect(-w2, -h2, w, h)
+            
+    def undo(self):
+        self.pynguin._undo()
+
 
 class Scene(QtGui.QGraphicsScene):
     def __init__(self):

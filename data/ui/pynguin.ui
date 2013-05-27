@@ -265,6 +265,7 @@
     <addaction name="actionNewPynguin"/>
     <addaction name="menuAvatar"/>
     <addaction name="menuMode"/>
+    <addaction name="actionUndo"/>
    </widget>
    <addaction name="filemenu"/>
    <addaction name="menuPynguin"/>
@@ -717,6 +718,14 @@
    </property>
    <property name="text">
     <string>Show line numbers</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>
@@ -1474,6 +1483,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionUndo</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>undo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>newdoc()</slot>
@@ -1520,5 +1545,6 @@
   <slot>clear_canvas()</slot>
   <slot>zoomfit()</slot>
   <slot>linenumbers()</slot>
+  <slot>undo()</slot>
  </slots>
 </ui>
