@@ -21,6 +21,10 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.15:
     Important fixes
+        - writes out all document pages every time when saving
+            - some pages could have been lost when changing between
+                single file method and file + directory method of
+                saving files
 
     Other fixes
         - fixed arc() with pen up
@@ -37,6 +41,8 @@ Changes in pynguin-0.15:
     Canvas
 
     UI
+        - loads .pyn file specified on command line
+        - shows better error message when there is a problem loading a file
 
     Integrated Editor
         - Replaced editor with QsciScintilla text widget

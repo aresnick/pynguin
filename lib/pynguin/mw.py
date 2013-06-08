@@ -822,12 +822,15 @@ Check configuration!''')
         z.close()
 
     def _writefile01(self, fp, backup=False):
-        '''Write file list files and history as a zip file called .pyn
+        '''Write file list files and history as a zip file called *.pyn
 
         Version 01
 
         Puts all files in to a folder to make it match the writedir
         method better.
+        
+        Also used by _writedir() but all internal files that should be
+        written to the related directory will be prefaced with '_@@'
 
         '''
         VERSION = b'pyn01'
@@ -857,18 +860,19 @@ Check configuration!''')
             doc.setModified(modified)
             doc.endUndoAction()
 
+            logger.info('writing %s' % doc)
             if not backup and doc._filepath is not None:
                 efp = doc._filepath
                 manifest.append(efp)
 
                 logger.info('external: %s' % efp)
-                if not doc.isModified():
-                    logger.info('UNCHANGED')
-                    continue
 
                 if efp.startswith('_@@'):
                     dirname, _ = os.path.split(fp)
-                    efp = efp.replace('_@@', dirname)
+                    if dirname:
+                        efp = efp.replace('_@@', dirname)
+                    else:
+                        efp = efp[4:]
                 self._remwatcher(efp)
                 f = open(efp, 'w')
                 f.write(code)
@@ -876,18 +880,18 @@ Check configuration!''')
                 self._addwatcher(efp, doc)
 
                 doc.setModified(False)
-                continue
+            
+            else:
+                arcname = '%05d.py' % n
 
-            arcname = '%05d.py' % n
-
-            zipi = zipfile.ZipInfo()
-            zipi.filename = os.path.join(fbase, arcname)
-            manifest.append(zipi.filename)
-            zipi.compress_type = zipfile.ZIP_DEFLATED
-            zipi.date_time = time.localtime()
-            zipi.external_attr = 0o644 << 16
-            zipi.comment = VERSION
-            z.writestr(zipi, code.encode('utf-8'))
+                zipi = zipfile.ZipInfo()
+                zipi.filename = os.path.join(fbase, arcname)
+                manifest.append(zipi.filename)
+                zipi.compress_type = zipfile.ZIP_DEFLATED
+                zipi.date_time = time.localtime()
+                zipi.external_attr = 0o644 << 16
+                zipi.comment = VERSION
+                z.writestr(zipi, code.encode('utf-8'))
 
         historyname = '@@history@@'
         history = '\n'.join(self.interpretereditor.history)
@@ -931,7 +935,9 @@ Check configuration!''')
     def _writedir(self, fp):
         'Write file list files in to a directory'
 
+        logger.info('_writedir %s' % fp)
         fpd = self._related_dir(fp)
+        logger.info('RELATED: %s' % fpd)
         _, dirname = os.path.split(fpd)
 
         if not os.path.exists(fpd):
@@ -955,9 +961,8 @@ Check configuration!''')
         for n in range(count):
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
-            if hasattr(doc, '_filepath'):
-                if doc._filepath.startswith('_@@'):
-                    del doc._filepath
+            if doc._filepath.startswith('_@@'):
+                doc._filepath = None
 
     def _savestate(self):
         '''write out the files in the editor window, and keep the list
@@ -1123,7 +1128,7 @@ Check configuration!''')
         else:
             return True
 
-    def open(self):
+    def open(self, fp=None):
         '''read in a previously written set of files,
             or a single python source file.
 
@@ -1146,7 +1151,8 @@ Check configuration!''')
 
         logger.info('open at %s' % fdir)
 
-        fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn *.py)'))
+        if fp is None:
+            fp = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', fdir, 'Text files (*.pyn *.py)'))
 
         if fp:
             if not os.path.exists(fp):
@@ -1204,10 +1210,10 @@ Check configuration!''')
             info = infos[0]
 
             if not info.comment:
-                self._openfile00(fp, dump)
+                ok = self._openfile00(fp, dump)
             else:
                 if info.comment == b'pyn01':
-                    self._openfile01(fp, dump)
+                    ok = self._openfile01(fp, dump)
                 else:
                     QtGui.QMessageBox.information(self,
                             'Unknown Format',
@@ -1227,7 +1233,7 @@ Check configuration!''')
                 #txt = txt.decode('utf-8')
                 print(txt)
                 print()
-        else:
+        elif ok:
             self._update_after_open(fp, add_to_recent)
 
     def _addwatcher(self, fp, doc):
@@ -1337,6 +1343,8 @@ Check configuration!''')
                 self._loaddata(data)
             elif ename.startswith('@@history@@'):
                 self._loadhistory(data)
+                
+        return True
 
     def _shouldload01(self, fp):
         'return true if _openfile01 should load the file contents'
@@ -1350,6 +1358,7 @@ Check configuration!''')
         fpd, _ = os.path.split(fp)
         z = zipfile.ZipFile(fp, 'r')
         namelist = z.namelist()
+        logger.info(namelist)
 
         hasmanifest = False
         hashistory = False
@@ -1384,7 +1393,37 @@ Check configuration!''')
                 n = ename[4:]
                 np = os.path.join(fpd, n)
                 logger.info('NP %s' % np)
-                fo = open(np, 'rU')
+                npd, _ = os.path.split(np)
+                if not os.path.exists(npd):
+                    QtGui.QMessageBox.information(self,
+                            'Not found',
+'''File does not exist:
+
+%s
+
+This file requires an associated directory of files:
+
+%s
+
+Move this file and that folder to the same place and
+try opening it again.
+
+''' % (np, npd))
+                    self.new()
+                    return False
+                try:
+                    fo = open(np, 'rU')
+                except FileNotFoundError:
+                    QtGui.QMessageBox.information(self,
+                            'Not found',
+'''File does not exist:
+
+%s
+
+Carrying on trying to recover if possible...
+
+''' % np)
+
 
             elif os.path.isabs(ename):
                 try:
@@ -1411,6 +1450,8 @@ Check configuration!''')
                 self._loaddata(data)
             elif '@@history@@' in ename:
                 self._loadhistory(data)
+        
+        return True
 
     def _opendir(self, d):
         files = os.listdir(d)

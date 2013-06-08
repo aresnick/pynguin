@@ -17,6 +17,7 @@
 # along with Pynguin.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
 import sys
 
 from PyQt4 import QtGui, QtCore
@@ -59,7 +60,7 @@ from .mw import MainWindow
 from .splash import Splash
 
 
-def run():
+def run(pynfile=None):
     translator = QtCore.QTranslator()
     localename = QtCore.QLocale.system().name()
     translation = 'data/translations/pynguin_' + localename
@@ -77,7 +78,21 @@ def run():
     win.show()
     splash.raise_()
 
+    if pynfile is not None:
+        loader = Loader(win, pynfile)
+        QtCore.QTimer.singleShot(250, loader.loadlater)
+
     app.exec_()
+
+class Loader:
+    def __init__(self, win, pynfile):
+        self.win = win
+        self.pynfile = pynfile
+
+    def loadlater(self):
+        abspath = os.path.abspath(self.pynfile)
+        self.win.open(self.pynfile)
+
 
 def dumpfile():
     fp = sys.argv[-1]

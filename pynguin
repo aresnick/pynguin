@@ -121,10 +121,18 @@ def help():
     print('       dump contents of pynguin file to standard output')
     print('  -d MAKEDEB : create debian package')
 
+
+pynfile = sys.argv[-1]
+if not pynfile.endswith('.pyn'):
+    pynfile = False
+
+
 if '-h' in sys.argv:
     help()
 elif main and 'DUMP' in sys.argv:
     main.dumpfile()
+elif main and pynfile:
+    main.run(pynfile)
 elif main:
     main.run()
 else:
