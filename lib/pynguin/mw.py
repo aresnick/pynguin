@@ -497,6 +497,10 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings()
         self.settings = settings
 
+        geometry = settings.value('window/geometry', None)
+        if geometry is not None:
+            self.restoreGeometry(geometry)
+
         self.pynguin._set_bgcolor_to_default()
         self.pynguin._set_color_to_default()
         self.pynguin._set_fillcolor_to_default()
@@ -672,6 +676,8 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, ev=None):
         if self.maybe_save():
             self.interpretereditor.cmdthread = None
+            settings = QtCore.QSettings()
+            settings.setValue('window/geometry', self.saveGeometry())
             ev.accept()
         else:
             ev.ignore()

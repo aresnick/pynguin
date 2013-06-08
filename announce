@@ -43,6 +43,7 @@ Changes in pynguin-0.15:
     UI
         - loads .pyn file specified on command line
         - shows better error message when there is a problem loading a file
+        - saves/restores main window geometry/location
 
     Integrated Editor
         - Replaced editor with QsciScintilla text widget
