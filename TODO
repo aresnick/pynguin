@@ -31,9 +31,10 @@ pynguins list needs a runtime analog so that running code sees the current
 adjust default backup file name for legacy installs
 move interpreter prompts to margin?
 elipses/eliptical arcs
-fill arc should do pie shape
 mode change is losing track of a pynguin
 increase/decrease font size in console?
+Switch command line processing to something more sane (argparse)
+
 
 Intermittent crash/freeze
   - python: ../../src/XlibInt.c:595: _XPrivSyncFunction: Assertion `dpy->synchandler == _XPrivSyncFunction' failed.
