@@ -47,7 +47,7 @@ Read pynguin source for manual deb build instructions.
     # py2dsc -m "Lee Harr <missive@hotmail.com>" pynguin-X.Y.tar.gz
     # cd deb_dist/pynguin-X.Y
     # Modify debian/changelog
-    #   # Change version "unstable" to "quantal"
+    #   # Change version "unstable" to "raring"
     # Modify debian/control
     #   # Change package name to pynguin
     #   # Change all X-Python-Version lines to X-Python3-Version: >= 3.2
@@ -60,6 +60,9 @@ Read pynguin source for manual deb build instructions.
     #       #override_dh_auto_build:
     #       #override_dh_compress:
     #       #(tab) dh_compress -X.pyn
+    # Copy MIME files
+    #   # cp data/mimesupport/pynguin.sharedmimeinfo debian/
+    #   # cp data/mimesupport/pynguin.mime debian/
     # For .deb:
     #   # debuild
     # For PPA:

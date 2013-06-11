@@ -52,6 +52,8 @@ DATA_FILES += [('share/applications',
                         ['data/icons/pynguin.desktop'])]
 DATA_FILES += [('share/icons/hicolor/scalable/apps',
                         ['data/icons/scalable/pynguin.svg'])]
+DATA_FILES += [('share/icons/hicolor/scalable/mimetypes',
+                        ['data/icons/scalable/application-x-pynguin.svg'])]
 DATA_FILES += [('share/pixmaps',
                         ['data/icons/48x48/pynguin.png'])]
 DATA_FILES += [('share/icons/hicolor/24x24/apps',

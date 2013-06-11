@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
-Exec=pynguin
+MimeType=application/x-pynguin;
+Exec=pynguin %U
 Icon=pynguin
 Comment=Python turtle graphics
 Terminal=false
