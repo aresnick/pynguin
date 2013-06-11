@@ -13,13 +13,19 @@ This release makes major changes to the editor to enable
     line numbers and other improvements.
 
 
-Pynguin is tested with Python 3.2.3 and PyQt 4.9.3 and
-    will use Pygments syntax highlighting if available.
+Pynguin is tested with Python 3.3.1 and PyQt 4.10 and
+    now requires QsciScintilla (tested with version 2.7.1)
 
 Pynguin is released under GPLv3.
 
 
 Changes in pynguin-0.15:
+    Major change!
+        - Now REQUIRES QsciScintilla!
+            - included with PyQt4 on windows
+            - .deb should pull in dependency automatically
+            - other systems may require manual intervention
+
     Important fixes
         - writes out all document pages every time when saving
             - some pages could have been lost when changing between
