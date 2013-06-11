@@ -44,15 +44,15 @@ INSTALLATION:
 DEPENDENCIES:
     python:
         http://python.org/
-            (tested with python-3.2.3)
+            (tested with python-3.3.1)
 
     pyqt4:
         http://www.riverbankcomputing.co.uk/software/pyqt/
-            (tested with pyqt-4.9.3)
+            (tested with pyqt-4.10)
 
-    pygments (optional):
-        http://pygments.org/
-            (tested with pygments-1.5)
+    qscintilla:
+        http://pyqt.sourceforge.net/Docs/QScintilla2/
+            (tested with qsciscintilla-2.7.1)
 
 
 RUNNING:
