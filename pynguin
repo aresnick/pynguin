@@ -43,6 +43,7 @@ Read pynguin source for manual deb build instructions.
     # from http://wiki.debian.org/Python/Packaging
     #
     # Create tarball. Name as pynguin-X.Y.tar.gz
+    #   # tar zcf pynguin-X.Y.tar.gz -X pynguin/.tar-ignore  pynguin
     # Move it to a new workspace (new folder)
     # py2dsc -m "Lee Harr <missive@hotmail.com>" pynguin-X.Y.tar.gz
     # cd deb_dist/pynguin-X.Y
