@@ -10,3 +10,4 @@ backup*
 wiki
 deb_dist
 __pycache__
+test
