@@ -5,3 +5,4 @@ doc/testing/
 logfile.log*
 backup~*
 doc/video
+test
