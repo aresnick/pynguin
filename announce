@@ -42,6 +42,8 @@ Changes in pynguin-0.15:
 
     UI
         - loads .pyn file specified on command line
+        - added ability to double-click open .pyn documents
+            - tested on Ubuntu Linux only
         - shows better error message when there is a problem loading a file
         - saves/restores main window geometry/location
 
