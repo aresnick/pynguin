@@ -1,4 +1,4 @@
-version = 'pynguin-0.15'
+version = 'pynguin-0.16'
 
 bug_url = 'http://code.google.com/p/pynguin/issues/list'
 
