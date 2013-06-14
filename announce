@@ -19,6 +19,7 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.16:
     Important fixes
+        - Ensures that prompt is visible after SyntaxError in console
 
     Other fixes
 
@@ -31,5 +32,7 @@ Changes in pynguin-0.16:
     Integrated Editor
 
     Integrated Console
+        - Delays check for prompt slightly to ensure that prompt is visible
+            - SyntaxError would sometimes leave console in a bad state
 
     Examples

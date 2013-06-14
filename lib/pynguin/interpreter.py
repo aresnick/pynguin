@@ -215,7 +215,7 @@ class Interpreter(editor.PythonEditor):
         self.cleanup_ControlC()
 
         if not self.needmore:
-            self.checkprompt()
+            QtCore.QTimer.singleShot(100, self.checkprompt)
         else:
             self.write('... ')
             self.write(' ' * self._indent_level)

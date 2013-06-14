@@ -35,7 +35,6 @@ mode change is losing track of a pynguin
 increase/decrease font size in console?
 Switch command line processing to something more sane (argparse)
 fill(False) synonym for nofill() ?
-prompt not displayed after syntax error in console (sometimes...)
 ability to paste multiple lines to console?
 
 
