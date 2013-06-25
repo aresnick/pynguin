@@ -262,3 +262,31 @@ class PythonEditor(QsciScintilla):
         menu.insertAction(sep0, redoaction)
 
         menu.exec_(ev.globalPos())
+
+    def cleancode(self):
+        '''fix up the code a bit first...
+        make sure the last line ends with newline
+        and make sure the code does not end with
+        lines that have only indentation
+        '''
+        code = self.text()
+
+        if not code:
+            return ''
+
+        lines = code.split('\n')
+        lines.reverse()
+        blankend = True
+        rewrite = []
+        for line in lines:
+            if blankend and (not line or line.isspace()):
+                pass
+            else:
+                blankend = False
+                line = line.rstrip()
+                rewrite.append(line)
+
+        rewrite.reverse()
+        code = '%s\n' % '\n'.join(rewrite)
+
+        return code

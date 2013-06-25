@@ -808,10 +808,9 @@ Check configuration!''')
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
             modified = doc.isModified()
-            code = doc.text()
             cline, ccol = doc.getCursorPosition()
             arcname = '##%05d##__%s' % (n, docid)
-            code = self.cleancode(code)
+            code = doc.cleancode()
             doc.beginUndoAction()
             doc.selectAll()
             doc.removeSelectedText()
@@ -855,9 +854,8 @@ Check configuration!''')
             docid = str(mselect.itemData(n))
             doc = self.editor.documents[docid]
             modified = doc.isModified()
-            code = doc.text()
             cline, ccol = doc.getCursorPosition()
-            code = self.cleancode(code)
+            code = doc.cleancode()
             doc.beginUndoAction()
             doc.selectAll()
             doc.removeSelectedText()
@@ -866,7 +864,7 @@ Check configuration!''')
             doc.setModified(modified)
             doc.endUndoAction()
 
-            logger.info('writing %s' % doc)
+            logger.info('writing %s' % n)
             if not backup and doc._filepath is not None:
                 efp = doc._filepath
                 manifest.append(efp)
@@ -891,7 +889,7 @@ Check configuration!''')
                 arcname = '%05d.py' % n
 
                 zipi = zipfile.ZipInfo()
-                zipi.filename = os.path.join(fbase, arcname)
+                zipi.filename = '/'.join([fbase, arcname])
                 manifest.append(zipi.filename)
                 zipi.compress_type = zipfile.ZIP_DEFLATED
                 zipi.date_time = time.localtime()
@@ -1354,10 +1352,16 @@ Check configuration!''')
 
     def _shouldload01(self, fp):
         'return true if _openfile01 should load the file contents'
+        while '\\' in fp:
+            fp = fp.replace('\\', '/')
+        while '//' in fp:
+            fp = fp.replace('//', '/')
         edir, ename = os.path.split(fp)
-        return len(ename)==8 and \
+        ok = len(ename)==8 and \
                 ename[:5].isdigit() and \
                 ename.endswith('.py')
+        logger.info('SL %s %s' % (ok, fp))
+        return ok
 
     def _openfile01(self, fp, dump=False):
         'used to open files in version 0.10 (file vers. pyn01)'
@@ -1371,17 +1375,44 @@ Check configuration!''')
         for ename in namelist:
             logger.info(ename)
             if '@@manifest@@' in ename:
-                hasmanifest = True
+                hasmanifest = ename
             elif '@@history@@' in ename:
                 hashistory = ename
 
         if hasmanifest:
-            fo = z.open(ename, 'rU')
+            fo = z.open(hasmanifest, 'rU')
             data = fo.read()
             data = data.decode('utf-8')
-            namelist = data.split('\n')
-            if hashistory:
-                namelist.append(hashistory)
+            manifest_namelist = data.split('\n')
+            if manifest_namelist:
+                # Try opening the entries to see if the
+                #   manifest is well formed or broken
+                broken = False
+                for ename in manifest_namelist:
+                    if ename.startswith('_@@'):
+                        # external
+                        continue
+                    if '_pynd' not in ename:
+                        # manifest or history
+                        continue
+
+                    logger.info('Chk %s' % ename)
+
+                    try:
+                        fo = z.open(ename, 'rU')
+                    except KeyError:
+                        #broken manifest
+                        logger.info('Broken manifest %s %s' % (ename, manifest_namelist))
+                        namelist.sort()
+                        broken = True
+                        break
+
+                if not broken:
+                    # Looks ok. Use the manifest
+                    namelist = manifest_namelist
+                    if hashistory:
+                        namelist.append(hashistory)
+
         else:
             namelist.sort()
 
@@ -1390,12 +1421,14 @@ Check configuration!''')
             for name in namelist:
                 print('  ', name)
 
+        pages = 0
         for ename in namelist:
             logger.info('loading %s' % ename)
             if dump:
                 print('============================================')
 
             if ename.startswith('_@@'):
+                # directory + .pyn style
                 n = ename[4:]
                 np = os.path.join(fpd, n)
                 logger.info('NP %s' % np)
@@ -1434,6 +1467,7 @@ Carrying on trying to recover if possible...
             elif os.path.isabs(ename):
                 try:
                     self._openfile(ename, dump=dump)
+                    pages += 1
                     continue
                 except IOError:
                     self.editor.add('Could not load:\n%s' % ename)
@@ -1445,6 +1479,8 @@ Carrying on trying to recover if possible...
                 fo = z.open(ename, 'rU')
 
             data = fo.read()
+            logger.info('OPEN')
+            logger.info(data)
             if hasattr(data, 'decode'):
                 data = data.decode('utf-8')
             if dump:
@@ -1454,9 +1490,12 @@ Carrying on trying to recover if possible...
                 print()
             elif self._shouldload01(ename):
                 self._loaddata(data)
+                pages += 1
             elif '@@history@@' in ename:
                 self._loadhistory(data)
-        
+
+        if not pages:
+            self.new()
         return True
 
     def _opendir(self, d):
@@ -1676,32 +1715,6 @@ Carrying on trying to recover if possible...
         else:
             self.interpretereditor.setFocus()
 
-    def cleancode(self, code):
-        '''fix up the code a bit first...
-        make sure the last line ends with newline
-        and make sure the code does not end with
-        lines that have only indentation
-        '''
-
-        if not code:
-            return ''
-
-        lines = code.split('\n')
-        lines.reverse()
-        blankend = True
-        rewrite = []
-        for line in lines:
-            if blankend and (not line or line.isspace()):
-                pass
-            else:
-                blankend = False
-                line = line.rstrip()
-                rewrite.append(line)
-
-        rewrite.reverse()
-        code = '%s\n' % '\n'.join(rewrite)
-        return code
-
     def findmain(self, code):
         '''returns information about the main function or class in
             the given code.
@@ -1778,9 +1791,7 @@ Carrying on trying to recover if possible...
             function.
         '''
         doc = self.editor._doc
-        code = doc.text()
-
-        code = self.cleancode(code)
+        code = doc.cleancode()
 
         error = None
 
@@ -1872,6 +1883,8 @@ Carrying on trying to recover if possible...
                 self.editor.switchto(docid)
                 self.editor.setFocus()
                 if reset and not Pynguin._stop_testall:
+                    ie.checkprompt()
+                    ie.spin(5)
                     ie.addcmd('reset()')
                     ie.spin(5)
                     ie.go()
@@ -1904,8 +1917,8 @@ Carrying on trying to recover if possible...
                 ie.spin(5, delay=0.1)
 
                 if autorun:
-                    code = str(self.editor.documents[docid])
-                    code = self.cleancode(code)
+                    doc = self.editor.documents[docid]
+                    code = doc.cleancode()
                     kind, name, params, nodefault = self.findmain(code)
                     missing_vars = []
                     if nodefault:

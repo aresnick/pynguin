@@ -36,6 +36,9 @@ increase/decrease font size in console?
 Switch command line processing to something more sane (argparse)
 fill(False) synonym for nofill() ?
 ability to paste multiple lines to console?
+paste in to editor should leave cursor at end of pasted code
+watch for changes in files when saving in dir + .pyn mode?
+rewrite file handling to be testable
 
 
 Intermittent crash/freeze
