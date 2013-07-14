@@ -123,6 +123,7 @@ def help():
     print('  -D : debug mode. Write debug info to log file')
     print(' DUMP <filename> :')
     print('       dump contents of pynguin file to standard output')
+    print('  -T : run test suite')
     print('  -d MAKEDEB : create debian package')
 
 
@@ -131,10 +132,23 @@ if not pynfile.endswith('.pyn'):
     pynfile = False
 
 
+def run_tests():
+    if '-d' not in sys.argv:
+        sys.argv.append('-d')
+        setup_devel()
+        
+    sys.argv = []
+    
+    import pytest
+    pytest.main(['-v'])
+
+
 if '-h' in sys.argv:
     help()
 elif main and 'DUMP' in sys.argv:
     main.dumpfile()
+elif '-T' in sys.argv:
+    run_tests()
 elif main and pynfile:
     main.run(pynfile)
 elif main:
