@@ -9,7 +9,8 @@ It is meant to be an easy environment for introducing
 http://pynguin.googlecode.com/
 
 
-This release ...
+This release fixes the problem loading saved files in Windows.
+
 
 Pynguin is tested with Python 3.3.1 and PyQt 4.10 and
     now requires QsciScintilla (tested with version 2.7.1)
@@ -19,6 +20,7 @@ Pynguin is released under GPLv3.
 
 Changes in pynguin-0.16:
     Important fixes
+        - Fixes loading saved files in Windows
         - Ensures that prompt is visible after SyntaxError in console
 
     Other fixes
