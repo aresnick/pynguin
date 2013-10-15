@@ -1539,7 +1539,7 @@ Carrying on trying to recover if possible...
                                 'Files not saved!')
                         break
 
-    def export(self):
+    def export(self, fp=None):
         '''save the current drawing'''
 
         if self._fdir is None:
@@ -1547,15 +1547,16 @@ Carrying on trying to recover if possible...
         else:
             fdir = self._fdir
 
-        fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
-        if fp:
-            root, ext = os.path.splitext(fp)
-            if not ext:
-                ext = '.png'
-                fp += ext
-            self._fdir, _ = os.path.split(fp)
-        else:
-            return False
+        if fp is None:
+            fp = str(QtGui.QFileDialog.getSaveFileName(self, 'Export Image', fdir))
+            if not fp:
+                return False
+
+        root, ext = os.path.splitext(fp)
+        if not ext:
+            ext = '.png'
+            fp += ext
+        self._fdir, _ = os.path.split(fp)
 
         for pynguin in self.pynguins:
             pynguin.gitem.hide()
