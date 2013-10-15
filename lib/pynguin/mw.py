@@ -1560,6 +1560,8 @@ Carrying on trying to recover if possible...
 
         for pynguin in self.pynguins:
             pynguin.gitem.hide()
+            if hasattr(pynguin, '_pyn'):
+                pynguin._pyn.gitem.hide()
 
         scene = self.scene
         view = scene.view
@@ -1591,6 +1593,8 @@ Carrying on trying to recover if possible...
 
         for pynguin in self.pynguins:
             pynguin.gitem.show()
+            if hasattr(pynguin, '_pyn'):
+                pynguin._pyn.gitem.show()
 
     def export_svg(self, fp, src):
         from PyQt4 import QtSvg
