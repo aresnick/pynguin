@@ -203,6 +203,9 @@ class ModeBase(Pynguin):
 
     def font(self, family=None, size=None, weight=None, italic=None):
         return self._pyn.font(family, size, weight, italic)
+    
+    def underline(self, on=True):
+        return self._pyn.underline(on)
 
     def write(self, txt, move=False, align='left', valign='bottom'):
         self._pyn.write(txt, move, align, valign)
