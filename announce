@@ -18,23 +18,21 @@ Pynguin is tested with Python 3.3.1 and PyQt 4.10 and
 Pynguin is released under GPLv3.
 
 
-Changes in pynguin-0.16:
+Changes in pynguin-0.17:
     Important fixes
-        - Fixes loading saved files in Windows
-        - Ensures that prompt is visible after SyntaxError in console
+        - Hide avatar when exporting image from alternate modes
 
     Other fixes
 
     Pynguin API
 
     Canvas
+        - Allow exporting image from code -- export()
 
     UI
 
     Integrated Editor
 
     Integrated Console
-        - Delays check for prompt slightly to ensure that prompt is visible
-            - SyntaxError would sometimes leave console in a bad state
 
     Examples
