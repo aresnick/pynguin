@@ -237,7 +237,7 @@ class PythonEditor(QsciScintilla):
             newtxt.append(line)
         txt = '\n'.join(newtxt)
 
-        self.insert(txt)
+        self.replaceSelectedText(txt)
 
     def contextMenuEvent(self, ev):
         '''Switch Redo to Ctrl-Shift-Z
