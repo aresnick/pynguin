@@ -1634,6 +1634,7 @@ Carrying on trying to recover if possible...
         self.editor.switchto(docid)
         self.editor._doc.setFocus()
         idx = self.ui.mselect.count() - 1
+        idx = max(0, idx)
         self.ui.mselect.setCurrentIndex(idx)
 
         self._modified = True
@@ -1655,7 +1656,14 @@ Carrying on trying to recover if possible...
         docname = str(mselect.itemText(idx))
         docid = str(mselect.itemData(idx))
         doc = documents[docid]
+        page_removed = self.editor.pages[docid]
         empty = not doc.text()
+        logger.info('REMOVE')
+        logger.info(str(documents))
+        logger.info(idx)
+        logger.info(docid)
+        logger.info(self.editor.pages)
+        logger.info(mselect.count())
 
         if hasattr(self.editor._doc, '_title'):
             external = True
@@ -1685,6 +1693,17 @@ Carrying on trying to recover if possible...
             idx = mselect.currentIndex()
             docname = str(mselect.itemText(idx))
             mselect.removeItem(idx)
+            cwidg = self.editor.box.currentWidget()
+            self.editor.box.removeWidget(cwidg)
+
+            if docid in self.editor.documents:
+                doc = self.editor.documents[docid]
+                del self.editor.documents[docid]
+                del self.editor.pages[docid]
+                for pages_docid, pagen in self.editor.pages.items():
+                    if pagen > page_removed:
+                        self.editor.pages[pages_docid] = pagen - 1
+
             if mselect.count():
                 self.changedoc(0)
                 mselect.setCurrentIndex(0)
@@ -1692,15 +1711,16 @@ Carrying on trying to recover if possible...
                 self.editor._doc.setText('')
                 self.newdoc()
 
-            if docid in self.editor.documents:
-                doc = self.editor.documents[docid]
-                del self.editor.documents[docid]
-
             self._modified = True
             self.show_modified_status()
 
             if external:
                 self._remwatcher(fp)
+
+        logger.info('DONE')
+        logger.info(self.editor.documents)
+        logger.info(self.editor.pages)
+        logger.info(mselect.count())
 
     def nextdoc(self):
         self.editor.shownext()

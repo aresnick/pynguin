@@ -130,15 +130,16 @@ class MultiDocumentEditor:
 
         doc.title = title
 
-    def switchto(self, docid):
+    def switchto(self, docid, force=False):
         '''switch to document docid'''
 
         old_doc = self._doc
         doc = self.documents[docid]
-        if doc == old_doc:
+        if not force and doc == old_doc:
             return
 
         page = self.pages[docid]
+        page = max(0, page)
         self.box.setCurrentIndex(page)
         self._selector.setCurrentIndex(page)
 
@@ -153,8 +154,8 @@ class MultiDocumentEditor:
         count = self.box.count()
         if idx < count-1:
             self.box.setCurrentIndex(idx+1)
-        item = self.box.currentWidget()
-        self.switchto(item.docid)
+            item = self.box.currentWidget()
+            self.switchto(item.docid)
 
     def showprev(self):
         '''show the previous document in the stack.'''
@@ -163,8 +164,8 @@ class MultiDocumentEditor:
         count = self.box.count()
         if idx > 0:
             self.box.setCurrentIndex(idx-1)
-        item = self.box.currentWidget()
-        self.switchto(item.docid)
+            item = self.box.currentWidget()
+            self.switchto(item.docid)
 
     def promote(self):
         '''move the current document up 1 place in the stack'''
@@ -183,13 +184,24 @@ class MultiDocumentEditor:
         self.box.takeAt(idx)
         self.box.insertWidget(idx-1, doc)
 
+        selector = self._selector
+        idata_idx = selector.itemData(idx)
+        title_idx = selector.itemText(idx)
+        idata_idx1 = selector.itemData(idx-1)
+        title_idx1 = selector.itemText(idx-1)
+
+        selector.setItemData(idx, idata_idx1)
+        selector.setItemText(idx, title_idx1)
+        selector.setItemData(idx-1, idata_idx)
+        selector.setItemText(idx-1, title_idx)
+
         self.pages[docid] = idx-1
         self.pages[otherdocid] = idx
 
         self._modified = True
         self.mw.show_modified_status()
 
-        self.switchto(docid)
+        self.switchto(docid, force=True)
 
     def demote(self):
         '''move the current document down 1 place in the stack'''
@@ -209,13 +221,24 @@ class MultiDocumentEditor:
         self.box.takeAt(idx)
         self.box.insertWidget(idx+1, doc)
 
+        selector = self._selector
+        idata_idx = selector.itemData(idx)
+        title_idx = selector.itemText(idx)
+        idata_idx1 = selector.itemData(idx+1)
+        title_idx1 = selector.itemText(idx+1)
+
+        selector.setItemData(idx, idata_idx1)
+        selector.setItemText(idx, title_idx1)
+        selector.setItemData(idx+1, idata_idx)
+        selector.setItemText(idx+1, title_idx)
+
         self.pages[docid] = idx+1
         self.pages[otherdocid] = idx
 
         self._modified = True
         self.mw.show_modified_status()
 
-        self.switchto(docid)
+        self.switchto(docid, force=True)
 
     def setfontsize(self, size):
         self._fontsize = size
