@@ -3,6 +3,6 @@ syntax:glob
 doc/examples/test/
 doc/testing/
 logfile.log*
-backup~*
+*backup~*
 doc/video
 test
