@@ -21,7 +21,6 @@ Pynguin subclass (Turtle?) that uses turtle.py API
 color(None) for transparent line?
 Ability to keep handle on drawn items, move them, use them as avatar.
 Test/Run all sometimes gets stuck trying to start
-pressing Enter at beginning of already indented line should keep indentation
 Adding ModeTurtle is including helper in pynguins?
 Adding ModeLogo is making a phantom pynguin!
 find in editor pages

@@ -169,8 +169,9 @@ class PythonEditor(QsciScintilla):
             indent = self.indentation(lineno)
             char = line[-1:]
             colon = ':'
-            if char == colon:
-                # auto indent
+            if char == colon and linedex:
+                # auto indent after line with colon
+                # unless cursor is at first position in line
                 indent += 4
             QsciScintilla.keyPressEvent(self, ev)
             self.insert(' '*indent)
