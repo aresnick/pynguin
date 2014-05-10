@@ -46,7 +46,7 @@ pynguin_functions = [
     'goto', 'xy', 'xyh', 'h', 'turnto', 'clear',
     'write', 'toward', 'distance', 'lineto', 'xyforward',
     'onscreen', 'viewcoords', 'stamp', 'square',
-    'avatar', 'remove', 'promote', 'reap', 'font',
+    'avatar', 'remove', 'promote', 'reap', 'font', 'export',
     'speed', 'track', 'notrack', 'bgcolor', 'mode', 'colorat']
 interpreter_protect = [
     'p', 'pynguin', 'Pynguin', 'ModeLogo', 'ModeTurtle', 'pynguins',
@@ -1981,6 +1981,15 @@ class Pynguin(object):
         if not floats:
             coords = [int(c) for c in coords]
         return coords
+
+    def export(self, fp):
+        '''Save the current drawing to the given file path.
+        
+        Format of the saved image is determined by the file name suffix.
+            (default .png if none given)
+        '''
+        
+        self.mw.export(fp)
 
     def onclick(self, x, y):
         '''This method will be called automatically when the user

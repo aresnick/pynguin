@@ -1540,7 +1540,12 @@ Carrying on trying to recover if possible...
                         break
 
     def export(self, fp=None):
-        '''save the current drawing'''
+        '''save the current drawing.
+        
+        Format of saved image is determined by file suffix
+            (default .png if none is given)
+        
+        '''
 
         if self._fdir is None:
             fdir = os.path.abspath(os.path.curdir)
